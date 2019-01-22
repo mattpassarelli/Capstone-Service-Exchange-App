@@ -1,44 +1,59 @@
 import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView, ScrollView } from 'react-native';
-import { createDrawerNavigator, createStackNavigator, DrawerItems } from 'react-navigation'
-import Home from './Screens/Home'
-import Settings from './Screens/Settings'
-import Account from './Screens/Account'
-import { Avatar } from 'react-native-elements'
+import { Text, View, Platform } from 'react-native';
+import { createBottomTabNavigator } from 'react-navigation';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-
-const CustomDrawerComponent = (props) => (
-  <SafeAreaView style={{ flex: 1 }}>
-    <View style={{ flex: 1, alignItems: "center", justifyContent: 'center', height: 80 }}>
-      <Avatar size={125} rounded title="MP" />
-    </View>
-    <ScrollView>
-      <DrawerItems {...props} />
-    </ScrollView>
-  </SafeAreaView>
-)
-
-const StackNavigator = createStackNavigator({
-  Account: Account
-})
-
-const AppDrawerNavigator = createDrawerNavigator({
-  Home: Home,
-  Account: Account,
-  Settings: Settings,
-},
-  {
-    contentComponent: CustomDrawerComponent,
-    // contentOptions: {
-    //   activeTintColor: 'orange'
-    // }
-  })
-
-export default class App extends React.Component {
+class Home extends React.Component {
   render() {
     return (
-      <StackNavigator /> ,
-      <AppDrawerNavigator />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Home!</Text>
+      </View>
     );
   }
 }
+
+class Settings extends React.Component {
+  render() {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Settings!</Text>
+      </View>
+    );
+  }
+}
+
+const TabNavigator = createBottomTabNavigator({
+  Home: {
+    screen: Home,
+    navigationOptions: {
+      tabBarLabel: 'Home',
+      tabBarIcon: ({ tintColor }) => (
+        <Icon name={Platform.OS === "ios" ? "ios-home" : "md-home"} color={tintColor} size={24} />
+      )
+    }
+  },
+  Settings: {
+    screen: Settings,
+    navigationOptions: {
+      tabBarLabel: 'Settings',
+      tabBarIcon: ({ tintColor }) => (
+        <Icon name={Platform.OS === "ios" ? "ios-settings" : "md-settings"} color={tintColor} size={24} />
+      )
+    }
+  }
+
+}, {//router config
+    initialRouteName: 'Home',
+    order: ['Home', 'Settings'],
+    //navigation for complete tab navigator
+    navigationOptions: {
+      tabBarVisible: true
+    },
+    tabBarOptions: {
+      activeTintColor: 'blue',
+      inactiveTintColor: 'grey'
+    }
+  });
+
+export default TabNavigator;
