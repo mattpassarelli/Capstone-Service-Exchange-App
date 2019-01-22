@@ -25,8 +25,7 @@ class Home extends Component {
                     </Left>
 
                     <Body style={{flex: 3}}>
-                        {/* this is going to become the account user's name */}
-                        <Title>Matt Passarelli</Title>
+                        <Title>Home</Title>
                     </Body>
 
                     <Right style={{flex: 1}}>

@@ -18,11 +18,11 @@ class Settings extends Component {
                     <Left style={{ flex: 1, paddingLeft: 5 }}>
                         <Icon name="menu" onPress={() => this.props.navigation.openDrawer()} />
                     </Left>
-                    <Body style={{flex: 2}}>
+                    <Body style={{ flex: 2 }}>
                         <Title> Settings </Title>
                     </Body>
 
-                    <Right style={{felx: 1}}></Right>
+                    <Right style={{ flex: 1 }}></Right>
                 </Header>
 
                 <ScrollView contentContainerStyle={ScrollStyle.container}>
