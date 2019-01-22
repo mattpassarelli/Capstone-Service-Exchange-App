@@ -1,8 +1,8 @@
 //import liraries
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
-// import { createStackNavigator } from 'react-navigation'
-// import Notifications from './Notifications'
+import {createStackNavigator} from 'react-navigation'
+
 
 // define your styles
 const styles = StyleSheet.create({
@@ -19,22 +19,19 @@ const ScrollStyle = StyleSheet.create({
 	}
 })
 
-// const StackNavigator = createStackNavigator({
-// 	Notifications: Notifications
-// })
 
-// create a component
-class Account extends Component {
+
+class Notifications extends React.Component {
 	render() {
 		return (
-			<View style={styles.container}>
-				<ScrollView contentContainerStyle={ScrollStyle.container}>
-					<Text>Hello Account</Text>
-				</ScrollView>
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<Text>Here will lie notifications!</Text>
 			</View>
 		)
 	}
 }
 
+
+
 //make this component available to the app
-export default Account;
+export default Notifications;

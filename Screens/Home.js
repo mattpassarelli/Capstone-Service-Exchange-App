@@ -1,7 +1,6 @@
 //import liraries
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Header, Left, Body, Right, Icon, Title } from 'native-base';
 
 
 // define your styles
@@ -20,45 +19,18 @@ const ScrollStyle = StyleSheet.create({
 })
 
 
-
-
 // create a component
 class Home extends Component {
-
-    makeNewRequest = () => {
-        this.props.navigation.navigate('NewRequest')
-    }
-
-    static navigationOptions = ({navigation}) => {
-        Title:'Home',
-        head
-    }
-
+    
     render() {
         return (
 
             <React.Fragment>
 
-               
-
-
                 <View style={styles.container}>
-                    {/* <Header>
-                        <Left style={{ flex: 1, paddingLeft: 5 }}>
-                            <Icon name="menu" onPress={() => this.props.navigation.openDrawer()} />
-                        </Left>
 
-                        <Body style={{ flex: 3 }}>
-                            <Title>Home</Title>
-                        </Body>
-
-                        <Right style={{ flex: 1 }}>
-                            <Icon name="swap" onPress={() => this.makeNewRequest()} />
-                        </Right>
-
-                    </Header> */}
                     <ScrollView contentContainerStyle={ScrollStyle.container}>
-                        <Text>Home</Text>
+                        <Text>Hello World</Text>
                     </ScrollView>
                 </View>
             </React.Fragment>

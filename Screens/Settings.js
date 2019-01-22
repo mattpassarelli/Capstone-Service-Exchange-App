@@ -1,37 +1,7 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Header, Left, Body, Right, Icon, Title } from 'native-base';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 
-// create a component
-class Settings extends Component {
-    static navigationOptions = {
-        drawerIcon: ({ tintColor }) => (
-            <Icon name="settings" style={{ fontSize: 24, color: tintColor }} />
-        )
-    }
-
-    render() {
-        return (
-            <View style={styles.container}>
-                <Header>
-                    <Left style={{ flex: 1, paddingLeft: 5 }}>
-                        <Icon name="menu" onPress={() => this.props.navigation.openDrawer()} />
-                    </Left>
-                    <Body style={{ flex: 2 }}>
-                        <Title> Settings </Title>
-                    </Body>
-
-                    <Right style={{ flex: 1 }}></Right>
-                </Header>
-
-                <ScrollView contentContainerStyle={ScrollStyle.container}>
-                    <Text>Settings</Text>
-                </ScrollView>
-            </View>
-        );
-    }
-}
 
 // define your styles
 const styles = StyleSheet.create({
@@ -47,6 +17,25 @@ const ScrollStyle = StyleSheet.create({
         justifyContent: 'center'
     }
 })
+
+
+// create a component
+class Settings extends Component {
+    render() {
+        return (
+
+            <React.Fragment>
+
+                <View style={styles.container}>
+
+                    <ScrollView contentContainerStyle={ScrollStyle.container}>
+                        <Text>Hello Settings</Text>
+                    </ScrollView>
+                </View>
+            </React.Fragment>
+        );
+    }
+}
 
 //make this component available to the app
 export default Settings;

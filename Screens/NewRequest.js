@@ -1,24 +1,41 @@
+//import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 
 
-const styles= StyleSheet.create({
-	container: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center'
-	}
+// define your styles
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+});
+
+const ScrollStyle = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
 })
 
-class NewRequest extends Component {
 
-  render() {
-	return (
-	  <View style={styles.container}>
-		<Text> NewRequest </Text>
-	  </View>
-	);
-  }
+// create a component
+class NewRequest extends Component {
+    render() {
+        return (
+
+            <React.Fragment>
+
+                <View style={styles.container}>
+
+                    <ScrollView contentContainerStyle={ScrollStyle.container}>
+                        <Text>Hello Requester</Text>
+                    </ScrollView>
+                </View>
+            </React.Fragment>
+        );
+    }
 }
 
+//make this component available to the app
 export default NewRequest;

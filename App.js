@@ -1,51 +1,122 @@
 import React from 'react';
-import { Text, View, Platform } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
+import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
+import { View, Text, Button, Platform } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons';
+import Home from "./Screens/Home"
+import Settings from "./Screens/Settings"
+import Notifications from "./Screens/Notifications"
+import Account from "./Screens/Account"
+import NewRequest from "./Screens/NewRequest"
 
-class Home extends React.Component {
+
+class NotificationsScreen extends React.Component {
   render() {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Home!</Text>
-      </View>
+      <Notifications />
     );
   }
 }
 
-class Settings extends React.Component {
+class HomeScreen extends React.Component {
   render() {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Settings!</Text>
-      </View>
+      <React.Fragment>
+        <Home />
+      </React.Fragment>
     );
   }
 }
+
+class SettingsScreen extends React.Component {
+  render() {
+    return (
+      <Settings />
+    );
+  }
+}
+
+class AccountScreen extends React.Component {
+  render() {
+    return (
+      <React.Fragment>
+      <Account />
+
+      <Button
+          title="Notifications"
+          onPress={() => this.props.navigation.navigate('Notifications')}
+        />
+      </React.Fragment>
+    )
+  }
+}
+
+class NewRequestScreen extends React.Component {
+  render() {
+    return (
+      <NewRequest />
+    )
+  }
+}
+
+
+const HomeStack = createStackNavigator({
+  Home: HomeScreen,
+});
+
+const SettingsStack = createStackNavigator({
+  Settings: SettingsScreen,
+});
+
+const AccountStack = createStackNavigator({
+  Account: AccountScreen,
+  Notifications: NotificationsScreen
+})
+
+const NewRequestStack = createStackNavigator({
+  NewRequest: NewRequestScreen
+})
 
 const TabNavigator = createBottomTabNavigator({
   Home: {
-    screen: Home,
+    screen: HomeStack,
     navigationOptions: {
-      tabBarLabel: 'Home',
+      tabBarLabel: "Home",
       tabBarIcon: ({ tintColor }) => (
         <Icon name={Platform.OS === "ios" ? "ios-home" : "md-home"} color={tintColor} size={24} />
       )
     }
   },
   Settings: {
-    screen: Settings,
+    screen: SettingsStack,
     navigationOptions: {
       tabBarLabel: 'Settings',
       tabBarIcon: ({ tintColor }) => (
         <Icon name={Platform.OS === "ios" ? "ios-settings" : "md-settings"} color={tintColor} size={24} />
       )
     }
+  },
+  Account: {
+    screen: AccountStack,
+    navigationOptions: {
+      tabBarLabel: 'Account',
+      tabBarIcon: ({ tintColor }) => (
+        <Icon name={Platform.OS === "ios" ? "ios-man" : "md-man"} color={tintColor} size={24} />
+      )
+    }
+  },
+  NewRequest: {
+    screen: NewRequestStack,
+    navigationOptions: {
+      tabBarLabel: "New Request",
+      tabBarIcon: ({ tintColor }) => (
+        <Icon name={Platform.OS === "ios" ? "ios-add-circle" : "md-add-circle"} color={tintColor} size={24} />
+      )
+    }
   }
-
-}, {//router config
+},
+  {//router config
     initialRouteName: 'Home',
-    order: ['Home', 'Settings'],
+    order: ['Home', 'NewRequest', 'Account', 'Settings'],
     //navigation for complete tab navigator
     navigationOptions: {
       tabBarVisible: true
@@ -54,6 +125,6 @@ const TabNavigator = createBottomTabNavigator({
       activeTintColor: 'blue',
       inactiveTintColor: 'grey'
     }
-  });
+  })
 
 export default TabNavigator;
