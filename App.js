@@ -10,6 +10,12 @@ import NewRequest from "./Screens/NewRequest"
 
 
 class NotificationsScreen extends React.Component {
+
+  static navigationOptions = {
+    title: "Notifications",
+    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+  }
+
   render() {
     return (
       <Notifications />
@@ -18,16 +24,26 @@ class NotificationsScreen extends React.Component {
 }
 
 class HomeScreen extends React.Component {
+
+  static navigationOptions = {
+    title: "Home",
+    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+  }
+
   render() {
     return (
-      <React.Fragment>
-        <Home />
-      </React.Fragment>
+      <Home />
     );
   }
 }
 
 class SettingsScreen extends React.Component {
+
+  static navigationOptions = {
+    title: "Settings",
+    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+  }
+
   render() {
     return (
       <Settings />
@@ -36,12 +52,19 @@ class SettingsScreen extends React.Component {
 }
 
 class AccountScreen extends React.Component {
+
+  static navigationOptions = {
+    //TODO Change to User's name
+    title: "Account",
+    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+  }
+
   render() {
     return (
       <React.Fragment>
-      <Account />
+        <Account />
 
-      <Button
+        <Button
           title="Notifications"
           onPress={() => this.props.navigation.navigate('Notifications')}
         />
@@ -51,6 +74,12 @@ class AccountScreen extends React.Component {
 }
 
 class NewRequestScreen extends React.Component {
+
+  static navigationOptions = {
+    title: "New Request",
+    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+  }
+
   render() {
     return (
       <NewRequest />
