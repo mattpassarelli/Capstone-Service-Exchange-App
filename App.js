@@ -65,8 +65,8 @@ class AccountScreen extends React.Component {
         <Account />
 
         <Button
-          title="Notifications"
-          onPress={() => this.props.navigation.navigate('Notifications')}
+          title="Go to Settings"
+          onPress={() => this.props.navigation.navigate('Settings')}
         />
       </React.Fragment>
     )
@@ -98,7 +98,11 @@ const SettingsStack = createStackNavigator({
 
 const AccountStack = createStackNavigator({
   Account: AccountScreen,
-  Notifications: NotificationsScreen
+  Settings: SettingsScreen
+})
+
+const NotificationStack = createStackNavigator({
+  Notifications: NotificationsScreen,
 })
 
 const NewRequestStack = createStackNavigator({
@@ -115,12 +119,12 @@ const TabNavigator = createBottomTabNavigator({
       )
     }
   },
-  Settings: {
-    screen: SettingsStack,
+  Notifications: {
+    screen: NotificationStack,
     navigationOptions: {
-      tabBarLabel: 'Settings',
+      tabBarLabel: 'Notifications',
       tabBarIcon: ({ tintColor }) => (
-        <Icon name={Platform.OS === "ios" ? "ios-settings" : "md-settings"} color={tintColor} size={24} />
+        <Icon name={Platform.OS === "ios" ? "ios-notifications" : "md-notifications"} color={tintColor} size={24} />
       )
     }
   },
@@ -145,7 +149,7 @@ const TabNavigator = createBottomTabNavigator({
 },
   {//router config
     initialRouteName: 'Home',
-    order: ['Home', 'NewRequest', 'Account', 'Settings'],
+    order: ['Home', 'NewRequest', 'Notifications', 'Account'],
     //navigation for complete tab navigator
     navigationOptions: {
       tabBarVisible: true
