@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Alert } from 'react-native';
 import { Card, ListItem, Button, Icon } from 'react-native-elements'
-
+import RequestPopup from './RequestPopup'
 
 const styles = StyleSheet.create(
     {
@@ -34,6 +34,7 @@ class Home extends Component {
 
         this.state = {
             requests: [],
+            popupIsOpen: false,
         }
     }
 
@@ -63,6 +64,19 @@ class Home extends Component {
         this.forceUpdate()
     }
 
+    openRequest = (request) => {
+        this.setState({
+            popupIsOpen: true,
+            request,
+        })
+    }
+
+    closeRequest = () => {
+        this.setState({
+            popupIsOpen: false,
+        })
+    }
+
 
     render() {
         return (
@@ -75,7 +89,7 @@ class Home extends Component {
                         {
                             this.state.requests.map((item, key) => {
                                 return (
-                                    <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => Alert.alert("You clicked the card! Card " + key + " to be exact")}>
+                                    <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
                                         <Card key={key} containerStyle={{ backgroundColor: 'green' }}>
                                             {item}
                                         </Card>
@@ -84,6 +98,11 @@ class Home extends Component {
                             })
                         }
                     </ScrollView>
+
+                    <RequestPopup
+                        isOpen={this.state.popupIsOpen}
+                        onClose={this.closeRequest}
+                    />
                 </View>
 
                 <View>
