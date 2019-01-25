@@ -1,8 +1,10 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Alert } from 'react-native';
+import { Modal, View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { Card, ListItem, Button, Icon } from 'react-native-elements'
-import RequestPopup from './RequestPopup'
+//import RequestPopup from './RequestPopup'
+import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
+
 
 const styles = StyleSheet.create(
     {
@@ -27,6 +29,8 @@ const styles = StyleSheet.create(
         }
     });
 
+
+
 // create a component
 class Home extends Component {
     constructor(props) {
@@ -35,6 +39,8 @@ class Home extends Component {
         this.state = {
             requests: [],
             popupIsOpen: false,
+            cardTitle: "",
+            cardBody: ""
         }
     }
 
@@ -43,12 +49,10 @@ class Home extends Component {
      * TODO add parameter so that we can pull title
      * and body texts
      */
-    makeNewCard = () => {
+    makeNewCard = (data) => {
         var newCard = (
-            <Card title="New Card">
-                <Text>
-                    This will be a request, wow!
-                </Text>
+            <Card title={data.title} subtitle={data.subtitle}>
+                <Text>{data.subtitle}</Text>
             </Card>
         )
 
@@ -64,10 +68,13 @@ class Home extends Component {
         this.forceUpdate()
     }
 
-    openRequest = (request) => {
+    openRequest = (item) => {
+        console.log(item.props.title)
+        console.log(item.props.subtitle)
         this.setState({
             popupIsOpen: true,
-            request,
+            cardTitle: item.props.title,
+            cardBody: item.props.subtitle,
         })
     }
 
@@ -79,6 +86,15 @@ class Home extends Component {
 
 
     render() {
+
+
+        var data = {title: "New Card Title", subtitle: "heh"}
+
+        const gestureConfig = {
+            velocityThreshold: 0.3,
+            directionalOffsetThreshold: 80
+        };
+        
         return (
 
             <React.Fragment>
@@ -98,17 +114,30 @@ class Home extends Component {
                             })
                         }
                     </ScrollView>
-
-                    <RequestPopup
-                        isOpen={this.state.popupIsOpen}
-                        onClose={this.closeRequest}
-                    />
                 </View>
 
                 <View>
-                    <Button title="Make Request" onPress={() => this.makeNewCard()}></Button>
+                    <Button title="Make Request" onPress={() => this.makeNewCard(data)}></Button>
 
                 </View>
+
+                <GestureRecognizer onSwipeDown={() => this.closeRequest()} config={gestureConfig}>
+                    <Modal
+                        animationType="slide"
+                        transparent={false}
+                        visible={this.state.popupIsOpen}
+                        onRequestClose={() => {
+                            this.closeRequest()
+                        }}>
+                        <View style={{ marginTop: 22 }}>
+                            <View>
+                                <Text>{this.state.cardTitle}</Text>
+                                <Text>{this.state.cardBody}</Text>
+                            </View>
+                        </View>
+                    </Modal>
+                </GestureRecognizer>
+
 
             </React.Fragment>
         );
