@@ -1,9 +1,13 @@
 //import liraries
 import React, { Component } from 'react';
-import { Modal, View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { Modal, View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, TouchableHighlight, Alert } from 'react-native';
 import { Card, ListItem, Button, Icon } from 'react-native-elements'
 //import RequestPopup from './RequestPopup'
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
+import openSocket from 'socket.io-client'
+
+
+const socket = openSocket.connect('http://127.0.0.1:5000')
 
 
 const styles = StyleSheet.create(
@@ -30,7 +34,6 @@ const styles = StyleSheet.create(
     });
 
 
-
 // create a component
 class Home extends Component {
     constructor(props) {
@@ -43,6 +46,21 @@ class Home extends Component {
             cardBody: ""
         }
     }
+
+
+
+    componentDidMount()
+    {
+        console.log("Component Mounted")
+    }
+
+
+    handleTestConnection= (data) => {
+        Alert.alert(data)
+    }
+
+
+
 
     /**
      * Make a new Card for adding to the home feed. 
