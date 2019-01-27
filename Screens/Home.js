@@ -4,11 +4,9 @@ import { Modal, View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, 
 import { Card, ListItem, Button, Icon } from 'react-native-elements'
 //import RequestPopup from './RequestPopup'
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
-import openSocket from 'socket.io-client'
+import io from 'socket.io-client'
 
-
-const socket = openSocket.connect('http://127.0.0.1:5000')
-
+window.navigator.userAgent=("ReactNative")
 
 const styles = StyleSheet.create(
     {
@@ -52,11 +50,14 @@ class Home extends Component {
     componentDidMount()
     {
         console.log("Component Mounted")
+
+        const socket = io("https://uexchange-backend.herokuapp.com/")
+        socket.on("time", (timeString) => this.handleTestConnection(timeString))
     }
 
 
-    handleTestConnection= (data) => {
-        Alert.alert(data)
+    handleTestConnection= (timeString) => {
+        Alert.alert("hello")
     }
 
 
