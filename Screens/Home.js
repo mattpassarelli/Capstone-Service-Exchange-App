@@ -6,7 +6,7 @@ import { Card, ListItem, Button, Icon } from 'react-native-elements'
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import io from 'socket.io-client'
 
-window.navigator.userAgent=("ReactNative")
+//window.navigator.userAgent = ("ReactNative")
 
 const styles = StyleSheet.create(
     {
@@ -31,6 +31,7 @@ const styles = StyleSheet.create(
         }
     });
 
+    const socket = io("https://uexchange-backend.herokuapp.com/", {transports: ['websocket']})
 
 // create a component
 class Home extends Component {
@@ -47,20 +48,27 @@ class Home extends Component {
 
 
 
-    componentDidMount()
-    {
+    componentDidMount() {
         console.log("Component Mounted")
 
-        const socket = io("https://uexchange-backend.herokuapp.com/")
+        socket.on("connect", () => Alert.alert("connected"))
         socket.on("time", (timeString) => this.handleTestConnection(timeString))
+        socket.on("_buttonReceived", (string) => this.handleTestConnection(string))
+        socket.on('example', (data) => {
+            console.log(data);
+        
+            socket.emit('my other event', { my: 'data' });
+        });
     }
 
 
-    handleTestConnection= (timeString) => {
-        Alert.alert("hello")
+    handleTestConnection = (string) => {
+        Alert.alert(string)
     }
 
-
+    sendTestButton() {
+        socket.emit("disconnect")
+    }
 
 
     /**
@@ -107,13 +115,13 @@ class Home extends Component {
     render() {
 
 
-        var data = {title: "New Card Title", subtitle: "heh"}
+        var data = { title: "New Card Title", subtitle: "heh" }
 
         const gestureConfig = {
             velocityThreshold: 0.3,
             directionalOffsetThreshold: 80
         };
-        
+
         return (
 
             <React.Fragment>
@@ -124,14 +132,16 @@ class Home extends Component {
                         {
                             this.state.requests.map((item, key) => {
                                 return (
-                                    <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
-                                        <Card key={key} containerStyle={{ backgroundColor: 'green' }}>
-                                            {item}
-                                        </Card>
+                                     <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
+                                    {/* <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.sendTestButton()}> */}
+
+                                    <Card key={key} containerStyle={{ backgroundColor: 'green' }}>
+                                        {item}
+                                    </Card>
                                     </TouchableOpacity>
-                                )
-                            })
-                        }
+                    )
+                })
+            }
                     </ScrollView>
                 </View>
 
