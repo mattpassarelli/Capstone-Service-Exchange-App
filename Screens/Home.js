@@ -1,12 +1,10 @@
 //import liraries
 import React, { Component } from 'react';
-import { Modal, View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, TouchableHighlight, Alert } from 'react-native';
+import { Modal, View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Dimensions, Alert } from 'react-native';
 import { Card, ListItem, Button, Icon } from 'react-native-elements'
 //import RequestPopup from './RequestPopup'
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import io from 'socket.io-client'
-
-//window.navigator.userAgent = ("ReactNative")
 
 const styles = StyleSheet.create(
     {
@@ -31,7 +29,7 @@ const styles = StyleSheet.create(
         }
     });
 
-    const socket = io("https://uexchange-backend.herokuapp.com/", {transports: ['websocket']})
+const socket = io("https://uexchange-backend.herokuapp.com/", { transports: ['websocket'] })
 
 // create a component
 class Home extends Component {
@@ -56,7 +54,7 @@ class Home extends Component {
         socket.on("_buttonReceived", (string) => this.handleTestConnection(string))
         socket.on('example', (data) => {
             console.log(data);
-        
+
             socket.emit('my other event', { my: 'data' });
         });
     }
@@ -132,16 +130,14 @@ class Home extends Component {
                         {
                             this.state.requests.map((item, key) => {
                                 return (
-                                     <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
-                                    {/* <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.sendTestButton()}> */}
-
-                                    <Card key={key} containerStyle={{ backgroundColor: 'green' }}>
-                                        {item}
-                                    </Card>
+                                    <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
+                                        <Card key={key} containerStyle={{ backgroundColor: 'green' }}>
+                                            {item}
+                                        </Card>
                                     </TouchableOpacity>
-                    )
-                })
-            }
+                                )
+                            })
+                        }
                     </ScrollView>
                 </View>
 
@@ -158,7 +154,7 @@ class Home extends Component {
                         onRequestClose={() => {
                             this.closeRequest()
                         }}>
-                        <View style={{ marginTop: 22 }}>
+                        <View style={{ marginTop: 30 }}>
                             <View>
                                 <Text>{this.state.cardTitle}</Text>
                                 <Text>{this.state.cardBody}</Text>

@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Picker } from 'react-native';
 
 
 // define your styles
@@ -21,6 +21,16 @@ const ScrollStyle = StyleSheet.create({
 
 // create a component
 class NewRequest extends Component {
+
+    constructor(props)
+    {
+        super(props)
+
+        this.state = {
+            selectedItem: "Select a Request"
+        }
+    }
+
     render() {
         return (
 
@@ -29,7 +39,16 @@ class NewRequest extends Component {
                 <View style={styles.container}>
 
                     <ScrollView contentContainerStyle={ScrollStyle.container}>
-                        <Text>Hello Requester</Text>
+                    <Text>Pick one below</Text>
+                        <Picker 
+                        selectedValue={this.state.selectedItem}
+                        onValueChange={(itemValue, itemIndex) =>
+                        this.setState({selectedItem: itemValue})}
+                        style={{height: 40, width: 200}}
+                        >
+                        <Picker.Item label="option one" value="option one"/>
+                        <Picker.Item label="option two" value="option two"/>
+                        </Picker>
                     </ScrollView>
                 </View>
             </React.Fragment>
