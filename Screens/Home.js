@@ -29,8 +29,8 @@ const styles = StyleSheet.create(
         }
     });
 
-const socket = io("https://uexchange-backend.herokuapp.com/", { transports: ['websocket'] })
-
+//const socket = io("https://uexchange-backend.herokuapp.com/", { transports: ['websocket'] })
+const socket = io("http://10.51.128.90:3000", {transports: ["websocket"]});
 // create a component
 class Home extends Component {
     constructor(props) {
