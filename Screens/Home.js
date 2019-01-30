@@ -5,6 +5,13 @@ import { Card, ListItem, Button, Icon } from 'react-native-elements'
 //import RequestPopup from './RequestPopup'
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import io from 'socket.io-client'
+import { YellowBox } from 'react-native';
+
+console.ignoredYellowBox = ["Remote Debugger"]
+YellowBox.ignoreWarnings([
+    'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
+]);
+
 
 const styles = StyleSheet.create(
     {
