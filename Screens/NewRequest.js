@@ -1,8 +1,9 @@
 //import liraries
 import React, { Component, PureComponent } from 'react';
-import { View, Text, StyleSheet, TextInput, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert, TouchableOpacity } from 'react-native';
 import Picker from 'react-native-universal-picker'
 import RF from "react-native-responsive-fontsize"
+import CustomButton from "../Components/CustomButton"
 
 
 // define your styles
@@ -12,6 +13,18 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: "flex-start"
     },
+
+    buttonStyle: {
+        padding: 10, 
+        backgroundColor: '#202646', 
+        borderRadius: 10
+    },
+
+    buttonTextStyle: {
+        fontSize: RF(2),
+        color: '#ffffff',
+        textAlign: 'center'
+    }
 });
 
 // create a component
@@ -53,7 +66,7 @@ class NewRequest extends PureComponent {
                     <View style={{ flex: 1, flexDirection: "column", justifyContent: "space-around", alignItems: "center" }}>
                         <Text style={{ paddingTop: 15, fontSize: RF(2.5) }}>Select a Request...</Text>
 
-                        <View style={{ backgroundColor: "rgba(137, 132, 132, 0.1)", height: 50, width: "50%", borderRadius: 15, borderWidth: .25 }}>
+                        <View style={{ backgroundColor: "rgba(137, 132, 132, 0.1)", height: 50, width: "50%", borderRadius: 10, borderWidth: .25 }}>
                             <Picker
                                 selectedValue={this.state.selectedItem}
                                 onValueChange={this.handlePickerChange}
@@ -84,8 +97,9 @@ class NewRequest extends PureComponent {
                             numberOfLines={8} />
                     </View>
 
-                    <View style={{ flex: .5 }}>
-                        <Text>Temp placement for preview button</Text>
+                    <View style={{ flex: .5, justifyContent: "center", paddingRight: 10, paddingLeft: 10 }}>
+                        <CustomButton text="Preview Button" onPress={() => Alert.alert()} buttonStyle={styles.buttonStyle}
+                        textStyle={styles.buttonTextStyle}/>
                     </View>
 
                     <View style={{}}></View>
