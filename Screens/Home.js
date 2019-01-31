@@ -156,13 +156,19 @@ class Home extends Component {
                 <GestureRecognizer onSwipeDown={() => this.closeRequest()} config={gestureConfig}>
                     <Modal
                         animationType="slide"
-                        transparent={false}
+                        transparent={true}
                         visible={this.state.popupIsOpen}
                         onRequestClose={() => {
                             this.closeRequest()
                         }}>
-                        <View style={{ marginTop: 30 }}>
-                            <View>
+                        <View style={[{
+                        flex: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingTop: 20,
+                        backgroundColor: '#ecf0f1',
+                    }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+                            <View style={{backgroundColor: '#fff', padding: 20,height: "80%", width: "80%"}}>
                                 <Text>{this.state.cardTitle}</Text>
                                 <Text>{this.state.cardBody}</Text>
                             </View>
