@@ -6,13 +6,9 @@ import Picker from 'react-native-universal-picker'
 import RF from "react-native-responsive-fontsize"
 import CustomButton from "../Components/CustomButton"
 import { API_ENDPOINT } from "../Components/api-config"
-import io from "socket.io-client"
 
 
 const apiEndpoint = API_ENDPOINT
-
-//const socket = io(, { transports: ['websocket'] })
-const socket = io(apiEndpoint, { transports: ["websocket"] });
 
 // define your styles
 const styles = StyleSheet.create({
@@ -45,6 +41,7 @@ class NewRequest extends PureComponent {
             selectedItem: "",
             requestDescription: "",
             isPreviewOpen: false,
+            socket: apiEndpoint
         }
     }
 
@@ -115,7 +112,7 @@ class NewRequest extends PureComponent {
 
         var data = { title: this.state.selectedItem, subtitle: this.state.requestDescription, posterID: 0 }
 
-        socket.emit("saveRequest", data)
+        this.state.socket.emit("saveRequest", data)
 
         this.closePreview()
 
@@ -123,6 +120,7 @@ class NewRequest extends PureComponent {
             selectedItem: "",
             requestDescription: ""
         })
+        this.textInput.clear()
     }
 
     render() {
@@ -168,6 +166,7 @@ class NewRequest extends PureComponent {
                                 numberOfLines={8}
                                 returnKeyType="done"
                                 blurOnSubmit={true}
+                                ref={input => { this.textInput = input }}
                             />
                         </View>
 

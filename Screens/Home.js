@@ -6,7 +6,6 @@ import { Card, ListItem, Button, Icon } from 'react-native-elements'
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import { YellowBox } from 'react-native';
 import { API_ENDPOINT } from "../Components/api-config"
-import io from "socket.io-client"
 
 console.ignoredYellowBox = ["Remote Debugger"]
 YellowBox.ignoreWarnings([
@@ -14,10 +13,6 @@ YellowBox.ignoreWarnings([
 ]);
 
 const apiEndpoint = API_ENDPOINT
-
-//const socket = io(, { transports: ['websocket'] })
-const socket = io(apiEndpoint, { transports: ["websocket"] });
-
 
 const styles = StyleSheet.create(
     {
@@ -52,7 +47,8 @@ class Home extends Component {
             requests: [],
             popupIsOpen: false,
             cardTitle: "",
-            cardBody: ""
+            cardBody: "",
+            socket: apiEndpoint
         }
     }
 
@@ -65,8 +61,8 @@ class Home extends Component {
     componentDidMount() {
         console.log("Component Mounted")
 
-        socket.on("connect", () => Alert.alert("connected"))
-        socket.emit("requestRequests", (data) => this.addRequestsFromServer(data))
+        this.state.socket.on("connect", () => Alert.alert("connected"))
+        this.state.socket.emit("requestRequests", (data) => this.addRequestsFromServer(data))
     }
 
     /**
