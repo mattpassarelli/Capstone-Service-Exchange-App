@@ -4,13 +4,19 @@ import { Modal, View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, 
 import { Card, ListItem, Button, Icon } from 'react-native-elements'
 //import RequestPopup from './RequestPopup'
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
-import io from 'socket.io-client'
 import { YellowBox } from 'react-native';
+import { API_ENDPOINT } from "../Components/api-config"
+import io from "socket.io-client"
 
 console.ignoredYellowBox = ["Remote Debugger"]
 YellowBox.ignoreWarnings([
     'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
 ]);
+
+const apiEndpoint = API_ENDPOINT
+
+//const socket = io(, { transports: ['websocket'] })
+const socket = io(apiEndpoint, { transports: ["websocket"] });
 
 
 const styles = StyleSheet.create(
@@ -36,8 +42,7 @@ const styles = StyleSheet.create(
         }
     });
 
-//const socket = io("https://uexchange-backend.herokuapp.com/", { transports: ['websocket'] })
-const socket = io("http://10.51.128.90:3000", {transports: ["websocket"]});
+
 // create a component
 class Home extends Component {
     constructor(props) {
@@ -52,34 +57,23 @@ class Home extends Component {
     }
 
 
-
+    /**
+     * Method is run when component mounts (duh)
+     * This is where the majority of our server listens will be so things
+     * can connect properly
+     */
     componentDidMount() {
         console.log("Component Mounted")
 
         socket.on("connect", () => Alert.alert("connected"))
-        socket.on("time", (timeString) => this.handleTestConnection(timeString))
-        socket.on("_buttonReceived", (string) => this.handleTestConnection(string))
-        socket.on('example', (data) => {
-            console.log(data);
-
-            socket.emit('my other event', { my: 'data' });
-        });
+        socket.emit("requestRequests", (data) => this.addRequestsFromServer(data))
     }
-
-
-    handleTestConnection = (string) => {
-        Alert.alert(string)
-    }
-
-    sendTestButton() {
-        socket.emit("disconnect")
-    }
-
 
     /**
      * Make a new Card for adding to the home feed. 
-     * TODO add parameter so that we can pull title
-     * and body texts
+     * 
+     * Data will contain, at the very least, a title prop
+     * and a subtitle, prop. Possibly more later on (like date/time of posting, requester's first name)
      */
     makeNewCard = (data) => {
         var newCard = (
@@ -88,18 +82,19 @@ class Home extends Component {
             </Card>
         )
 
+        //Make a new array from the state and then add the new Card to it
         var tempRequests = this.state.requests.slice()
         tempRequests.push(newCard)
 
+        //replace old array with the new one that has the New Request
         this.setState({
             requests: tempRequests
         })
 
         console.log("adding request. Requests is now " + this.state.requests.length)
-
-        this.forceUpdate()
     }
 
+    //Displays the modal for clicking a Request
     openRequest = (item) => {
         console.log(item.props.title)
         console.log(item.props.subtitle)
@@ -110,15 +105,21 @@ class Home extends Component {
         })
     }
 
+    //Closes the Request modal
     closeRequest = () => {
         this.setState({
             popupIsOpen: false,
         })
     }
 
+    //Gathers the requests from the backend for adding into
+    //the array of requests
+    addRequestsFromServer = (data) => {
+
+    }
+
 
     render() {
-
 
         var data = { title: "New Card Title", subtitle: "heh" }
 
@@ -135,6 +136,7 @@ class Home extends Component {
 
                     <ScrollView>
                         {
+                            // Map the requests for proper display onto the main feed
                             this.state.requests.map((item, key) => {
                                 return (
                                     <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
@@ -150,10 +152,12 @@ class Home extends Component {
 
                 <View>
                     <Button title="Make Request" onPress={() => this.makeNewCard(data)}></Button>
-
                 </View>
 
+                {/* The gesture recognition so we can swipe down to dismiss the modal */}
                 <GestureRecognizer onSwipeDown={() => this.closeRequest()} config={gestureConfig}>
+
+                    {/*Modal for the requests*/}
                     <Modal
                         animationType="slide"
                         transparent={true}
@@ -162,13 +166,13 @@ class Home extends Component {
                             this.closeRequest()
                         }}>
                         <View style={[{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        paddingTop: 20,
-                        backgroundColor: '#ecf0f1',
-                    }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
-                            <View style={{backgroundColor: '#fff', padding: 20,height: "80%", width: "80%"}}>
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            paddingTop: 20,
+                            backgroundColor: '#ecf0f1',
+                        }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+                            <View style={{ backgroundColor: '#fff', padding: 20, height: "80%", width: "80%" }}>
                                 <Text>{this.state.cardTitle}</Text>
                                 <Text>{this.state.cardBody}</Text>
                             </View>

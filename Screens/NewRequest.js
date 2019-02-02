@@ -5,6 +5,14 @@ import { Card } from 'react-native-elements'
 import Picker from 'react-native-universal-picker'
 import RF from "react-native-responsive-fontsize"
 import CustomButton from "../Components/CustomButton"
+import { API_ENDPOINT } from "../Components/api-config"
+import io from "socket.io-client"
+
+
+const apiEndpoint = API_ENDPOINT
+
+//const socket = io(, { transports: ['websocket'] })
+const socket = io(apiEndpoint, { transports: ["websocket"] });
 
 // define your styles
 const styles = StyleSheet.create({
@@ -44,18 +52,21 @@ class NewRequest extends PureComponent {
 
     }
 
+    //Handles selection from the Picker for title
     handlePickerChange = (itemValue, itemIndex) => {
         this.setState({
             selectedItem: itemValue,
         })
     }
 
+    //Handles text input in the textInput for requestDescription
     handleDescriptionChange = (text) => {
         this.setState({
             requestDescription: text
         })
     }
 
+    //Opens preview modal
     openPreview() {
 
         var checked = this.checkForEmptyStates()
@@ -70,12 +81,17 @@ class NewRequest extends PureComponent {
         }
     }
 
+    //closes preview modal
     closePreview() {
         this.setState({
             isPreviewOpen: false
         })
     }
 
+    /**Checks to make sure Pick has a valid option selected
+     * and the textInput is not blank. Only called when the Preview button
+     * is pressed
+     * */
     checkForEmptyStates() {
         if (this.state.selectedItem.length <= 0) {
             return false
@@ -87,6 +103,26 @@ class NewRequest extends PureComponent {
         }
 
         return true
+    }
+
+    /**
+     * Takes the data from the inputs and processes them into
+     * a data variable. Data is then sent to the server, where 
+     * it adds it to the database. Closes preview, then clears
+     * inputs
+     */
+    sendRequestToDatabase() {
+
+        var data = { title: this.state.selectedItem, subtitle: this.state.requestDescription, posterID: 0 }
+
+        socket.emit("saveRequest", data)
+
+        this.closePreview()
+
+        this.setState({
+            selectedItem: "",
+            requestDescription: ""
+        })
     }
 
     render() {
@@ -152,25 +188,25 @@ class NewRequest extends PureComponent {
                         backgroundColor: '#ecf0f1',
                     }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
 
-                        <View style={{backgroundColor: '#fff', padding: 20,height: "50%", width: "80%"}}>
-                            <View style={{flex: 1 }}>
+                        <View style={{ backgroundColor: '#fff', padding: 20, height: "50%", width: "80%" }}>
+                            <View style={{ flex: 1 }}>
                                 <Card title={this.state.selectedItem} subtitle={this.state.requestDescription}>
                                     <Text>{this.state.requestDescription}</Text>
                                 </Card>
                             </View>
-                            <View style={{flex:.3, flexDirection: "row", alignItems: "center", justifyContent:"space-between", height: "10%"  }}>
+                            <View style={{ flex: .3, flexDirection: "row", alignItems: "center", justifyContent: "space-between", height: "10%" }}>
                                 <CustomButton text='Close'
                                     onPress={() => this.closePreview()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle}
                                 />
 
                                 <CustomButton text="Submit"
-                                    onPress={() => Alert.alert("Will send")} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+                                    onPress={() => this.sendRequestToDatabase()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
                             </View>
                         </View>
-                      
+
 
                     </View>
-                    
+
                 </Modal>
 
 
