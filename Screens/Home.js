@@ -1,9 +1,9 @@
 //import liraries
 import React, { Component } from 'react';
-import { Modal, View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Dimensions, Alert } from 'react-native';
-import { Card, ListItem, Button, Icon } from 'react-native-elements'
+import { Modal, View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import { Card } from 'react-native-elements'
 //import RequestPopup from './RequestPopup'
-import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import { YellowBox } from 'react-native';
 import { API_ENDPOINT } from "../Components/api-config"
 
@@ -45,10 +45,12 @@ class Home extends Component {
 
         this.state = {
             requests: [],
+            requestsDataJSON: "",
             popupIsOpen: false,
             cardTitle: "",
             cardBody: "",
-            socket: apiEndpoint
+            socket: apiEndpoint,
+            refreshing: false
         }
     }
 
@@ -62,32 +64,8 @@ class Home extends Component {
         console.log("Component Mounted")
 
         this.state.socket.on("connect", () => Alert.alert("connected"))
-        this.state.socket.emit("requestRequests", (data) => this.addRequestsFromServer(data))
-    }
-
-    /**
-     * Make a new Card for adding to the home feed. 
-     * 
-     * Data will contain, at the very least, a title prop
-     * and a subtitle, prop. Possibly more later on (like date/time of posting, requester's first name)
-     */
-    makeNewCard = (data) => {
-        var newCard = (
-            <Card title={data.title} subtitle={data.subtitle}>
-                <Text>{data.subtitle}</Text>
-            </Card>
-        )
-
-        //Make a new array from the state and then add the new Card to it
-        var tempRequests = this.state.requests.slice()
-        tempRequests.push(newCard)
-
-        //replace old array with the new one that has the New Request
-        this.setState({
-            requests: tempRequests
-        })
-
-        console.log("adding request. Requests is now " + this.state.requests.length)
+        this.state.socket.emit("requestRequests")
+        this.state.socket.on("requestData", (data) => { this.setState({ requestsDataJSON: data }), this.addRequestsFromServer() })
     }
 
     //Displays the modal for clicking a Request
@@ -110,14 +88,63 @@ class Home extends Component {
 
     //Gathers the requests from the backend for adding into
     //the array of requests
-    addRequestsFromServer = (data) => {
+    addRequestsFromServer = () => {
 
+        console.log("Gotten Request data from server")
+
+        if (this.state.requestsDataJSON.length > 0) {
+            console.log(this.state.requestsDataJSON)
+            var tempRequests = []
+
+
+            for (var i = 0; i < this.state.requestsDataJSON.length; i++) {
+                console.log("Adding request " + i + " to array of requests")
+                var newCard = (
+                    <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}>
+                        <Text>{this.state.requestsDataJSON[i].subtitle}</Text>
+                    </Card>
+                )
+
+                tempRequests.push(newCard)
+            }
+
+            this.setState({
+                requests: tempRequests
+            })
+
+            console.log("Finished adding requests. Total is now: " + this.state.requests.length)
+
+        }
+        else {
+            console.log("No requests in DB. Or is connection bad?")
+        }
     }
 
+    /**
+     * Method is called when refreshControl is activated
+     * Meaning that whenever you pull down to refresh, this 
+     * is what is called
+     */
+    refreshFeed = () => {
+        console.log("Refreshing requestsDataJSON")
+
+        this.setState({
+            refreshing: true
+        })
+
+        this.state.socket.emit("requestRequests", (data) => { this.setState({ requestsDataJSON: data }) })
+
+        console.log("Data received from server is: " + this.state.requestsDataJSON)
+
+        this.setState({
+            refreshing: false
+        })
+
+        console.log("Done Refreshing JSON")
+        this.addRequestsFromServer()
+    }
 
     render() {
-
-        var data = { title: "New Card Title", subtitle: "heh" }
 
         const gestureConfig = {
             velocityThreshold: 0.3,
@@ -130,7 +157,10 @@ class Home extends Component {
 
                 <View style={styles.container}>
 
-                    <ScrollView>
+                    <ScrollView
+                        refreshControl={
+                            <RefreshControl refreshing={this.state.refreshing} onRefresh={this.refreshFeed} />
+                        }>
                         {
                             // Map the requests for proper display onto the main feed
                             this.state.requests.map((item, key) => {
@@ -144,10 +174,6 @@ class Home extends Component {
                             })
                         }
                     </ScrollView>
-                </View>
-
-                <View>
-                    <Button title="Make Request" onPress={() => this.makeNewCard(data)}></Button>
                 </View>
 
                 {/* The gesture recognition so we can swipe down to dismiss the modal */}
