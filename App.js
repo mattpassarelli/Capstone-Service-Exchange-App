@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
+import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator } from 'react-navigation';
 import { View, Text, Button, Platform } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons';
 import Home from "./Screens/Home"
@@ -7,6 +7,8 @@ import Settings from "./Screens/Settings"
 import Notifications from "./Screens/Notifications"
 import Account from "./Screens/Account"
 import NewRequest from "./Screens/NewRequest"
+import Login from "./Screens/Login"
+import RegisterAccount from "./Screens/RegisterAccount"
 
 
 class NotificationsScreen extends React.Component {
@@ -64,6 +66,7 @@ class AccountScreen extends React.Component {
       <React.Fragment>
         <Account />
 
+        {/* //TODO: replace this inside Account.js*/}
         <Button
           title="Go to Settings"
           onPress={() => this.props.navigation.navigate('Settings')}
@@ -87,13 +90,44 @@ class NewRequestScreen extends React.Component {
   }
 }
 
+class RegisterAccountScreen extends React.Component {
+  static navigationOptions = {
+    title: "Create Account",
+    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+      <RegisterAccount />
+
+      <Button title="Go to Sign In" onPress={() => this.props.navigation.navigate("SignIn")}></Button>
+      </React.Fragment>
+    )
+  }
+}
+
+class SignInScreen extends React.Component{
+  static navigationOptions = {
+    title: "Sign In",
+    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+      <Login props={this.props.navigation}/>
+
+      <Button title="Go to Register" onPress={() => this.props.navigation.navigate("SignUp")}></Button>
+
+      </React.Fragment>
+    )
+  }
+}
+
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
-});
-
-const SettingsStack = createStackNavigator({
-  Settings: SettingsScreen,
 });
 
 const AccountStack = createStackNavigator({
@@ -109,7 +143,14 @@ const NewRequestStack = createStackNavigator({
   NewRequest: NewRequestScreen
 })
 
-const TabNavigator = createBottomTabNavigator({
+
+export const SignedOut = createStackNavigator({
+  SignIn: SignInScreen,
+  SignUp: RegisterAccountScreen,
+})
+
+
+const SignedIn = createBottomTabNavigator({
   Home: {
     screen: HomeStack,
     navigationOptions: {
@@ -160,4 +201,38 @@ const TabNavigator = createBottomTabNavigator({
     }
   })
 
-export default TabNavigator;
+export const createRootNavigator = (signedIn = false) => {
+  return createSwitchNavigator(
+    {
+      SignedIn:{
+        screen: SignedIn,
+      },
+      SignedOut: {
+        screen: SignedOut,
+      }
+    },
+    {
+      initialRouteName: signedIn ? "SignedIn" : "SignedOut"
+    }
+  )
+}
+
+export default class App extends React.Component{
+  constructor(props)
+  {
+    super(props);
+
+    this.state = {
+      signedIn: false,
+      checkedSignedIn: false,
+    }
+  }
+
+  render()
+  {
+    const {checkedSignedIn, signedIn} = this.state;
+
+    const Layout = createRootNavigator(signedIn)
+    return <Layout />
+  }
+}
