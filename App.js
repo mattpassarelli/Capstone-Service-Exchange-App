@@ -117,9 +117,6 @@ class SignInScreen extends React.Component{
     return (
       <React.Fragment>
       <Login props={this.props.navigation}/>
-
-      <Button title="Go to Register" onPress={() => this.props.navigation.navigate("SignUp")}></Button>
-
       </React.Fragment>
     )
   }

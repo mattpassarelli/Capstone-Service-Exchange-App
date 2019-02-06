@@ -150,6 +150,7 @@ class NewRequest extends PureComponent {
 
                         </View>
 
+                        {/* TODO: Attempt to replace this with KeyboardAwareScrollView */}
                         <View style={{ flex: 2, }}>
 
                             <View style={{ position: "absolute", backgroundColor: "transparent", top: 0, bottom: 0, left: "84.5%", right: 0, zIndex: 0 }}>
