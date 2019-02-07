@@ -4,7 +4,10 @@ import { withNavigation } from 'react-navigation'
 import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-aware-scroll-view'
+import { API_ENDPOINT } from "../Components/api-config"
 
+
+const apiEndpoint = API_ENDPOINT
 
 const styles = StyleSheet.create({
 	container: {
@@ -38,7 +41,9 @@ const styles = StyleSheet.create({
 class Login extends Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
+			socket: apiEndpoint,
 			firstName: "",
 			lastName: "",
 			email: "",
@@ -109,7 +114,11 @@ class Login extends Component {
 		if (fieldsAreNotEmpty && emailHasAtSign && emailEndsInEDU && phoneNumberLengthIs10 && passwordsMatch) {
 			Alert.alert("Check your email for the verification email and then come back and login")
 			//TODO: send data to server backend
-			this.props.navigation.navigate("SignIn")	
+			var data= {firstName: this.state.firstName, lastName: this.state.lastName, 
+				email: this.state.email, phoneNumber: this.state.phoneNumber, password: this.state.password}
+			this.state.socket.emit("newUserRegistration", (data))
+
+			//this.props.navigation.navigate("SignIn")	
 			}
 	}
 
