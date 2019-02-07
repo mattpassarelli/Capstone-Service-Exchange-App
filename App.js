@@ -100,8 +100,6 @@ class RegisterAccountScreen extends React.Component {
     return (
       <React.Fragment>
       <RegisterAccount />
-
-      <Button title="Go to Sign In" onPress={() => this.props.navigation.navigate("SignIn")}></Button>
       </React.Fragment>
     )
   }

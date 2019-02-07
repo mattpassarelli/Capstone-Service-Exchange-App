@@ -50,16 +50,16 @@ class Login extends Component {
 		})
 	}
 
-	handlePasswordTextChange = (pass) =>{
+	handlePasswordTextChange = (pass) => {
 		this.setState({
 			password: pass
 		})
 	}
 
-	_scrollToInput (reactNode) {
+	_scrollToInput(reactNode) {
 		// Add a 'scroll' ref to your ScrollView
 		this.scroll.props.scrollToFocusedInput(reactNode)
-	  }
+	}
 
 	render() {
 
@@ -72,7 +72,7 @@ class Login extends Component {
 				scrollEnabled={false}
 				innerRef={ref => {
 					this.scroll = ref
-				  }}
+				}}
 				enableOnAndroid={true}>
 
 
@@ -87,31 +87,36 @@ class Login extends Component {
 
 
 
-					<TextInput placeholder="Email"
-						style={styles.textInput} 
-						returnKeyType={"next"}
-						onSubmitEditing={() => this.passwordInput.focus()}
-						blurOnSubmit={true}
-						onChangeText={(text) => this.handleEmailTextChange(text)}
-						onFocus= {(event) => {
-							// `bind` the function if you're using ES6 classes
-							this._scrollToInput(findNodeHandle(event.target))}}
-						keyboardType={"email-address"}
-						autoCorrect={false}
-						autoCapitalize={"none"}
-						/>
+				<TextInput placeholder="Email"
+					style={styles.textInput}
+					returnKeyType={"next"}
+					onSubmitEditing={() => this.passwordInput.focus()}
+					blurOnSubmit={true}
+					onChangeText={(text) => this.handleEmailTextChange(text)}
+					onFocus={(event) => {
+						// `bind` the function if you're using ES6 classes
+						this._scrollToInput(findNodeHandle(event.target))
+					}}
+					keyboardType={"email-address"}
+					autoCorrect={false}
+					autoCapitalize={"none"}
+				/>
 
-					<TextInput placeholder="Password"
+				<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
+
+
+				<TextInput placeholder="Password"
 					ref={(input) => { this.passwordInput = input; }}
-						style={styles.textInput}
-						returnKeyType={"go"}
-						onChangeText={(text) => this.handlePasswordTextChange(text)}
-						blurOnSubmit={true}
-						onFocus= {(event) => {
-							// `bind` the function if you're using ES6 classes
-							this._scrollToInput(findNodeHandle(event.target))}}
-							secureTextEntry={true}
-						/>
+					style={styles.textInput}
+					returnKeyType={"go"}
+					onChangeText={(text) => this.handlePasswordTextChange(text)}
+					blurOnSubmit={true}
+					onFocus={(event) => {
+						// `bind` the function if you're using ES6 classes
+						this._scrollToInput(findNodeHandle(event.target))
+					}}
+					secureTextEntry={true}
+				/>
 
 
 				<View style={{ flex: 1, flexDirection: "column", width: "100%", alignItems: "center", justifyContent: "space-between", paddingBottom: 30, paddingTop: 20 }}>
