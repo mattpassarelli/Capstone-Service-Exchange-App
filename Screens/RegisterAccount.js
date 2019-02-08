@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, TextInput, Text, findNodeHandle, Alert } from 'react-native';
+import { View, StyleSheet, Image, TextInput, Text, findNodeHandle, Alert, Modal } from 'react-native';
 import { withNavigation } from 'react-navigation'
 import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-aware-scroll-view'
 import { API_ENDPOINT } from "../Components/api-config"
+import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
+import { Button } from 'react-native-elements';
+
 
 
 const apiEndpoint = API_ENDPOINT
@@ -50,6 +53,8 @@ class Login extends Component {
 			phoneNumber: "",
 			password: "",
 			passwordConfirm: "",
+			popupIsOpen: false,
+			pinString: "",
 		};
 	}
 
@@ -111,14 +116,14 @@ class Login extends Component {
 		if (!passwordsMatch) { Alert.alert("Your passwords do not match") }
 
 
-		if (fieldsAreNotEmpty && emailHasAtSign && emailEndsInEDU && phoneNumberLengthIs10 && passwordsMatch) {
-			Alert.alert("Check your email for the verification email and then come back and login")
-			//TODO: send data to server backend
+		if (fieldsAreNotEmpty && emailHasAtSign && emailEndsInEDU && phoneNumberLengthIs10 && passwordsMatch) {			
 			var data= {firstName: this.state.firstName, lastName: this.state.lastName, 
 				email: this.state.email, phoneNumber: this.state.phoneNumber, password: this.state.password}
+			
 			this.state.socket.emit("newUserRegistration", (data))
 
-			//this.props.navigation.navigate("SignIn")	
+			this.openRequest()
+
 			}
 	}
 
@@ -178,130 +183,208 @@ class Login extends Component {
 		this.scroll.props.scrollToFocusedInput(reactNode)
 	}
 
+	openRequest = () => {
+        this.setState({
+            popupIsOpen: true,
+		})
+    }
+
+    //Closes the Request modal
+    closeRequest = () => {
+        this.setState({
+            popupIsOpen: false,
+        })
+		//TODO: This gets called when code is correct
+		//this.props.navigation.navigate("SignIn")	
+	}
+
+	handlePinCodeChange = (code) => {
+		this.setState({
+			pinString: code,
+		})
+	}
+
+	crossCheckCode = () => {
+		/**
+		 * TODO: 
+		 * Send code to server
+		 * Have that do it's logic
+		 * close modal and reroute to login screen
+		 */
+		var code = parseInt(this.state.pinString)
+
+		console.log("PIN is: " + code)
+	}
+
 	render() {
 
 		return (
+			<React.Fragment>
 
-			<KeyboardAwareScrollView
-				style={{ flex: 1, paddingTop: 125 }}
-				resetScrollToCoords={{ x: 0, y: 0 }}
-				contentContainerStyle={styles.container}
-				scrollEnabled={false}
-				innerRef={ref => {
-					this.scroll = ref
-				}}
-				enableOnAndroid={true}>
-
-
-				<TextInput placeholder="First Name"
-					style={styles.textInput}
-					ref={(input) => { this.firstNameInput = input }}
-					returnKeyType={"next"}
-					onSubmitEditing={() => this.firstLastInput.focus()}
-					blurOnSubmit={true}
-					onChangeText={(text) => this.handleFirstNameChange(text)}
-					onFocus={(event) => {
-						// `bind` the function if you're using ES6 classes
-						this._scrollToInput(findNodeHandle(event.target))
+				<KeyboardAwareScrollView
+					style={{ flex: 1, paddingTop: 125 }}
+					resetScrollToCoords={{ x: 0, y: 0 }}
+					contentContainerStyle={styles.container}
+					scrollEnabled={false}
+					innerRef={ref => {
+						this.scroll = ref
 					}}
-					autoCorrect={false}
-					autoCapitalize="words"
-				/>
-
-				<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
-
-				<TextInput placeholder="Last Name"
-					style={styles.textInput}
-					ref={(input) => { this.firstLastInput = input }}
-					returnKeyType={"next"}
-					onSubmitEditing={() => this.emailInput.focus()}
-					blurOnSubmit={true}
-					onChangeText={(text) => this.handleLastNameChange(text)}
-					onFocus={(event) => {
-						// `bind` the function if you're using ES6 classes
-						this._scrollToInput(findNodeHandle(event.target))
-					}}
-					autoCorrect={false}
-					autoCapitalize="words"
-				/>
-
-				<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
-
-				<TextInput placeholder="Email Ending In edu"
-					style={styles.textInput}
-					ref={(input) => { this.emailInput = input }}
-					returnKeyType={"next"}
-					onSubmitEditing={() => this.phoneInput.focus()}
-					blurOnSubmit={true}
-					onChangeText={(text) => this.handleEmailTextChange(text)}
-					onFocus={(event) => {
-						// `bind` the function if you're using ES6 classes
-						this._scrollToInput(findNodeHandle(event.target))
-					}}
-					keyboardType={"email-address"}
-					autoCorrect={false}
-					autoCapitalize={"none"}
-				/>
-
-				<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
-
-				<TextInput placeholder="Phone Number"
-					style={styles.textInput}
-					ref={(input) => { this.phoneInput = input }}
-					returnKeyType={"next"}
-					onSubmitEditing={() => this.passwordInput.focus()}
-					blurOnSubmit={true}
-					onChangeText={(text) => this.handlePhoneNumberChange(text)}
-					onFocus={(event) => {
-						// `bind` the function if you're using ES6 classes
-						this._scrollToInput(findNodeHandle(event.target))
-					}}
-					textContentType={"telephoneNumber"}
-					keyboardType={"phone-pad"}
-					autoCorrect={false}
-					autoCapitalize={"none"}
-				/>
-
-				<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
-
-				<TextInput placeholder="Password"
-					ref={(input) => { this.passwordInput = input; }}
-					style={styles.textInput}
-					returnKeyType={"next"}
-					onChangeText={(text) => this.handlePasswordTextChange(text)}
-					blurOnSubmit={true}
-					onSubmitEditing={() => this.passwordConfirmInput.focus()}
-					onFocus={(event) => {
-						// `bind` the function if you're using ES6 classes
-						this._scrollToInput(findNodeHandle(event.target))
-					}}
-					secureTextEntry={true}
-				/>
-
-				<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
-
-				<TextInput placeholder="Confirm Password"
-					ref={(input) => { this.passwordConfirmInput = input; }}
-					style={styles.textInput}
-					returnKeyType={"go"}
-					onChangeText={(text) => this.handlePasswordConfirmChange(text)}
-					blurOnSubmit={true}
-					onFocus={(event) => {
-						// `bind` the function if you're using ES6 classes
-						this._scrollToInput(findNodeHandle(event.target))
-					}}
-					secureTextEntry={true}
-				/>
+					enableOnAndroid={true}>
 
 
-				<View style={{ flex: 1, flexDirection: "column", width: "100%", alignItems: "center", justifyContent: "space-between", paddingBottom: 30, paddingTop: 20 }}>
-					<CustomButton text="Create Account" onPress={() => { this.createAccount() }}
-						buttonStyle={styles.buttonStyle}
-						textStyle={styles.buttonTextStyle} />
+					<TextInput placeholder="First Name"
+						style={styles.textInput}
+						ref={(input) => { this.firstNameInput = input }}
+						returnKeyType={"next"}
+						onSubmitEditing={() => this.firstLastInput.focus()}
+						blurOnSubmit={true}
+						onChangeText={(text) => this.handleFirstNameChange(text)}
+						onFocus={(event) => {
+							// `bind` the function if you're using ES6 classes
+							this._scrollToInput(findNodeHandle(event.target))
+						}}
+						autoCorrect={false}
+						autoCapitalize="words"
+					/>
+
+					<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
+
+					<TextInput placeholder="Last Name"
+						style={styles.textInput}
+						ref={(input) => { this.firstLastInput = input }}
+						returnKeyType={"next"}
+						onSubmitEditing={() => this.emailInput.focus()}
+						blurOnSubmit={true}
+						onChangeText={(text) => this.handleLastNameChange(text)}
+						onFocus={(event) => {
+							// `bind` the function if you're using ES6 classes
+							this._scrollToInput(findNodeHandle(event.target))
+						}}
+						autoCorrect={false}
+						autoCapitalize="words"
+					/>
+
+					<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
+
+					<TextInput placeholder="Email Ending In edu"
+						style={styles.textInput}
+						ref={(input) => { this.emailInput = input }}
+						returnKeyType={"next"}
+						onSubmitEditing={() => this.phoneInput.focus()}
+						blurOnSubmit={true}
+						onChangeText={(text) => this.handleEmailTextChange(text)}
+						onFocus={(event) => {
+							// `bind` the function if you're using ES6 classes
+							this._scrollToInput(findNodeHandle(event.target))
+						}}
+						keyboardType={"email-address"}
+						autoCorrect={false}
+						autoCapitalize={"none"}
+					/>
+
+					<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
+
+					<TextInput placeholder="Phone Number"
+						style={styles.textInput}
+						ref={(input) => { this.phoneInput = input }}
+						returnKeyType={"next"}
+						onSubmitEditing={() => this.passwordInput.focus()}
+						blurOnSubmit={true}
+						maxLength={10}
+						onChangeText={(text) => this.handlePhoneNumberChange(text)}
+						onFocus={(event) => {
+							// `bind` the function if you're using ES6 classes
+							this._scrollToInput(findNodeHandle(event.target))
+						}}
+						textContentType={"telephoneNumber"}
+						keyboardType={"phone-pad"}
+						autoCorrect={false}
+						autoCapitalize={"none"}
+					/>
+
+					<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
+
+					<TextInput placeholder="Password"
+						ref={(input) => { this.passwordInput = input; }}
+						style={styles.textInput}
+						returnKeyType={"next"}
+						onChangeText={(text) => this.handlePasswordTextChange(text)}
+						blurOnSubmit={true}
+						onSubmitEditing={() => this.passwordConfirmInput.focus()}
+						onFocus={(event) => {
+							// `bind` the function if you're using ES6 classes
+							this._scrollToInput(findNodeHandle(event.target))
+						}}
+						secureTextEntry={true}
+					/>
+
+					<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
+
+					<TextInput placeholder="Confirm Password"
+						ref={(input) => { this.passwordConfirmInput = input; }}
+						style={styles.textInput}
+						returnKeyType={"go"}
+						onChangeText={(text) => this.handlePasswordConfirmChange(text)}
+						blurOnSubmit={true}
+						onFocus={(event) => {
+							// `bind` the function if you're using ES6 classes
+							this._scrollToInput(findNodeHandle(event.target))
+						}}
+						secureTextEntry={true}
+					/>
 
 
-				</View>
-			</KeyboardAwareScrollView>
+					<View style={{ flex: 1, flexDirection: "column", width: "100%", alignItems: "center", justifyContent: "space-between", paddingBottom: 30, paddingTop: 20 }}>
+						<CustomButton text="Create Account" onPress={() => { this.createAccount() }}
+							buttonStyle={styles.buttonStyle}
+							textStyle={styles.buttonTextStyle} />
+
+
+					</View>
+				</KeyboardAwareScrollView>
+
+
+				<Modal
+					animationType="slide"
+					transparent={true}
+					visible={this.state.popupIsOpen}
+					onRequestClose={() => {
+						this.closeRequest()
+					}
+					}>
+					<View style={[{
+						flex: 1,
+						alignItems: 'center',
+						justifyContent: 'center',
+						paddingTop: 20,
+						backgroundColor: '#ecf0f1',
+					}, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+						<View style={{ backgroundColor: '#fff', padding: 20, height: "80%", width: "80%" }}>
+							<SmoothPinCodeInput
+								containerStyle={{
+
+								}}
+								cellStyle={{
+									borderBottomWidth: 2,
+									borderColor: 'gray',
+								}}
+								cellStyleFocused={{
+									borderColor: 'black',
+								}}
+								value={this.state.pinString}
+								codeLength={6}
+								cellSize={36}
+								onTextChange={(code) => { this.handlePinCodeChange(code) }}
+							/>
+
+							{/* //TODO: Change to custom buttom */}
+						<Button onPress={() => this.crossCheckCode()}/>
+						</View>
+					</View>
+				</Modal>
+
+			</React.Fragment>
+
 		);
 	}
 }
