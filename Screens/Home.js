@@ -194,7 +194,7 @@ class Home extends Component {
                             paddingTop: 20,
                             backgroundColor: '#ecf0f1',
                         }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
-                            <View style={{ backgroundColor: '#fff', padding: 20, height: "80%", width: "80%" }}>
+                            <View style={{ backgroundColor: '#fff', padding: 20, height: "80%", width: "80%", borderRadius: 10 }}>
                                 <Text>{this.state.cardTitle}</Text>
                                 <Text>{this.state.cardBody}</Text>
                             </View>

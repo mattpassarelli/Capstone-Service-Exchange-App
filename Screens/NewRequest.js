@@ -188,7 +188,7 @@ class NewRequest extends PureComponent {
                         backgroundColor: '#ecf0f1',
                     }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
 
-                        <View style={{ backgroundColor: '#fff', padding: 20, height: "50%", width: "80%" }}>
+                        <View style={{ backgroundColor: '#fff', padding: 20, height: "50%", width: "80%", borderRadius: 10 }}>
                             <View style={{ flex: 1 }}>
                                 <Card title={this.state.selectedItem} subtitle={this.state.requestDescription}>
                                     <Text>{this.state.requestDescription}</Text>

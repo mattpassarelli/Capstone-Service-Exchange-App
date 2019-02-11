@@ -6,6 +6,15 @@ import RF from "react-native-responsive-fontsize"
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-aware-scroll-view'
 
 
+/**
+ * TODO:
+ * At login, check for email and password.
+ * If for some reason the account isn't verified yet, give them an
+ * option to enter the PIN and/or resend the email
+ * 
+ * Possible forgot password option down the line
+ */
+
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,

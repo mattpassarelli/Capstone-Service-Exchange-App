@@ -5,10 +5,6 @@ import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-aware-scroll-view'
 import { API_ENDPOINT } from "../Components/api-config"
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import { Button } from 'react-native-elements';
-
-
 
 const apiEndpoint = API_ENDPOINT
 
@@ -55,7 +51,13 @@ class Login extends Component {
 			passwordConfirm: "",
 			popupIsOpen: false,
 			pinString: "",
+			pinCode: 0,
+			socket: apiEndpoint
 		};
+	}
+
+	componentDidMount() {
+		this.state.socket.on("isAccountVerified", (data) => this.checkVerifiedAccount(data))
 	}
 
 	handleFirstNameChange = (first) => {
@@ -117,14 +119,14 @@ class Login extends Component {
 
 
 		if (fieldsAreNotEmpty && emailHasAtSign && emailEndsInEDU && phoneNumberLengthIs10 && passwordsMatch) {			
-			var data= {firstName: this.state.firstName, lastName: this.state.lastName, 
+		 	var data= {firstName: this.state.firstName, lastName: this.state.lastName, 
 				email: this.state.email, phoneNumber: this.state.phoneNumber, password: this.state.password}
-			
-			this.state.socket.emit("newUserRegistration", (data))
 
-			this.openRequest()
+		 	this.state.socket.emit("newUserRegistration", (data))
 
-			}
+		this.openRequest()
+
+		}
 	}
 
 	//Checks all fields for for lengths > 0
@@ -184,16 +186,16 @@ class Login extends Component {
 	}
 
 	openRequest = () => {
-        this.setState({
-            popupIsOpen: true,
+		this.setState({
+			popupIsOpen: true,
 		})
-    }
+	}
 
-    //Closes the Request modal
-    closeRequest = () => {
-        this.setState({
-            popupIsOpen: false,
-        })
+	//Closes the Request modal
+	closeRequest = () => {
+		this.setState({
+			popupIsOpen: false,
+		})
 		//TODO: This gets called when code is correct
 		//this.props.navigation.navigate("SignIn")	
 	}
@@ -204,16 +206,44 @@ class Login extends Component {
 		})
 	}
 
-	crossCheckCode = () => {
-		/**
-		 * TODO: 
-		 * Send code to server
-		 * Have that do it's logic
-		 * close modal and reroute to login screen
-		 */
-		var code = parseInt(this.state.pinString)
 
-		console.log("PIN is: " + code)
+	checkVerifiedAccount = (data) => {
+		
+		switch(data){
+			case "Default Messages":
+			{
+				Alert.alert("An error occured. Please try again")
+				break
+			}
+			case "Verification successful":
+			{
+				this.closeRequest()
+				this.props.navigation.navigate("SignIn")
+				break
+			}
+			case "Codes do not match":
+			{
+				Alert.alert("Codes do not match. Please check your email and try again")
+				break
+			}
+			default:
+			{
+				Alert.alert("Pray this never appears cause I have no idea why it would")
+				break
+			}
+		}
+	}
+
+	crossCheckCode = () => {
+		var code = parseInt(this.state.pinString)
+		var data = {email: this.state.email, pinCode: code}
+
+		if(this.state.pinString.trim().length == 6){
+		this.state.socket.emit("verifyNewAccount", (data))
+		}
+		else{
+			Alert.alert("Verification code must 6 digits. Check your email")
+		}
 	}
 
 	render() {
@@ -359,26 +389,32 @@ class Login extends Component {
 						paddingTop: 20,
 						backgroundColor: '#ecf0f1',
 					}, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
-						<View style={{ backgroundColor: '#fff', padding: 20, height: "80%", width: "80%" }}>
-							<SmoothPinCodeInput
-								containerStyle={{
+						<View style={{
+							backgroundColor: '#fff', padding: 20, height: "30%", width: "80%",
+							justifyContent: "space-between", alignItems: "center", borderRadius: 10
+						}}>
 
+							<Text style={{ fontSize: RF(2.5) }}>Enter the PIN you got from your email</Text>
+
+							<TextInput
+								placeholder="Verification Pin"
+								keyboardType="numeric"
+								maxLength={6}
+								fontSize={RF(3)}
+								style={{
+									textAlign: "center", borderBottomWidth: 1, borderBottomColor: "#bfbfbf",
+									backgroundColor: "rgba(137, 132, 132, 0.1)",
+									height: 40, width: "100%", textAlignVertical: "top"
 								}}
-								cellStyle={{
-									borderBottomWidth: 2,
-									borderColor: 'gray',
-								}}
-								cellStyleFocused={{
-									borderColor: 'black',
-								}}
-								value={this.state.pinString}
-								codeLength={6}
-								cellSize={36}
-								onTextChange={(code) => { this.handlePinCodeChange(code) }}
+								onChangeText={(code) => this.handlePinCodeChange(code)}
 							/>
 
-							{/* //TODO: Change to custom buttom */}
-						<Button onPress={() => this.crossCheckCode()}/>
+							<CustomButton
+								text="Verify Account"
+								onPress={() => this.crossCheckCode()}
+								buttonStyle={styles.buttonStyle}
+								textStyle={styles.buttonTextStyle}
+							/>
 						</View>
 					</View>
 				</Modal>
