@@ -6,6 +6,7 @@ import Picker from 'react-native-universal-picker'
 import RF from "react-native-responsive-fontsize"
 import CustomButton from "../Components/CustomButton"
 import { API_ENDPOINT } from "../Components/api-config"
+import { AsyncStorage } from 'react-native';
 
 
 const apiEndpoint = API_ENDPOINT
@@ -41,13 +42,46 @@ class NewRequest extends PureComponent {
             selectedItem: "",
             requestDescription: "",
             isPreviewOpen: false,
-            socket: apiEndpoint
+            socket: apiEndpoint,
+            fullName: "",
+            email: "",
         }
     }
 
-    componentDidMount() {
-
+    componentDidMount(){
+        this.userFullName()
+        this.userEmail()
     }
+
+    //Grab the full name from the phone's storage
+	userFullName = async () => {
+		try {
+			await AsyncStorage.getItem("fullAccountName").then(async (value) => {
+				console.log("Name: " + value)
+				this.setState({
+					fullName: value
+				})
+			})
+		}
+		catch (error) {
+			console.log(error)
+		}
+	}
+
+	//grab user email from phone storage
+	userEmail = async () => {
+		try {
+			await AsyncStorage.getItem("userEmail").then((value) => {
+				console.log("Email:" + value)
+				this.setState({
+					email: value
+				})
+			})
+		}
+		catch (error) {
+			console.log(error)
+		}
+	}
 
     //Handles selection from the Picker for title
     handlePickerChange = (itemValue, itemIndex) => {
@@ -110,7 +144,8 @@ class NewRequest extends PureComponent {
      */
     sendRequestToDatabase() {
 
-        var data = { title: this.state.selectedItem, subtitle: this.state.requestDescription, posterID: 0 }
+        var data = { title: this.state.selectedItem, subtitle: this.state.requestDescription, 
+            posterName: this.state.fullName, posterEmail: this.state.email }
 
         this.state.socket.emit("saveRequest", data)
 
@@ -135,15 +170,20 @@ class NewRequest extends PureComponent {
                         <View style={{ flex: 1, flexDirection: "column", justifyContent: "space-around", alignItems: "center" }}>
                             <Text style={{ paddingTop: 15, fontSize: RF(2.5) }}>Select a Request...</Text>
 
-                            <View style={{ backgroundColor: "rgba(137, 132, 132, 0.1)", height: 50, width: "50%", borderRadius: 10, borderWidth: .25 }}>
+                            <View style={{ backgroundColor: "rgba(137, 132, 132, 0.1)", height: 50, width: "80%", borderRadius: 10, borderWidth: .25 }}>
                                 <Picker
                                     selectedValue={this.state.selectedItem}
                                     onValueChange={this.handlePickerChange}
                                     style={{ alignItems: 'center', justifyContent: "center" }}
                                     prompt="Select a Request Type">
 
-                                    <Picker.Item label="java" value="java" />
-                                    <Picker.Item label="JS" value="js" />
+                                    {/* TODO: Add in request items */}
+
+                                    <Picker.Item label="Need Help Moving Something" value="Need Help Moving Something" />
+                                    <Picker.Item label="Need A Ride" value="Need A Ride" />
+                                    <Picker.Item label="Selling Textbook" value="Selling Textbook" />
+                                    <Picker.Item label="Homework Help" value="Homework Help" />
+                                    <Picker.Item label="Found Missing Item" value="Found Missing Item" />
 
                                 </Picker>
                             </View>
@@ -153,9 +193,9 @@ class NewRequest extends PureComponent {
                         {/* TODO: Attempt to replace this with KeyboardAwareScrollView */}
                         <View style={{ flex: 2, }}>
 
-                            <View style={{ position: "absolute", backgroundColor: "transparent", top: 0, bottom: 0, left: "84.5%", right: 0, zIndex: 0 }}>
-                                <Text style={{ color: "rgba(137, 132, 132, 0.5)" }}>{this.state.requestDescription.length}/100</Text>
-                            </View>
+
+                            <Text style={{ position: "absolute", right: 0, backgroundColor: "transparent", color: "rgba(137, 132, 132, 0.5)", alignItems: "flex-end" }}>{this.state.requestDescription.length}/100</Text>
+
 
                             <TextInput placeholder="Type a description..." multiline={true}
                                 style={{

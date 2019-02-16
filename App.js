@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator } from 'react-navigation';
 import { View, Text, Button, Platform } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons';
+import { AsyncStorage } from 'react-native';
 import Home from "./Screens/Home"
 import Settings from "./Screens/Settings"
 import Notifications from "./Screens/Notifications"
@@ -9,7 +10,16 @@ import Account from "./Screens/Account"
 import NewRequest from "./Screens/NewRequest"
 import Login from "./Screens/Login"
 import RegisterAccount from "./Screens/RegisterAccount"
+import TermsOfService from "./Screens/TermsOfService"
+import { YellowBox } from 'react-native';
+YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
 
+
+/**
+ * TODO: 
+ * FInd a way to get all user data (email, name, etc) and
+ * share across all pages
+ */
 
 class NotificationsScreen extends React.Component {
 
@@ -64,7 +74,7 @@ class AccountScreen extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Account />
+        <Account navigation={this.props.navigation} />
 
         {/* //TODO: replace this inside Account.js*/}
         <Button
@@ -99,13 +109,25 @@ class RegisterAccountScreen extends React.Component {
   render() {
     return (
       <React.Fragment>
-      <RegisterAccount />
+        <RegisterAccount />
       </React.Fragment>
     )
   }
 }
 
-class SignInScreen extends React.Component{
+class TermsOfServiceScreen extends React.Component {
+  static navigationOptions = {
+    title: "Terms of Service",
+    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+  }
+  render() {
+    return (
+      <TermsOfService />
+    )
+  }
+}
+
+class SignInScreen extends React.Component {
   static navigationOptions = {
     title: "Sign In",
     headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
@@ -114,7 +136,7 @@ class SignInScreen extends React.Component{
   render() {
     return (
       <React.Fragment>
-      <Login props={this.props.navigation}/>
+        <Login props={this.props.navigation} />
       </React.Fragment>
     )
   }
@@ -127,7 +149,7 @@ const HomeStack = createStackNavigator({
 
 const AccountStack = createStackNavigator({
   Account: AccountScreen,
-  Settings: SettingsScreen
+  Settings: SettingsScreen,
 })
 
 const NotificationStack = createStackNavigator({
@@ -139,9 +161,10 @@ const NewRequestStack = createStackNavigator({
 })
 
 
-export const SignedOut = createStackNavigator({
+const SignedOut = createStackNavigator({
   SignIn: SignInScreen,
   SignUp: RegisterAccountScreen,
+  TOS: TermsOfServiceScreen
 })
 
 
@@ -196,15 +219,15 @@ const SignedIn = createBottomTabNavigator({
     }
   })
 
-export const createRootNavigator = (signedIn = false) => {
+export const createRootNavigator = (signedIn) => {
   return createSwitchNavigator(
     {
-      SignedIn:{
+      SignedIn: {
         screen: SignedIn,
       },
       SignedOut: {
         screen: SignedOut,
-      }
+      },
     },
     {
       initialRouteName: signedIn ? "SignedIn" : "SignedOut"
@@ -212,9 +235,8 @@ export const createRootNavigator = (signedIn = false) => {
   )
 }
 
-export default class App extends React.Component{
-  constructor(props)
-  {
+export default class App extends React.Component {
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -223,11 +245,32 @@ export default class App extends React.Component{
     }
   }
 
-  render()
-  {
-    const {checkedSignedIn, signedIn} = this.state;
+  componentDidMount = () => {
 
-    const Layout = createRootNavigator(signedIn)
+    //Check for loginKey to log user's back in
+    AsyncStorage.getItem("loginKey").then((value) => {
+      if (value !== null) {
+        console.log("Login key found!")
+
+        this.setState({
+          signedIn: true
+        })
+
+      }
+      else {
+        console.log("Login key not found")
+
+        this.setState({
+          signedIn: false
+        })
+      }
+    })
+  }
+
+  render() {
+
+    console.log("SignedIn Boolean: " + this.state.signedIn)
+    const Layout = createRootNavigator(this.state.signedIn)
     return <Layout />
   }
 }

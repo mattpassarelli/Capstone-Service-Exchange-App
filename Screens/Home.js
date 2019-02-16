@@ -49,6 +49,7 @@ class Home extends Component {
             popupIsOpen: false,
             cardTitle: "",
             cardBody: "",
+            cardPoster: "",
             socket: apiEndpoint,
             refreshing: false
         }
@@ -60,13 +61,15 @@ class Home extends Component {
      * This is where the majority of our server listens will be so things
      * can connect properly
      */
-    componentDidMount() {
+    componentDidMount(){
         console.log("Component Mounted")
-
-        this.state.socket.on("connect", () => Alert.alert("connected"))
-        this.state.socket.emit("requestRequests")
         this.state.socket.on("requestData", (data) => { this.setState({ requestsDataJSON: data }), this.addRequestsFromServer() })
     }
+    
+    componentWillMount(){
+        this.state.socket.emit("requestRequests") 
+    }
+    
 
     //Displays the modal for clicking a Request
     openRequest = (item) => {
@@ -76,6 +79,7 @@ class Home extends Component {
             popupIsOpen: true,
             cardTitle: item.props.title,
             cardBody: item.props.subtitle,
+            cardPoster: item.props.posterName
         })
     }
 
@@ -92,15 +96,20 @@ class Home extends Component {
 
         console.log("Gotten Request data from server")
 
+        this.setState({
+            requests: []
+        })
+
         if (this.state.requestsDataJSON.length > 0) {
-            console.log(this.state.requestsDataJSON)
+            //console.log(this.state.requestsDataJSON)
             var tempRequests = []
 
 
             for (var i = 0; i < this.state.requestsDataJSON.length; i++) {
-                console.log("Adding request " + i + " to array of requests")
+               // console.log("Adding request " + i + " to array of requests")
                 var newCard = (
-                    <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}>
+                    <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle} 
+                    posterName={this.state.requestsDataJSON[i].posterName}>
                         <Text>{this.state.requestsDataJSON[i].subtitle}</Text>
                     </Card>
                 )
@@ -112,7 +121,7 @@ class Home extends Component {
                 requests: tempRequests
             })
 
-            console.log("Finished adding requests. Total is now: " + this.state.requests.length)
+            //console.log("Finished adding requests. Total is now: " + this.state.requests.length)
 
         }
         else {
@@ -128,6 +137,10 @@ class Home extends Component {
     refreshFeed = () => {
         console.log("Refreshing requestsDataJSON")
 
+        /**
+         * Clear requests (in case they've all been deleted lol),
+         * Then pull in all of the requests again
+         */
         this.setState({
             refreshing: true
         })
@@ -197,6 +210,7 @@ class Home extends Component {
                             <View style={{ backgroundColor: '#fff', padding: 20, height: "80%", width: "80%", borderRadius: 10 }}>
                                 <Text>{this.state.cardTitle}</Text>
                                 <Text>{this.state.cardBody}</Text>
+                                <Text style={{position: "absolute", right: 5, bottom: 5,}}>Posted by: {this.state.cardPoster}</Text>
                             </View>
                         </View>
                     </Modal>

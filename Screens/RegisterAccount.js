@@ -5,6 +5,8 @@ import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-aware-scroll-view'
 import { API_ENDPOINT } from "../Components/api-config"
+import { CheckBox } from 'react-native-elements'
+
 
 const apiEndpoint = API_ENDPOINT
 
@@ -37,7 +39,7 @@ const styles = StyleSheet.create({
 	}
 });
 
-class Login extends Component {
+class RegisterAccount extends Component {
 	constructor(props) {
 		super(props);
 
@@ -52,12 +54,14 @@ class Login extends Component {
 			popupIsOpen: false,
 			pinString: "",
 			pinCode: 0,
+			tosAgreed: false,
 			socket: apiEndpoint
 		};
 	}
 
 	componentDidMount() {
 		this.state.socket.on("isAccountVerified", (data) => this.checkVerifiedAccount(data))
+		this.state.socket.on("creationReturn", (data) => this.creationReturnData(data))
 	}
 
 	handleFirstNameChange = (first) => {
@@ -116,16 +120,31 @@ class Login extends Component {
 		if (!emailEndsInEDU) { Alert.alert("Your email must end in 'edu'") }
 		if (!phoneNumberLengthIs10) { Alert.alert("Make sure the phone number is 10 digits, with no hypens") }
 		if (!passwordsMatch) { Alert.alert("Your passwords do not match") }
+		if (!this.state.tosAgreed) { Alert.alert("Please accept the Terms of Service") }
 
 
-		if (fieldsAreNotEmpty && emailHasAtSign && emailEndsInEDU && phoneNumberLengthIs10 && passwordsMatch) {			
-		 	var data= {firstName: this.state.firstName, lastName: this.state.lastName, 
-				email: this.state.email, phoneNumber: this.state.phoneNumber, password: this.state.password}
+		if (fieldsAreNotEmpty && emailHasAtSign && emailEndsInEDU && phoneNumberLengthIs10 && passwordsMatch && this.state.tosAgreed) {
+			var data = {
+				firstName: this.state.firstName, lastName: this.state.lastName,
+				email: this.state.email, phoneNumber: this.state.phoneNumber, password: this.state.password
+			}
 
-		 	this.state.socket.emit("newUserRegistration", (data))
+			this.state.socket.emit("newUserRegistration", (data))
+		}
+	}
 
-		this.openRequest()
-
+	creationReturnData = (data) => {
+		console.log(data)
+		switch (data) {
+			case "Email Already Used":
+				Alert.alert("There is already an account with this email")
+				break;
+			case "Email Not Used":
+				this.openRequest()
+				break;
+			default:
+				console.log("Oh No")
+				break;
 		}
 	}
 
@@ -196,8 +215,6 @@ class Login extends Component {
 		this.setState({
 			popupIsOpen: false,
 		})
-		//TODO: This gets called when code is correct
-		//this.props.navigation.navigate("SignIn")	
 	}
 
 	handlePinCodeChange = (code) => {
@@ -208,46 +225,51 @@ class Login extends Component {
 
 
 	checkVerifiedAccount = (data) => {
-		
-		switch(data){
+
+		switch (data) {
 			case "Default Messages":
-			{
-				Alert.alert("An error occured. Please try again")
-				break
-			}
+				{
+					Alert.alert("An error occured. Please try again")
+					break
+				}
 			case "Verification successful":
-			{
-				this.closeRequest()
-				this.props.navigation.navigate("SignIn")
-				break
-			}
+				{
+					this.closeRequest()
+					this.props.navigation.navigate("SignIn")
+					break
+				}
 			case "Codes do not match":
-			{
-				Alert.alert("Codes do not match. Please check your email and try again")
-				break
-			}
+				{
+					Alert.alert("Codes do not match. Please check your email and try again")
+					break
+				}
 			default:
-			{
-				Alert.alert("Pray this never appears cause I have no idea why it would")
-				break
-			}
+				{
+					Alert.alert("Pray this never appears cause I have no idea why it would")
+					break
+				}
 		}
+	}
+
+	handleTOSChange() {
+		this.setState({
+			tosAgreed: !this.state.tosAgreed
+		})
 	}
 
 	crossCheckCode = () => {
 		var code = parseInt(this.state.pinString)
-		var data = {email: this.state.email, pinCode: code}
+		var data = { email: this.state.email, pinCode: code }
 
-		if(this.state.pinString.trim().length == 6){
-		this.state.socket.emit("verifyNewAccount", (data))
+		if (this.state.pinString.trim().length == 6) {
+			this.state.socket.emit("verifyNewAccount", (data))
 		}
-		else{
+		else {
 			Alert.alert("Verification code must 6 digits. Check your email")
 		}
 	}
 
 	render() {
-
 		return (
 			<React.Fragment>
 
@@ -363,6 +385,16 @@ class Login extends Component {
 						secureTextEntry={true}
 					/>
 
+					<View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+						<CheckBox
+							checkedIcon='dot-circle-o'
+							uncheckedIcon='circle-o'
+							checked={this.state.tosAgreed}
+							containerStyle={{ backgroundColor: "transparent" }}
+							onPress={() => this.handleTOSChange()}
+						/>
+						<Text style={{ fontSize: RF(2), color: '#00F' }} onPress={() => this.props.navigation.navigate("TOS")}>Accept Terms of Serivce</Text>
+					</View>
 
 					<View style={{ flex: 1, flexDirection: "column", width: "100%", alignItems: "center", justifyContent: "space-between", paddingBottom: 30, paddingTop: 20 }}>
 						<CustomButton text="Create Account" onPress={() => { this.createAccount() }}
@@ -425,4 +457,4 @@ class Login extends Component {
 	}
 }
 
-export default withNavigation(Login)
+export default withNavigation(RegisterAccount)
