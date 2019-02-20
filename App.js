@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator } from 'react-navigation';
 import { View, Text, Button, Platform } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons';
+import AccountIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { AsyncStorage } from 'react-native';
 import Home from "./Screens/Home"
 import Settings from "./Screens/Settings"
@@ -11,15 +12,10 @@ import NewRequest from "./Screens/NewRequest"
 import Login from "./Screens/Login"
 import RegisterAccount from "./Screens/RegisterAccount"
 import TermsOfService from "./Screens/TermsOfService"
+import Messages from "./Screens/Messages"
+import MessageThread from "./Screens/MessagesThread"
 import { YellowBox } from 'react-native';
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
-
-
-/**
- * TODO: 
- * FInd a way to get all user data (email, name, etc) and
- * share across all pages
- */
 
 class NotificationsScreen extends React.Component {
 
@@ -142,6 +138,29 @@ class SignInScreen extends React.Component {
   }
 }
 
+class MessagesScreen extends React.Component{
+  static navigationOptions = {
+    title: "Messages",
+    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+  }
+
+  render()
+  {
+    return(
+      <Messages/>
+    )
+  }
+}
+
+class MessageThreadScreen extends React.Component{
+  render()
+  {
+    return(
+      <MessageThread/>
+    )
+  }
+}
+
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -158,6 +177,11 @@ const NotificationStack = createStackNavigator({
 
 const NewRequestStack = createStackNavigator({
   NewRequest: NewRequestScreen
+})
+
+const MessagesStack = createStackNavigator({
+  Messages: MessagesScreen,
+  Thread: MessageThreadScreen,
 })
 
 
@@ -178,6 +202,15 @@ const SignedIn = createBottomTabNavigator({
       )
     }
   },
+  Messages: {
+    screen: MessagesStack,
+    navigationOptions: {
+      tabBarLabel: "Messages",
+      tabBarIcon: ({tintColor}) => (
+        <Icon name={Platform.OS === "ios" ? "ios-chatbubbles" : "md-chatbubbles"} color={tintColor} size={24}/>
+      )
+    }
+  },
   Notifications: {
     screen: NotificationStack,
     navigationOptions: {
@@ -192,7 +225,7 @@ const SignedIn = createBottomTabNavigator({
     navigationOptions: {
       tabBarLabel: 'Account',
       tabBarIcon: ({ tintColor }) => (
-        <Icon name={Platform.OS === "ios" ? "ios-man" : "md-man"} color={tintColor} size={24} />
+        <AccountIcon name="account" color={tintColor} size={24} />
       )
     }
   },
@@ -208,7 +241,7 @@ const SignedIn = createBottomTabNavigator({
 },
   {//router config
     initialRouteName: 'Home',
-    order: ['Home', 'NewRequest', 'Notifications', 'Account'],
+    order: ['Home', 'Messages', 'NewRequest', 'Notifications', 'Account'],
     //navigation for complete tab navigator
     navigationOptions: {
       tabBarVisible: true

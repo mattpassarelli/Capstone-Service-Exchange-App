@@ -6,6 +6,8 @@ import { Card } from 'react-native-elements'
 import GestureRecognizer from 'react-native-swipe-gestures';
 import { YellowBox } from 'react-native';
 import { API_ENDPOINT } from "../Components/api-config"
+import CustomButton from "../Components/CustomButton"
+import RF from "react-native-responsive-fontsize"
 
 console.ignoredYellowBox = ["Remote Debugger"]
 YellowBox.ignoreWarnings([
@@ -34,7 +36,20 @@ const styles = StyleSheet.create(
             fontSize: 18,
             color: 'black',
             padding: 15
-        }
+        },
+
+        buttonStyle: {
+            padding: 10,
+            backgroundColor: '#202646',
+            borderRadius: 10,
+            width: "80%",
+        },
+
+        buttonTextStyle: {
+            fontSize: RF(2),
+            color: '#ffffff',
+            textAlign: 'center'
+        },
     });
 
 
@@ -61,15 +76,15 @@ class Home extends Component {
      * This is where the majority of our server listens will be so things
      * can connect properly
      */
-    componentDidMount(){
+    componentDidMount() {
         console.log("Component Mounted")
         this.state.socket.on("requestData", (data) => { this.setState({ requestsDataJSON: data }), this.addRequestsFromServer() })
     }
-    
-    componentWillMount(){
-        this.state.socket.emit("requestRequests") 
+
+    componentWillMount() {
+        this.state.socket.emit("requestRequests")
     }
-    
+
 
     //Displays the modal for clicking a Request
     openRequest = (item) => {
@@ -106,10 +121,10 @@ class Home extends Component {
 
 
             for (var i = 0; i < this.state.requestsDataJSON.length; i++) {
-               // console.log("Adding request " + i + " to array of requests")
+                // console.log("Adding request " + i + " to array of requests")
                 var newCard = (
-                    <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle} 
-                    posterName={this.state.requestsDataJSON[i].posterName}>
+                    <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}
+                        posterName={this.state.requestsDataJSON[i].posterName}>
                         <Text>{this.state.requestsDataJSON[i].subtitle}</Text>
                     </Card>
                 )
@@ -155,6 +170,10 @@ class Home extends Component {
 
         console.log("Done Refreshing JSON")
         this.addRequestsFromServer()
+    }
+
+    connectWithRequester() {
+
     }
 
     render() {
@@ -207,11 +226,23 @@ class Home extends Component {
                             paddingTop: 20,
                             backgroundColor: '#ecf0f1',
                         }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
-                            <View style={{ backgroundColor: '#fff', padding: 20, height: "80%", width: "80%", borderRadius: 10 }}>
-                                <Text>{this.state.cardTitle}</Text>
-                                <Text>{this.state.cardBody}</Text>
-                                <Text style={{position: "absolute", right: 5, bottom: 5,}}>Posted by: {this.state.cardPoster}</Text>
+                            <View style={{ backgroundColor: '#fff', padding: 20, height: "40%", 
+                            width: "80%", borderRadius: 10, justifyContent: "space-between" }}>
+                                <View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
+                                    <Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>{this.state.cardTitle}</Text>
+                                    <Text style={{ fontSize: RF(1.5), textAlign: "center" }}>Posted by: {this.state.cardPoster}</Text>
+                                    <Text style={{ fontSize: RF(2.5), paddingTop: 15 }}>{this.state.cardBody}</Text>
+                                </View>
+
+
+                                <View style={{ alignItems: "center" }}>
+                                    <CustomButton text="Fulfill Request"
+                                        onPress={() => this.connectWithRequester()}
+                                        buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+                                </View>
                             </View>
+
+
                         </View>
                     </Modal>
                 </GestureRecognizer>
