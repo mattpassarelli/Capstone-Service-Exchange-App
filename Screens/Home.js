@@ -8,6 +8,7 @@ import { YellowBox } from 'react-native';
 import { API_ENDPOINT } from "../Components/api-config"
 import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
+import { AsyncStorage } from "react-native"
 
 console.ignoredYellowBox = ["Remote Debugger"]
 YellowBox.ignoreWarnings([
@@ -65,8 +66,11 @@ class Home extends Component {
             cardTitle: "",
             cardBody: "",
             cardPoster: "",
+            cardID: "",
             socket: apiEndpoint,
-            refreshing: false
+            refreshing: false,
+            fullName: "",
+            email: "",
         }
     }
 
@@ -81,8 +85,40 @@ class Home extends Component {
         this.state.socket.on("requestData", (data) => { this.setState({ requestsDataJSON: data }), this.addRequestsFromServer() })
     }
 
+    //Grab the full name from the phone's storage
+    userFullName = async () => {
+        try {
+            await AsyncStorage.getItem("fullAccountName").then(async (value) => {
+                console.log("Name: " + value)
+                this.setState({
+                    fullName: value
+                })
+            })
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
+    //grab user email from phone storage
+    userEmail = async () => {
+        try {
+            await AsyncStorage.getItem("userEmail").then((value) => {
+                console.log("Email:" + value)
+                this.setState({
+                    email: value
+                })
+            })
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
     componentWillMount() {
         this.state.socket.emit("requestRequests")
+        this.userFullName()
+        this.userEmail()
     }
 
 
@@ -90,11 +126,14 @@ class Home extends Component {
     openRequest = (item) => {
         console.log(item.props.title)
         console.log(item.props.subtitle)
+        console.log(item.props.request_ID)
+        console.log(item.props.posterName)
         this.setState({
             popupIsOpen: true,
             cardTitle: item.props.title,
             cardBody: item.props.subtitle,
-            cardPoster: item.props.posterName
+            cardPoster: item.props.posterName,
+            cardID: item.props.request_ID,
         })
     }
 
@@ -110,6 +149,7 @@ class Home extends Component {
     addRequestsFromServer = () => {
 
         console.log("Gotten Request data from server")
+        // console.log(this.state.requestsDataJSON)
 
         this.setState({
             requests: []
@@ -124,7 +164,7 @@ class Home extends Component {
                 // console.log("Adding request " + i + " to array of requests")
                 var newCard = (
                     <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}
-                        posterName={this.state.requestsDataJSON[i].posterName}>
+                        posterName={this.state.requestsDataJSON[i].posterName} request_ID={this.state.requestsDataJSON[i]._id}>
                         <Text>{this.state.requestsDataJSON[i].subtitle}</Text>
                     </Card>
                 )
@@ -173,7 +213,23 @@ class Home extends Component {
     }
 
     connectWithRequester() {
+        var data = { request_ID: this.state.cardID, fulfiller: this.state.email }
 
+        if (this.state.cardPoster === this.state.fullName) {
+            Alert.alert("You cannot request to fulfill your own request")
+        }
+        else {
+            Alert.alert("Confirm", "Offer to help this person?",
+                [
+                    { text: "No", onPress: () => this.closeRequest() },
+                    { text: "Yes", onPress: () => this.sendConnectRequest(data) }
+                ])
+        }
+    }
+
+    sendConnectRequest = (data) => {
+        this.state.socket.emit("offerToConnect", (data))
+        this.closeRequest()
     }
 
     render() {
@@ -226,8 +282,10 @@ class Home extends Component {
                             paddingTop: 20,
                             backgroundColor: '#ecf0f1',
                         }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
-                            <View style={{ backgroundColor: '#fff', padding: 20, height: "40%", 
-                            width: "80%", borderRadius: 10, justifyContent: "space-between" }}>
+                            <View style={{
+                                backgroundColor: '#fff', padding: 20, height: "40%",
+                                width: "80%", borderRadius: 10, justifyContent: "space-between"
+                            }}>
                                 <View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
                                     <Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>{this.state.cardTitle}</Text>
                                     <Text style={{ fontSize: RF(1.5), textAlign: "center" }}>Posted by: {this.state.cardPoster}</Text>
