@@ -182,6 +182,10 @@ class Home extends Component {
         else {
             console.log("No requests in DB. Or is connection bad?")
         }
+
+        this.setState({
+            refreshing: false
+        })
     }
 
     /**
@@ -204,10 +208,6 @@ class Home extends Component {
 
         console.log("Data received from server is: " + this.state.requestsDataJSON)
 
-        this.setState({
-            refreshing: false
-        })
-
         console.log("Done Refreshing JSON")
         this.addRequestsFromServer()
     }
@@ -215,16 +215,18 @@ class Home extends Component {
     connectWithRequester() {
         var data = { request_ID: this.state.cardID, fulfiller: this.state.email }
 
-        if (this.state.cardPoster === this.state.fullName) {
-            Alert.alert("You cannot request to fulfill your own request")
-        }
-        else {
+        //TODO: Re-enable this
+        
+        // if (this.state.cardPoster === this.state.fullName) {
+        //     Alert.alert("You cannot request to fulfill your own request")
+        // }
+        // else {
             Alert.alert("Confirm", "Offer to help this person?",
                 [
                     { text: "No", onPress: () => this.closeRequest() },
                     { text: "Yes", onPress: () => this.sendConnectRequest(data) }
                 ])
-        }
+       // }
     }
 
     sendConnectRequest = (data) => {
