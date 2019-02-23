@@ -1,11 +1,12 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Button, TouchableOpacity, Modal } from 'react-native';
 import { Card } from "react-native-elements"
 import { createStackNavigator } from 'react-navigation'
 import { AsyncStorage } from "react-native"
 import { API_ENDPOINT } from '../Components/api-config';
 import RF from "react-native-responsive-fontsize"
+import CustomButton from "../Components/CustomButton"
 
 const apiEndpoint = API_ENDPOINT
 
@@ -13,6 +14,19 @@ const apiEndpoint = API_ENDPOINT
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+	},
+	
+	buttonStyle: {
+		padding: 10,
+		backgroundColor: '#202646',
+		borderRadius: 10,
+		width: "20%",
+	},
+
+	buttonTextStyle: {
+		fontSize: RF(2),
+		color: '#ffffff',
+		textAlign: 'center'
 	},
 });
 
@@ -36,7 +50,9 @@ class Notifications extends React.Component {
 			email: "",
 			socket: apiEndpoint,
 			notificationJSON: "",
-			notifications: []
+			notifications: [],
+			popupIsOpen: false,
+			fulFiller_Name: "",
 		}
 	}
 	componentDidMount() {
@@ -100,7 +116,7 @@ class Notifications extends React.Component {
 				var title = this.state.notificationJSON[i].fulFiller_Name + " has offered to help you with your request: " + this.state.notificationJSON[i].requestTitle
 
 				var newCard = (
-					<Card title={title} fulFiller_Email={this.state.notificationJSON[i].fulFiller_Email}></Card>
+					<Card title={title} fulFiller_Email={this.state.notificationJSON[i].fulFiller_Email} fulFiller_Name={this.state.notificationJSON[i].fulFiller_Name}></Card>
 				)
 
 				tempNotifications.push(newCard)
@@ -112,32 +128,82 @@ class Notifications extends React.Component {
 		}
 	}
 
-	openRequest = (item) =>{
+	openRequest = (item) => {
 		console.log(item.props.title)
 		console.log(item.props.fulFiller_Email)
+		console.log(item.props.fulFiller_Name)
+		this.setState({
+			fulFiller_Name: item.props.fulFiller_Name,
+			popupIsOpen: true
+		})
+	}
+
+	closeRequest() {
+		this.setState({
+			popupIsOpen: false,
+		})
 	}
 
 	render() {
 		return (
-			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-				<ScrollView>
-					{
-						this.state.notifications.map((item, key) => {
-							return (
-								<TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
-									<Card key={key}>
-										<View>
-											{/* //TODO: Work out Time difference math */}
-											<Text>{item.props.title}</Text>
-											<Text style={{position: "absolute", right: 0, bottom: 0, fontSize: RF(1.2)}}>Time diff here</Text>
-										</View>
-									</Card>
-								</TouchableOpacity>
-							)
-						})
-					}
-				</ScrollView>
-			</View>
+			<React.Fragment>
+				<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+					<ScrollView>
+						{
+							this.state.notifications.map((item, key) => {
+								return (
+									<TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
+										<Card key={key}>
+											<View>
+												{/* //TODO: Work out Time difference math */}
+												<Text>{item.props.title}</Text>
+												<Text style={{ position: "absolute", right: 0, bottom: 0, fontSize: RF(1.2) }}>Time diff here</Text>
+											</View>
+										</Card>
+									</TouchableOpacity>
+								)
+							})
+						}
+					</ScrollView>
+				</View>
+
+				<Modal
+					animationType="slide"
+					transparent={true}
+					visible={this.state.popupIsOpen}
+					onRequestClose={() => {
+						this.closeRequest()
+					}}>
+					<View style={[{
+						flex: 1,
+						alignItems: 'center',
+						justifyContent: 'center',
+						paddingTop: 20,
+						backgroundColor: '#ecf0f1',
+					}, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+						<View style={{
+							backgroundColor: '#fff', padding: 20, height: "40%",
+							width: "80%", borderRadius: 10, justifyContent: "space-between"
+						}}>
+							<View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
+								<Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>Connect with {this.state.fulFiller_Name} about your request?</Text>
+								<Text style={{ fontSize: RF(2), textAlign: "center" }}>This will create a new coversation</Text>
+							</View>
+
+
+							<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+							<CustomButton text="No"
+								onPress={() => this.closeRequest()}
+									buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+
+								<CustomButton text="Yes"
+								onPress={() => this.closeRequest()}
+									buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+							</View>
+						</View>
+						</View>
+						</Modal>
+			</React.Fragment>
 		)
 	}
 }
