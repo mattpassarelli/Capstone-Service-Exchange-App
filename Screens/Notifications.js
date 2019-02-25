@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Button, TouchableOpacity, Modal, RefreshControl, Alert } from 'react-native';
 import { Card } from "react-native-elements"
 import { createStackNavigator } from 'react-navigation'
 import { AsyncStorage } from "react-native"
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
-	
+
 	buttonStyle: {
 		padding: 10,
 		backgroundColor: '#202646',
@@ -53,6 +53,10 @@ class Notifications extends React.Component {
 			notifications: [],
 			popupIsOpen: false,
 			fulFiller_Name: "",
+			fulFiller_Email: "",
+			request_ID: "",
+			requestType: "",
+			refreshing: false,
 		}
 	}
 	componentDidMount() {
@@ -60,6 +64,30 @@ class Notifications extends React.Component {
 		this.userFullName()
 		this.userEmail()
 		this.state.socket.on("receiveNotifications", (data) => { this.setState({ notificationJSON: data }), this.addNotifications() })
+	}
+
+	/**
+	* Method is called when refreshControl is activated
+	* Meaning that whenever you pull down to refresh, this 
+	* is what is called
+	*/
+	refreshFeed = () => {
+		console.log("Refreshing requestsDataJSON")
+
+        /**
+         * Clear requests (in case they've all been deleted lol),
+         * Then pull in all of the requests again
+         */
+		this.setState({
+			refreshing: true
+		})
+
+		this.state.socket.emit("pullNotifications", (this.state.email))
+
+		console.log("Data received from server is: " + this.state.requestsDataJSON)
+
+		console.log("Done Refreshing JSON")
+		this.addNotifications()
 	}
 
 	//Grab the full name from the phone's storage
@@ -100,6 +128,11 @@ class Notifications extends React.Component {
 		}
 	}
 
+	/**
+	 * Called when the server sends the emit signal with Notification data
+	 * Parses the data as a JSON and adds the notifications to the state array
+	 * as Cards (possibly temporary)
+	 */
 	addNotifications = () => {
 		console.log("Recevied notification data: " + JSON.stringify(this.state.notificationJSON, null, 2))
 
@@ -114,16 +147,25 @@ class Notifications extends React.Component {
 			for (var i = 0; i < this.state.notificationJSON.length; i++) {
 
 				var title = this.state.notificationJSON[i].fulFiller_Name + " has offered to help you with your request: " + this.state.notificationJSON[i].requestTitle
-
+				console.log("Request_ID: " + this.state.notificationJSON[i].request_ID)
 				var newCard = (
-					<Card title={title} fulFiller_Email={this.state.notificationJSON[i].fulFiller_Email} fulFiller_Name={this.state.notificationJSON[i].fulFiller_Name}></Card>
+					<Card title={title} 
+					fulFiller_Email={this.state.notificationJSON[i].fulFiller_Email}
+					 fulFiller_Name={this.state.notificationJSON[i].fulFiller_Name}
+					 request_ID={this.state.notificationJSON[i].request_ID}
+					 requestType={this.state.notificationJSON[i].requestTitle}
+					 ></Card>
 				)
 
 				tempNotifications.push(newCard)
 			}
 
+			//flip the array so the latest Notifications are at the top
+			tempNotifications.reverse()
+
 			this.setState({
-				notifications: tempNotifications
+				notifications: tempNotifications,
+				refreshing: false
 			})
 		}
 	}
@@ -132,8 +174,13 @@ class Notifications extends React.Component {
 		console.log(item.props.title)
 		console.log(item.props.fulFiller_Email)
 		console.log(item.props.fulFiller_Name)
+		console.log(item.props.request_ID)
+		console.log(item.props.requestType)
 		this.setState({
 			fulFiller_Name: item.props.fulFiller_Name,
+			fulFiller_Email: item.props.fulFiller_Email,
+			request_ID: item.props.request_ID,
+			requestType: item.props.requestType,
 			popupIsOpen: true
 		})
 	}
@@ -144,11 +191,36 @@ class Notifications extends React.Component {
 		})
 	}
 
+
+	createConversation() {
+		console.log("Attempting to create conversation between: " + this.state.email + " and " + this.state.fulFiller_Email)
+
+		var data = { user1: this.state.email, user1Name: this.state.fullName,
+			 user2: this.state.fulFiller_Email, user2Name: this.state.fulFiller_Name,
+			  request_ID: this.state.request_ID, requestType: this.state.requestType}
+
+		this.state.socket.emit("createConversation", (data))
+		this.state.socket.on("convoReturn", (data) => this.convoReturn(data))
+	}
+
+	convoReturn(data){
+		console.log("Convo Return: " + data)
+		if(data)
+		{
+			Alert.alert("Conversation already Exists", "A conversation about this request already exists")
+		}
+		else{
+			this.closeRequest()
+		}
+	}
+
 	render() {
 		return (
 			<React.Fragment>
 				<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-					<ScrollView>
+					<ScrollView refreshControl={
+						<RefreshControl refreshing={this.state.refreshing} onRefresh={this.refreshFeed} />
+					}>
 						{
 							this.state.notifications.map((item, key) => {
 								return (
@@ -191,18 +263,18 @@ class Notifications extends React.Component {
 							</View>
 
 
-							<View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-							<CustomButton text="No"
-								onPress={() => this.closeRequest()}
+							<View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+								<CustomButton text="No"
+									onPress={() => this.closeRequest()}
 									buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
 
 								<CustomButton text="Yes"
-								onPress={() => this.closeRequest()}
+									onPress={() => this.createConversation()}
 									buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
 							</View>
 						</View>
-						</View>
-						</Modal>
+					</View>
+				</Modal>
 			</React.Fragment>
 		)
 	}
