@@ -8,7 +8,7 @@
       "ios",
       "android"
     ],
-    "version": "0.1.0",
+    "version": "0.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -19,21 +19,13 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.mattpassarelli.uxechange",
-      "publishBundlePath": "ios/uexchange/Supporting/shell-app.bundle",
-      "publishManifestPath": "ios/uexchange/Supporting/shell-app-manifest.json"
+      "bundleIdentifier": "com.mattpassarelli.uexchange"
+     
     },
     "android": {
-      "package": "com.mattpassarelli.uxechange",
-      "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
-      "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
-    },
-    "description": "UExchange by Matt Passarelli",
-    "scheme": "expbff982bedd814cc6970159be51a17a39"
+      "package": "com.mattpassarelli.uexchange"
+    }
+
   }
 }
