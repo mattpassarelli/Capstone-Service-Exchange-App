@@ -5,6 +5,7 @@ import { GiftedChat } from 'react-native-gifted-chat'
 import { AsyncStorage } from "react-native"
 import { API_ENDPOINT } from "../Components/api-config"
 import { withNavigation } from "react-navigation"
+import KeyboardSpacer from "react-native-keyboard-spacer"
 
 const apiEndpoint = API_ENDPOINT
 
@@ -33,21 +34,6 @@ class MessagesThread extends Component {
     this.userEmail()
 
     console.log(this.state.user2Name + " " + this.state.user2Email)
-
-    this.setState({
-      messages: [
-        {
-          _id: 1,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://placeimg.com/140/140/any',
-          },
-        },
-      ],
-    })
   }
 
   //Grab the full name from the phone's storage
@@ -93,10 +79,11 @@ class MessagesThread extends Component {
       <View style={styles.container}>
         <GiftedChat
           messages={this.state.messages}
-          user={{ _name: this.state.fullName }}
+          user={{ _name: this.state.email }}
           onSend={(messages) => this.onSend(messages)}
           placeholder="Message"
         />
+        {Platform.OS === 'android' ? <KeyboardSpacer /> : null}
       </View>
     );
   }

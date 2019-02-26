@@ -83,43 +83,40 @@ class Messages extends Component {
             conversations: []
         })
 
-            console.log("sorting JSON")
-            var tempArray = []
+        console.log("sorting JSON")
+        var tempArray = []
 
-            console.log(this.state.conversationsJSON.length)
+        console.log(this.state.conversationsJSON.length)
 
+        if (this.state.conversationsJSON.length > 0) {
             for (var i = 0; i < this.state.conversationsJSON.length; i++) {
 
-                var otherUser = ""
+                var title = this.state.conversationsJSON[i].user1Name + " & " + this.state.conversationsJSON[i].user2Name
 
-                if (this.state.name != this.state.conversationsJSON[i].user1Name) {
-                    otherUser = this.state.conversationsJSON[i].user1Name
-                }
-                if (this.state.name != this.state.conversationsJSON[i].user2Name) {
-                    otherUser = this.state.conversationsJSON[i].user2Name
-                }
 
                 var newConvo = (
-                    <Message userNameTitle={otherUser}
+                    <Message userNameTitle={title}
                         requestType={this.state.conversationsJSON[i].requestType}
                     >
                     </Message>
                 )
 
                 tempArray.push(newConvo)
-
-
-            tempArray.reverse()
-
-
-            this.setState({
-                conversations: tempArray,
-                refreshing: false
-            })
-
-            console.log(this.state.conversations + " length is " + this.state.conversations.length)
+            }
         }
+
+        tempArray.reverse()
+
+
+        this.setState({
+            conversations: tempArray,
+            refreshing: false
+        })
+
+        console.log(this.state.conversations + " length is " + this.state.conversations.length)
     }
+
+
 
     refreshFeed = () => {
         console.log("requesting messages")
@@ -127,8 +124,6 @@ class Messages extends Component {
         this.setState({
             refreshing: true
         })
-
-        var data = {email: this.state.email}
 
         this.state.socket.emit("requestConversations", (this.state.email))
     }
@@ -146,8 +141,7 @@ class Messages extends Component {
             <View style={styles.container}>
                 <ScrollView refreshControl={
                     <RefreshControl refreshing={this.state.refreshing} onRefresh={this.refreshFeed} />
-                }
-                >
+                }>
                     {
                         this.state.conversations.map((item, key) => {
                             return (

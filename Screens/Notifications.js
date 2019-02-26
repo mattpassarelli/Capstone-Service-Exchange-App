@@ -165,9 +165,12 @@ class Notifications extends React.Component {
 
 			this.setState({
 				notifications: tempNotifications,
-				refreshing: false
 			})
 		}
+
+		this.setState({
+			refreshing: false
+		})
 	}
 
 	openRequest = (item) => {
@@ -217,7 +220,7 @@ class Notifications extends React.Component {
 	render() {
 		return (
 			<React.Fragment>
-				<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				{/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}> */}
 					<ScrollView refreshControl={
 						<RefreshControl refreshing={this.state.refreshing} onRefresh={this.refreshFeed} />
 					}>
@@ -237,7 +240,7 @@ class Notifications extends React.Component {
 							})
 						}
 					</ScrollView>
-				</View>
+				{/* </View> */}
 
 				<Modal
 					animationType="slide"
