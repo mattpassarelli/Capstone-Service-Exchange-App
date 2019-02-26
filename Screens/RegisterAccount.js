@@ -7,6 +7,9 @@ import { KeyboardAwareScrollView, } from 'react-native-keyboard-aware-scroll-vie
 import { API_ENDPOINT } from "../Components/api-config"
 import { CheckBox } from 'react-native-elements'
 
+/**
+ * TODO: Remove phone number requirement from here and server
+ */
 
 const apiEndpoint = API_ENDPOINT
 
