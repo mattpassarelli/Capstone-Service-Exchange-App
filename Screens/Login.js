@@ -226,12 +226,12 @@ class Login extends Component {
 					enableOnAndroid={true}>
 
 
-					{/* TODO: get an app icon for placement here */}
+					{/* TODO: Replace icon with the LOGO from Holly */}
 
 					<Image
 						style={{ flex: 1, width: 200, height: 200, paddingTop: 125 }}
 						resizeMode="contain"
-						source={{ uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png' }}
+						source={require('../assets/roundedIcon.png')}
 					/>
 
 

@@ -10,7 +10,7 @@ If you would like to use a local backend, you can find my repo for that [here](h
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+What you need to install the software and how to install them
 
 ```
 - NodeJS
@@ -20,14 +20,13 @@ What things you need to install the software and how to install them
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
 ```
 1) Clone the repo with "git clone https://github.com/mattpassarelli/Capstone-Service-Exchange-App.git"
-2) Install the Expo CLI if it is not alreay with "npm install -g expo-cli"
+2) Install the Expo CLI if it is not already with "npm install -g expo-cli"
 3) cd into Capstone-Service-Exchange
-4) Run with "npm start"
-5) Connect with your smartphone/tablet or click on "Open in iOS Simulator/Android Emulator" in the Expo tab that opened in your internet browser
+4) Run "npm install" to grab all the node modules
+5) Run with "npm start"
+6) Connect with your smartphone/tablet or click on "Open in iOS Simulator/Android Emulator" in the Expo tab that opened in your internet browser
 ```
 
 ## Deployment
@@ -50,3 +49,4 @@ I'm constantly working on this. If the app is unable to connect, check api-confi
 * The numerous npm modules I've used
 * Professor Kreider for the chance to get this off the ground
 * [Walker Reynolds](https://github.com/walkerreynolds16/) for basically teaching me React and how to use MongoDB while working on Clubin. Thanks buddy.
+* [Holly Rice](http://hollyrice15.wixsite.com/artsadminholly) for designing my Icons and Splash Screen. She's a wonderful human. Look at her portfolio
