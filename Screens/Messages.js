@@ -68,7 +68,7 @@ class Messages extends Component {
 				 * 
 				 * TODO: Store account data in a constant file hopefully
 				 */
-                this.state.socket.emit("requestConversations", (value))
+                this.state.socket.emit("requestConversations", ({email: value}))
             })
         }
         catch (error) {
@@ -97,9 +97,12 @@ class Messages extends Component {
                 var newConvo = (
                     <Message userNameTitle={title}
                         requestType={this.state.conversationsJSON[i].requestType}
+                        convo_ID={this.state.conversationsJSON[i]._id}
                     >
                     </Message>
                 )
+
+                console.log(newConvo)
 
                 tempArray.push(newConvo)
             }
@@ -125,7 +128,7 @@ class Messages extends Component {
             refreshing: true
         })
 
-        this.state.socket.emit("requestConversations", (this.state.email))
+        this.state.socket.emit("requestConversations", ({email: this.state.email}))
     }
 
 
@@ -145,8 +148,12 @@ class Messages extends Component {
                     {
                         this.state.conversations.map((item, key) => {
                             return (
-                                <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.props.navigation.navigate("Thread",
-                                    { user2Name: this.state.user2Name, user2Email: this.state.user2Email })}>
+                                <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.props.navigation.navigate(
+                                {
+                                    type: "Navigate",
+                                    routeName: "Thread",
+                                    params: {convo_ID: item.props.convo_ID}
+                                })}>
                                     <Message userNameTitle={item.props.userNameTitle} key={key} requestType={item.props.requestType} />
                                 </TouchableOpacity>
                             )

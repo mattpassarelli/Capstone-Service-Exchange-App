@@ -26,6 +26,7 @@ class MessagesThread extends Component {
       socket: apiEndpoint,
       user2Name: "",
       user2Email: "",
+      convo_ID: this.props.navigation.state.params.convo_ID,
     }
   }
 
@@ -33,7 +34,7 @@ class MessagesThread extends Component {
     this.userFullName()
     this.userEmail()
 
-    console.log(this.state.user2Name + " " + this.state.user2Email)
+    console.log("Convo ID: " + this.state.convo_ID)
   }
 
   //Grab the full name from the phone's storage
@@ -70,16 +71,23 @@ class MessagesThread extends Component {
     this.setState(previousState => ({
       messages: GiftedChat.append(previousState.messages, messages),
     }))
+
+    var data = {messages: this.state.messages, _ID: this.state.convo_ID}
+
+    this.state.socket.emit("addMessageToConvo", (data))
   }
 
+  /**
+   * TODO: Add a header
+   */
 
-
+  
   render() {
     return (
       <View style={styles.container}>
         <GiftedChat
           messages={this.state.messages}
-          user={{ _name: this.state.email }}
+          user={{ _name: this.state.name }}
           onSend={(messages) => this.onSend(messages)}
           placeholder="Message"
         />
