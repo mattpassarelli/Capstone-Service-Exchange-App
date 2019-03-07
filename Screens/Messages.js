@@ -26,6 +26,7 @@ class Messages extends Component {
             conversationsJSON: [],
             conversations: [],
             refreshing: false,
+            user_ID: 0
         }
     }
 
@@ -36,6 +37,7 @@ class Messages extends Component {
 
     componentDidMount() {
         this.state.socket.on("conversationsFound", (data) => { this.setState({ conversationsJSON: data }), this.processConversations() })
+        this.state.socket.on("userIDGiven", (data) => this.setState({ user_ID: data }))
     }
 
     //Grab the full name from the phone's storage
@@ -68,7 +70,8 @@ class Messages extends Component {
 				 * 
 				 * TODO: Store account data in a constant file hopefully
 				 */
-                this.state.socket.emit("requestConversations", ({email: value}))
+                this.state.socket.emit("requestConversations", ({ email: value }))
+                this.state.socket.emit("requestUserID", ({ email: value }))
             })
         }
         catch (error) {
@@ -128,7 +131,7 @@ class Messages extends Component {
             refreshing: true
         })
 
-        this.state.socket.emit("requestConversations", ({email: this.state.email}))
+        this.state.socket.emit("requestConversations", ({ email: this.state.email }))
     }
 
 
@@ -149,11 +152,11 @@ class Messages extends Component {
                         this.state.conversations.map((item, key) => {
                             return (
                                 <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.props.navigation.navigate(
-                                {
-                                    type: "Navigate",
-                                    routeName: "Thread",
-                                    params: {convo_ID: item.props.convo_ID}
-                                })}>
+                                    {
+                                        type: "Navigate",
+                                        routeName: "Thread",
+                                        params: { convo_ID: item.props.convo_ID, user_ID: this.state.user_ID }
+                                    })}>
                                     <Message userNameTitle={item.props.userNameTitle} key={key} requestType={item.props.requestType} />
                                 </TouchableOpacity>
                             )

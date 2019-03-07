@@ -12,10 +12,6 @@ const apiEndpoint = API_ENDPOINT
 // create a component
 class MessagesThread extends Component {
 
-  static navigationOptions = {
-    title: "Hello There"
-  }
-
   constructor(props) {
     super(props)
 
@@ -27,6 +23,7 @@ class MessagesThread extends Component {
       user2Name: "",
       user2Email: "",
       convo_ID: this.props.navigation.state.params.convo_ID,
+      user_ID: this.props.navigation.state.params.user_ID
     }
   }
 
@@ -34,7 +31,38 @@ class MessagesThread extends Component {
     this.userFullName()
     this.userEmail()
 
+    this.requestMessages()
+    this.state.socket.on("conversationMessagesReceived", (data) => this.processMessagesReceived(data))
+    this.state.socket.on("pullNewMessage", () => this.requestMessages())
+
     console.log("Convo ID: " + this.state.convo_ID)
+    console.log("User ID: " + this.state.user_ID)
+  }
+
+  requestMessages() {
+    console.log("Requesting Messages from Server")
+
+    var data = { convo_ID: this.state.convo_ID }
+
+    this.state.socket.emit("requestConversationMessages", (data))
+  }
+
+  processMessagesReceived = (data = []) => {
+    console.log("Messages Recevied: " + data)
+
+    /**
+     * TODO:
+     * I'm apparently causing another memory leak here, but
+     * that is yet to be confirmed. Just keep it in mind
+     */
+
+    this.setState({
+      messages: []
+    })
+
+    this.setState(previousState => ({
+      messages: GiftedChat.append(previousState.messages, data),
+    }))
   }
 
   //Grab the full name from the phone's storage
@@ -67,12 +95,21 @@ class MessagesThread extends Component {
     }
   }
 
+  /**
+   * TODO: For now, I'm passing in the entire new state to the server and 
+   * replacing the message array everytime. I have no idea how taxing this
+   * will get on the front/back ends. If it proves too much, I can try sending
+   * only the message that is sent 
+   */
+
   onSend(messages = []) {
     this.setState(previousState => ({
       messages: GiftedChat.append(previousState.messages, messages),
     }))
 
-    var data = {messages: this.state.messages, _ID: this.state.convo_ID}
+    var data = { messages: messages, _ID: this.state.convo_ID }
+
+    console.log(messages)
 
     this.state.socket.emit("addMessageToConvo", (data))
   }
@@ -81,15 +118,18 @@ class MessagesThread extends Component {
    * TODO: Add a header
    */
 
-  
+
   render() {
     return (
       <View style={styles.container}>
         <GiftedChat
           messages={this.state.messages}
-          user={{ _name: this.state.name }}
+          user={{
+            _id: this.state.user_ID,
+            name: this.state.fullName,
+            // _avatar: "https://facebook.github.io/react/img/logo_og.png"
+          }}
           onSend={(messages) => this.onSend(messages)}
-          placeholder="Message"
         />
         {Platform.OS === 'android' ? <KeyboardSpacer /> : null}
       </View>
