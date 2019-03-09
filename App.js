@@ -14,6 +14,7 @@ import RegisterAccount from "./Screens/RegisterAccount"
 import TermsOfService from "./Screens/TermsOfService"
 import Messages from "./Screens/Messages"
 import MessageThread from "./Screens/MessagesThread"
+import PersonalRequests from "./Screens/PersonalRequests"
 import { YellowBox } from 'react-native';
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
 
@@ -161,6 +162,17 @@ class MessageThreadScreen extends React.Component{
   }
 }
 
+class PersonalRequestsScreen extends React.Component{
+  static navigationOptions={
+    title: "Your Requests"
+  }
+  render(){
+    return(
+      <PersonalRequests/>
+    )
+  }
+}
+
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -169,6 +181,7 @@ const HomeStack = createStackNavigator({
 const AccountStack = createStackNavigator({
   Account: AccountScreen,
   Settings: SettingsScreen,
+  PersonalRequests: PersonalRequestsScreen
 })
 
 const NotificationStack = createStackNavigator({

@@ -114,6 +114,9 @@ class Account extends React.Component {
 					])}
 						buttonStyle={styles.buttonStyle}
 						textStyle={styles.buttonTextStyle} />
+					<Button 
+					title="View Your Requests"
+					onPress={() => this.props.navigation.navigate("PersonalRequests")}/>
 				</ScrollView>
 			</View>
 		)

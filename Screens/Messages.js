@@ -135,13 +135,6 @@ class Messages extends Component {
     }
 
 
-    /**
-     * AsyncStorage for email and name
-     * compare the data pulled from server. 
-     * Whichever userXName is NOT the logged in user
-     * assign that as the prop for the "Message" component
-     */
-
     render() {
         return (
             <View style={styles.container}>

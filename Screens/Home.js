@@ -22,7 +22,8 @@ const styles = StyleSheet.create(
         container:
         {
             flex: 1,
-            paddingTop: (Platform.OS === 'ios') ? 20 : 0
+            paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+            // backgroundColor: "rgb(56, 73, 154)"
         },
 
         separator:
@@ -164,8 +165,12 @@ class Home extends Component {
                 // console.log("Adding request " + i + " to array of requests")
                 var newCard = (
                     <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}
-                        posterName={this.state.requestsDataJSON[i].posterName} request_ID={this.state.requestsDataJSON[i]._id}>
-                        <Text>{this.state.requestsDataJSON[i].subtitle}</Text>
+                        posterName={this.state.requestsDataJSON[i].posterName} request_ID={this.state.requestsDataJSON[i]._id}
+                        containerStyle={{borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)"}} 
+                        wrapperStyle={{}}
+                        titleStyle={{fontSize: RF(2.5), fontWeight: "bold"}}
+                        >
+                        <Text style={{textAlign: "center", fontSize: RF(2)}}>{this.state.requestsDataJSON[i].subtitle}</Text>
                     </Card>
                 )
 
@@ -256,9 +261,7 @@ class Home extends Component {
                             this.state.requests.map((item, key) => {
                                 return (
                                     <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
-                                        <Card key={key} containerStyle={{ backgroundColor: 'green' }}>
-                                            {item}
-                                        </Card>
+                                        {item}
                                     </TouchableOpacity>
                                 )
                             })
