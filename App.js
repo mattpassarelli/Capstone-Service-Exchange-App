@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator } from 'react-navigation';
-import { View, Text, Button, Platform } from 'react-native'
+import { Alert, Button, Platform } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons';
 import AccountIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { AsyncStorage } from 'react-native';
@@ -15,6 +15,8 @@ import TermsOfService from "./Screens/TermsOfService"
 import Messages from "./Screens/Messages"
 import MessageThread from "./Screens/MessagesThread"
 import PersonalRequests from "./Screens/PersonalRequests"
+import RejectedDistance from "./Screens/RejectedDistance"
+import geolib from 'geolib'
 import { YellowBox } from 'react-native';
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
 
@@ -139,40 +141,50 @@ class SignInScreen extends React.Component {
   }
 }
 
-class MessagesScreen extends React.Component{
+class MessagesScreen extends React.Component {
   static navigationOptions = {
     title: "Messages",
     headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
   }
 
-  render()
-  {
-    return(
-      <Messages/>
+  render() {
+    return (
+      <Messages />
     )
   }
 }
 
-class MessageThreadScreen extends React.Component{
-  render()
-  {
-    return(
-      <MessageThread/>
+class MessageThreadScreen extends React.Component {
+  render() {
+    return (
+      <MessageThread />
     )
   }
 }
 
-class PersonalRequestsScreen extends React.Component{
-  static navigationOptions={
+class PersonalRequestsScreen extends React.Component {
+  static navigationOptions = {
     title: "Your Requests"
   }
-  render(){
-    return(
-      <PersonalRequests/>
+  render() {
+    return (
+      <PersonalRequests />
     )
   }
 }
 
+class DistanceTooFarScreen extends React.Component {
+
+  static navigationOptions = {
+    title: "UExchange"
+  }
+
+  render() {
+    return (
+      <RejectedDistance />
+    )
+  }
+}
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -219,8 +231,8 @@ const SignedIn = createBottomTabNavigator({
     screen: MessagesStack,
     navigationOptions: {
       tabBarLabel: "Messages",
-      tabBarIcon: ({tintColor}) => (
-        <Icon name={Platform.OS === "ios" ? "ios-chatbubbles" : "md-chatbubbles"} color={tintColor} size={24}/>
+      tabBarIcon: ({ tintColor }) => (
+        <Icon name={Platform.OS === "ios" ? "ios-chatbubbles" : "md-chatbubbles"} color={tintColor} size={24} />
       )
     }
   },
@@ -265,6 +277,10 @@ const SignedIn = createBottomTabNavigator({
     }
   })
 
+const tooFarDistance = createStackNavigator({
+  tooFar: DistanceTooFarScreen
+})
+
 export const createRootNavigator = (signedIn) => {
   return createSwitchNavigator(
     {
@@ -281,6 +297,14 @@ export const createRootNavigator = (signedIn) => {
   )
 }
 
+export const rejectedDistanceRoot = () => {
+  return createSwitchNavigator(
+    {
+      tooFar: tooFarDistance
+    }
+  )
+}
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -288,10 +312,11 @@ export default class App extends React.Component {
     this.state = {
       signedIn: false,
       checkedSignedIn: false,
+      withinDistance: false,
     }
   }
 
-  componentDidMount = () => {
+  componentWillMount() {
 
     //Check for loginKey to log user's back in
     AsyncStorage.getItem("loginKey").then((value) => {
@@ -311,12 +336,60 @@ export default class App extends React.Component {
         })
       }
     })
+
+
+    console.log("Getting Geo-Location")
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const location = JSON.stringify(position)
+        console.log("LOCATION: " + location)
+
+        /**
+         * TODO: Reinstate the proper distance method below
+         */
+
+
+        // const distance = geolib.getDistance(position.coords, {
+        //   latitude: 37.063922,
+        //   longitude: -76.492951
+        // })
+
+        const distance = geolib.getDistance({ latitude: 37.066388, longitude: -76.488703 }, {
+          latitude: 37.063922,
+          longitude: -76.492951
+        })
+
+        console.log('You are ' + distance + ' meters away from CNU')
+
+        if (distance <= 1610) {
+          this.setState({
+            withinDistance: true
+          })
+        }
+      },
+      function (error) {
+        Alert.alert(error.message)
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 1000
+      }
+    )
+
   }
 
   render() {
-
+    console.log("Are you WITHIN DISTANCE: " + this.state.withinDistance)
     console.log("SignedIn Boolean: " + this.state.signedIn)
-    const Layout = createRootNavigator(this.state.signedIn)
-    return <Layout />
+
+    if (this.state.withinDistance) {
+      const Layout = createRootNavigator(this.state.signedIn)
+      return <Layout />
+    }
+    else {
+      const Layout = rejectedDistanceRoot()
+      return <Layout />
+    }
   }
 }

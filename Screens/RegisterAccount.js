@@ -7,10 +7,6 @@ import { KeyboardAwareScrollView, } from 'react-native-keyboard-aware-scroll-vie
 import { API_ENDPOINT } from "../Components/api-config"
 import { CheckBox } from 'react-native-elements'
 
-/**
- * TODO: Remove phone number requirement from here and server
- */
-
 const apiEndpoint = API_ENDPOINT
 
 const styles = StyleSheet.create({
@@ -51,7 +47,6 @@ class RegisterAccount extends Component {
 			firstName: "",
 			lastName: "",
 			email: "",
-			phoneNumber: "",
 			password: "",
 			passwordConfirm: "",
 			popupIsOpen: false,
@@ -85,12 +80,6 @@ class RegisterAccount extends Component {
 		})
 	}
 
-	handlePhoneNumberChange = (phone) => {
-		this.setState({
-			phoneNumber: phone
-		})
-	}
-
 	handlePasswordTextChange = (pass) => {
 		this.setState({
 			password: pass
@@ -109,24 +98,21 @@ class RegisterAccount extends Component {
 		var fieldsAreNotEmpty = this.checkFieldsForCompleteness()
 		var emailHasAtSign = this.checkEmailForAtSign()
 		var emailEndsInEDU = this.checkEmailForEDU()
-		var phoneNumberLengthIs10 = this.checkPhoneNumberLength()
 		var passwordsMatch = this.checkPasswordsMatch()
 
 		console.log("Completeness " + fieldsAreNotEmpty)
 		console.log("Email Has @: " + emailHasAtSign)
 		console.log("Email ends in EDU: " + emailEndsInEDU)
-		console.log("Is Phone number 10 digits? " + phoneNumberLengthIs10)
 		console.log("Do passwords match? " + passwordsMatch)
 
 		if (!fieldsAreNotEmpty) { Alert.alert("Fill in all fields") }
 		if (!emailHasAtSign) { Alert.alert("Make sure your email contains an @") }
 		if (!emailEndsInEDU) { Alert.alert("Your email must end in 'edu'") }
-		if (!phoneNumberLengthIs10) { Alert.alert("Make sure the phone number is 10 digits, with no hypens") }
 		if (!passwordsMatch) { Alert.alert("Your passwords do not match") }
 		if (!this.state.tosAgreed) { Alert.alert("Please accept the Terms of Service") }
 
 
-		if (fieldsAreNotEmpty && emailHasAtSign && emailEndsInEDU && phoneNumberLengthIs10 && passwordsMatch && this.state.tosAgreed) {
+		if (fieldsAreNotEmpty && emailHasAtSign && emailEndsInEDU && passwordsMatch && this.state.tosAgreed) {
 			var data = {
 				firstName: this.state.firstName, lastName: this.state.lastName,
 				email: this.state.email, phoneNumber: this.state.phoneNumber, password: this.state.password
@@ -156,7 +142,6 @@ class RegisterAccount extends Component {
 		if (this.state.firstName.trim() == "" ||
 			this.state.lastName.trim() == "" ||
 			this.state.email.trim() == "" ||
-			this.state.phoneNumber.trim() == "" ||
 			this.state.password.trim() == "" ||
 			this.state.passwordConfirm.trim() == "") {
 			return false;
@@ -181,15 +166,6 @@ class RegisterAccount extends Component {
 			return true;
 		}
 		return false;
-	}
-
-	//Make sure the phone number they entered is 10 digits
-	checkPhoneNumberLength() {
-		if (this.state.phoneNumber.trim().length == 10) {
-			return true
-		}
-		return false
-
 	}
 
 	//Make sure passwords match
@@ -333,26 +309,6 @@ class RegisterAccount extends Component {
 							this._scrollToInput(findNodeHandle(event.target))
 						}}
 						keyboardType={"email-address"}
-						autoCorrect={false}
-						autoCapitalize={"none"}
-					/>
-
-					<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
-
-					<TextInput placeholder="Phone Number"
-						style={styles.textInput}
-						ref={(input) => { this.phoneInput = input }}
-						returnKeyType={"next"}
-						onSubmitEditing={() => this.passwordInput.focus()}
-						blurOnSubmit={true}
-						maxLength={10}
-						onChangeText={(text) => this.handlePhoneNumberChange(text)}
-						onFocus={(event) => {
-							// `bind` the function if you're using ES6 classes
-							this._scrollToInput(findNodeHandle(event.target))
-						}}
-						textContentType={"telephoneNumber"}
-						keyboardType={"phone-pad"}
 						autoCorrect={false}
 						autoCapitalize={"none"}
 					/>

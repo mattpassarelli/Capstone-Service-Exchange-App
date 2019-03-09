@@ -30,7 +30,7 @@ class PersonalRequests extends Component {
         this.userEmail()
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.state.socket.on("personalRequestsReceived", (data) => { this.setState({ requestsDataJSON: data }), this.processRequests() })
     }
 
@@ -70,20 +70,20 @@ class PersonalRequests extends Component {
             requests: []
         })
 
-        if(this.state.requestsDataJSON.length > 0){
+        if (this.state.requestsDataJSON.length > 0) {
             console.log("Requests received: " + this.state.requestsDataJSON)
 
             var temp = []
 
-            for(var i = 0; i < this.state.requestsDataJSON.length; i++){
+            for (var i = 0; i < this.state.requestsDataJSON.length; i++) {
                 var newCard = (
                     <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}
                         posterName={this.state.requestsDataJSON[i].posterName} request_ID={this.state.requestsDataJSON[i]._id}
-                        containerStyle={{borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)"}} 
+                        containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)" }}
                         wrapperStyle={{}}
-                        titleStyle={{fontSize: RF(2.5), fontWeight: "bold"}}
-                        >
-                        <Text style={{textAlign: "center", fontSize: RF(2)}}>{this.state.requestsDataJSON[i].subtitle}</Text>
+                        titleStyle={{ fontSize: RF(2.5), fontWeight: "bold" }}
+                    >
+                        <Text style={{ textAlign: "center", fontSize: RF(2) }}>{this.state.requestsDataJSON[i].subtitle}</Text>
                     </Card>
                 )
 
@@ -128,21 +128,18 @@ class PersonalRequests extends Component {
                 refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.refreshFeed} />
                 }>
                 {
-                    this.state.requests.map((item, key) => {
-                        if(this.state.requests.length > 0){
+                    this.state.requests.length > 0 ?
+                        this.state.requests.map((item, key) => {
                             return (
                                 <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openOptions(item)}>
                                     {item}
                                 </TouchableOpacity>
                             )
-                        }
-                        else {
-                            return (
-                                <Text>You have no requests.</Text>
-                            )
-                        }
-                    })
+                        })
+                        :
+                        <Text style={{ textAlign: "center", fontSize: RF(2.5) }}>You have no requests</Text>
                 }
+
             </ScrollView>
         );
     }

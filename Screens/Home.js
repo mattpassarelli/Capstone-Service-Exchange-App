@@ -86,6 +86,12 @@ class Home extends Component {
         this.state.socket.on("requestData", (data) => { this.setState({ requestsDataJSON: data }), this.addRequestsFromServer() })
     }
 
+    componentWillMount() {
+        this.state.socket.emit("requestRequests")
+        this.userFullName()
+        this.userEmail()
+    }
+
     //Grab the full name from the phone's storage
     userFullName = async () => {
         try {
@@ -116,11 +122,6 @@ class Home extends Component {
         }
     }
 
-    componentWillMount() {
-        this.state.socket.emit("requestRequests")
-        this.userFullName()
-        this.userEmail()
-    }
 
 
     //Displays the modal for clicking a Request
@@ -166,11 +167,11 @@ class Home extends Component {
                 var newCard = (
                     <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}
                         posterName={this.state.requestsDataJSON[i].posterName} request_ID={this.state.requestsDataJSON[i]._id}
-                        containerStyle={{borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)"}} 
+                        containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)" }}
                         wrapperStyle={{}}
-                        titleStyle={{fontSize: RF(2.5), fontWeight: "bold"}}
-                        >
-                        <Text style={{textAlign: "center", fontSize: RF(2)}}>{this.state.requestsDataJSON[i].subtitle}</Text>
+                        titleStyle={{ fontSize: RF(2.5), fontWeight: "bold" }}
+                    >
+                        <Text style={{ textAlign: "center", fontSize: RF(2) }}>{this.state.requestsDataJSON[i].subtitle}</Text>
                     </Card>
                 )
 
@@ -221,17 +222,17 @@ class Home extends Component {
         var data = { request_ID: this.state.cardID, fulfiller: this.state.email }
 
         //TODO: Re-enable this
-        
+
         // if (this.state.cardPoster === this.state.fullName) {
         //     Alert.alert("You cannot request to fulfill your own request")
         // }
         // else {
-            Alert.alert("Confirm", "Offer to help this person?",
-                [
-                    { text: "No", onPress: () => this.closeRequest() },
-                    { text: "Yes", onPress: () => this.sendConnectRequest(data) }
-                ])
-       // }
+        Alert.alert("Confirm", "Offer to help this person?",
+            [
+                { text: "No", onPress: () => this.closeRequest() },
+                { text: "Yes", onPress: () => this.sendConnectRequest(data) }
+            ])
+        // }
     }
 
     sendConnectRequest = (data) => {
@@ -294,7 +295,7 @@ class Home extends Component {
                                 <View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
                                     <Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>{this.state.cardTitle}</Text>
                                     <Text style={{ fontSize: RF(1.5), textAlign: "center" }}>Posted by: {this.state.cardPoster}</Text>
-                                    <Text style={{ fontSize: RF(2.5), paddingTop: 15 }}>{this.state.cardBody}</Text>
+                                    <Text style={{ fontSize: RF(2.5), paddingTop: 15, textAlign: "center" }}>{this.state.cardBody}</Text>
                                 </View>
 
 

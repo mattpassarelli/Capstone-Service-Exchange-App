@@ -45,43 +45,57 @@ class NewRequest extends PureComponent {
             socket: apiEndpoint,
             fullName: "",
             email: "",
+            firstNameLastInitial: "",
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.userFullName()
         this.userEmail()
     }
 
     //Grab the full name from the phone's storage
-	userFullName = async () => {
-		try {
-			await AsyncStorage.getItem("fullAccountName").then(async (value) => {
-				console.log("Name: " + value)
-				this.setState({
-					fullName: value
-				})
-			})
-		}
-		catch (error) {
-			console.log(error)
-		}
-	}
+    userFullName = async () => {
+        try {
+            await AsyncStorage.getItem("fullAccountName").then(async (value) => {
+                console.log("Name: " + value)
+                this.setState({
+                    fullName: value
+                })
+                this.removeLastName()
+            })
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
 
-	//grab user email from phone storage
-	userEmail = async () => {
-		try {
-			await AsyncStorage.getItem("userEmail").then((value) => {
-				console.log("Email:" + value)
-				this.setState({
-					email: value
-				})
-			})
-		}
-		catch (error) {
-			console.log(error)
-		}
-	}
+    //grab user email from phone storage
+    userEmail = async () => {
+        try {
+            await AsyncStorage.getItem("userEmail").then((value) => {
+                console.log("Email:" + value)
+                this.setState({
+                    email: value
+                })
+            })
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
+    removeLastName(){
+        var index = this.state.fullName.indexOf(" " )
+        var firstName = this.state.fullName.substring(0, index)
+        var lastName = this.state.fullName.substring(index + 1)
+        var firstIntialofLast = lastName.substring(0,1)
+        var name = firstName + " " + firstIntialofLast
+
+        this.setState({
+            firstNameLastInitial: name
+        })
+    }
 
     //Handles selection from the Picker for title
     handlePickerChange = (itemValue, itemIndex) => {
@@ -144,8 +158,10 @@ class NewRequest extends PureComponent {
      */
     sendRequestToDatabase() {
 
-        var data = { title: this.state.selectedItem, subtitle: this.state.requestDescription, 
-            posterName: this.state.fullName, posterEmail: this.state.email }
+        var data = {
+            title: this.state.selectedItem, subtitle: this.state.requestDescription,
+            posterName: this.state.fullName, posterEmail: this.state.email
+        }
 
         this.state.socket.emit("saveRequest", data)
 
@@ -228,11 +244,14 @@ class NewRequest extends PureComponent {
                         backgroundColor: '#ecf0f1',
                     }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
 
-                        <View style={{ backgroundColor: '#fff', padding: 20, height: "50%", width: "80%", borderRadius: 10 }}>
+                        <View style={{
+                            backgroundColor: '#fff', padding: 20, height: "40%",
+                            width: "80%", borderRadius: 10, justifyContent: "space-between"
+                        }}>
                             <View style={{ flex: 1 }}>
-                                <Card title={this.state.selectedItem} subtitle={this.state.requestDescription}>
-                                    <Text>{this.state.requestDescription}</Text>
-                                </Card>
+                                <Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>{this.state.selectedItem}</Text>
+                                <Text style={{ fontSize: RF(1.5), textAlign: "center" }}>Posted by: {this.state.firstNameLastInitial}</Text>
+                                <Text style={{ fontSize: RF(2.5), paddingTop: 15, textAlign: "center" }}>{this.state.requestDescription}</Text>
                             </View>
                             <View style={{ flex: .3, flexDirection: "row", alignItems: "center", justifyContent: "space-between", height: "10%" }}>
                                 <CustomButton text='Close'
