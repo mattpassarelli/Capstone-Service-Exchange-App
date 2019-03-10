@@ -160,7 +160,7 @@ class NewRequest extends PureComponent {
 
         var data = {
             title: this.state.selectedItem, subtitle: this.state.requestDescription,
-            posterName: this.state.fullName, posterEmail: this.state.email
+            posterName: this.state.firstNameLastInitial, posterEmail: this.state.email
         }
 
         this.state.socket.emit("saveRequest", data)

@@ -219,7 +219,7 @@ class Home extends Component {
     }
 
     connectWithRequester() {
-        var data = { request_ID: this.state.cardID, fulfiller: this.state.email }
+        var data = { request_ID: this.state.cardID, fulfiller: this.state.email, fulFiller_Name: this.state.fullName }
 
         //TODO: Re-enable this
 

@@ -1,11 +1,12 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, RefreshControl, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, RefreshControl, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
 import CustomButton from "../Components/CustomButton"
 import { Card } from 'react-native-elements'
 import RF from "react-native-responsive-fontsize"
 import { AsyncStorage } from 'react-native';
 import { API_ENDPOINT } from "../Components/api-config"
+import GestureRecognizer from 'react-native-swipe-gestures';
 
 const apiEndpoint = API_ENDPOINT
 
@@ -21,7 +22,13 @@ class PersonalRequests extends Component {
             socket: apiEndpoint,
             refreshing: false,
             requestsDataJSON: "",
-            requests: []
+            requests: [],
+            popupIsOpen: false,
+            requestTitle: "",
+            requestFulFiller: "No one yet!",
+            requestSubtitle: "",
+            requestDateCreated: "",
+            request_ID: "",
         }
     }
 
@@ -32,6 +39,7 @@ class PersonalRequests extends Component {
 
     componentDidMount() {
         this.state.socket.on("personalRequestsReceived", (data) => { this.setState({ requestsDataJSON: data }), this.processRequests() })
+        this.state.socket.on("deletingRequestCallback", (data) => this.processRequestDeletion(data))
     }
 
     //Grab the full name from the phone's storage
@@ -79,6 +87,8 @@ class PersonalRequests extends Component {
                 var newCard = (
                     <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}
                         posterName={this.state.requestsDataJSON[i].posterName} request_ID={this.state.requestsDataJSON[i]._id}
+                        fulfiller_Name={this.state.requestsDataJSON[i].fulfiller_Name}
+                        dateCreated={this.state.requestsDataJSON[i].dateCreated}
                         containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)" }}
                         wrapperStyle={{}}
                         titleStyle={{ fontSize: RF(2.5), fontWeight: "bold" }}
@@ -118,29 +128,137 @@ class PersonalRequests extends Component {
         })
     }
 
-    openOptions = (item) => {
+    openRequest = (item) => {
+        console.log("Fulfiller: " + item.props.fulfiller_Name)
+        console.log("Date Created: " + new Date(item.props.dateCreated).toLocaleDateString())
+        console.log("Request ID: " + item.props.request_ID)
 
+        if (item.props.fulfiller_Name != null) {
+            this.setState({
+                popupIsOpen: true,
+                requestDateCreated: new Date(item.props.dateCreated).toLocaleDateString(),
+                requestFulFiller: item.props.fulfiller_Name,
+                requestTitle: item.props.title,
+                requestSubtitle: item.props.subtitle,
+                request_ID: item.props.request_ID
+            })
+        }
+        else {
+            console.log("No Fulfiller Yet")
+            this.setState({
+                popupIsOpen: true,
+                requestDateCreated: new Date(item.props.dateCreated).toLocaleDateString(),
+                requestTitle: item.props.title,
+                requestSubtitle: item.props.subtitle,
+                request_ID: item.props.request_ID
+            })
+        }
+    }
+
+    closeRequest() {
+        this.setState({
+            popupIsOpen: false
+        })
+    }
+
+    deleteRequest() {
+        Alert.alert("Confirm", "Are you sure you want to remove this request? It will also remove the conversation about it if it exists.",
+            [
+                { text: "No" },
+                {
+                    text: "Yes", onPress: () => {
+                        console.log("Deleting Request")
+                        this.state.socket.emit("deletePersonalRequest", (this.state.request_ID))
+                    }
+                }
+            ])
+    }
+
+    processRequestDeletion = (data) => {
+        console.log("Data from deleting request is: " + data)
+
+        switch (data) {
+            case "error":
+                Alert.alert("Error", "There was an error removing the request. Please try again.",
+                    [{ text: "OK", onPress: () => this.closeRequest() }])
+                break;
+            case "success":
+                Alert.alert("Success", "Successfully deleted the request",
+                    [{ text: "OK", onPress: () => this.closeRequest() }])
+                break;
+        }
     }
 
     render() {
-        return (
-            <ScrollView style={styles.container}
-                refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.refreshFeed} />
-                }>
-                {
-                    this.state.requests.length > 0 ?
-                        this.state.requests.map((item, key) => {
-                            return (
-                                <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openOptions(item)}>
-                                    {item}
-                                </TouchableOpacity>
-                            )
-                        })
-                        :
-                        <Text style={{ textAlign: "center", fontSize: RF(2.5) }}>You have no requests</Text>
-                }
 
-            </ScrollView>
+        const gestureConfig = {
+            velocityThreshold: 0.3,
+            directionalOffsetThreshold: 80
+        };
+
+        return (
+            <React.Fragment>
+                <ScrollView style={styles.container}
+                    refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.refreshFeed} />
+                    }>
+                    {
+                        this.state.requests.length > 0 ?
+                            this.state.requests.map((item, key) => {
+                                return (
+                                    <TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
+                                        {item}
+                                    </TouchableOpacity>
+                                )
+                            })
+                            :
+                            <Text style={{ textAlign: "center", fontSize: RF(2.5) }}>This is where you'll find any open requests you've made. It looks like you don't have any yet.</Text>
+                    }
+
+                </ScrollView>
+
+                {/* The gesture recognition so we can swipe down to dismiss the modal */}
+                <GestureRecognizer onSwipeDown={() => this.closeRequest()} config={gestureConfig}>
+
+                    {/*Modal for the requests*/}
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={this.state.popupIsOpen}
+                        onRequestClose={() => {
+                            this.closeRequest()
+                        }}>
+                        <View style={[{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            paddingTop: 20,
+                            backgroundColor: '#ecf0f1',
+                        }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+                            <View style={{
+                                backgroundColor: '#fff', padding: 20, height: "40%",
+                                width: "80%", borderRadius: 10, justifyContent: "space-between"
+                            }}>
+                                <View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
+                                    <Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>{this.state.requestTitle}</Text>
+                                    <Text style={{ fontSize: RF(1.5), textAlign: "center", }}>Being fulfilled by: {this.state.requestFulFiller}</Text>
+                                    <Text style={{ fontSize: RF(1.5), textAlign: "center", paddingTop: 3 }}>Created on {this.state.requestDateCreated}</Text>
+                                    <Text style={{ fontSize: RF(2.5), paddingTop: 15, textAlign: "center" }}>{this.state.requestSubtitle}</Text>
+                                </View>
+
+
+                                <View style={{ alignItems: "center" }}>
+                                    <CustomButton text="Delete Request"
+                                        onPress={() => this.deleteRequest()}
+                                        buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+                                </View>
+                            </View>
+
+
+                        </View>
+                    </Modal>
+                </GestureRecognizer>
+            </React.Fragment>
+
         );
     }
 
