@@ -211,7 +211,7 @@ class PersonalRequests extends Component {
                                 )
                             })
                             :
-                            <Text style={{ textAlign: "center", fontSize: RF(2.5) }}>This is where you'll find any open requests you've made. It looks like you don't have any yet.</Text>
+                            <Text style={{ textAlign: "center", fontSize: RF(2.5), top:"50%", bottom: "50%" }}>This is where you'll find any open requests you've made. It looks like you don't have any yet.</Text>
                     }
 
                 </ScrollView>

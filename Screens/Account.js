@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Button, Alert, TouchableOpacity } from 'react-native';
 import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
 import { AsyncStorage } from 'react-native';
@@ -103,22 +103,67 @@ class Account extends React.Component {
 	render() {
 
 		return (
-			<View style={styles.container}>
-				<ScrollView contentContainerStyle={ScrollStyle.container}>
-					<Text>{this.state.fullName}</Text>
-					<Text>{this.state.email}</Text>
-					<CustomButton text="Logout" onPress={() => Alert.alert("Confirm Logout", "Are you sure you want to logout?",
-					[
-						{text: "No"},
-						{text: "Yes", onPress: () => this.logout(this.props.navigation)}
-					])}
-						buttonStyle={styles.buttonStyle}
-						textStyle={styles.buttonTextStyle} />
-					<Button 
-					title="View Your Requests"
-					onPress={() => this.props.navigation.navigate("PersonalRequests")}/>
-				</ScrollView>
-			</View>
+			<ScrollView contentContainerStyle={ScrollStyle.container}>
+				<View style={{
+					flex: .3, flexDirection: "row", justifyContent: "space-between", width: "100%", padding: 10,
+					position: "absolute", top: 10, borderTopWidth: 1, borderBottomWidth: 1, borderTopColor: "rgb(202, 202, 206)",
+					borderBottomColor: "rgb(202, 202, 206)", backgroundColor: "rgb(255,255,255)"
+				}}>
+					<View>
+						<TouchableOpacity activeOpacity={0.7} onPress={() => this.props.navigation.navigate("")}>
+							<Text style={{ fontSize: RF(2.5), fontWeight: "bold" }}>{this.state.fullName}</Text>
+							<Text style={{ fontSize: RF(2) }}>{this.state.email}</Text>
+						</TouchableOpacity>
+					</View>
+
+					<View style={{ justifyContent: "center" }}>
+						<TouchableOpacity activeOpacity={0.7} onPress={() => Alert.alert("Confirm Logout", "Are you sure you want to logout?",
+							[
+								{ text: "No" },
+								{ text: "Yes", onPress: () => this.logout(this.props.navigation) }
+							])}>
+							<Text style={{ fontSize: RF(2), color: 'rgb(0, 0, 255)' }}>Logout</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+
+				<View style={{ flex: .7, flexDirection: "column", width: "100%", top: 20 }}>
+
+					<View style={{
+						backgroundColor: "rgb(255,255,255)", borderTopWidth: 1, borderBottomWidth: 1, borderTopColor: "rgb(202, 202, 206)",
+						borderBottomColor: "rgb(202, 202, 206)", padding: 10
+					}}>
+
+						<TouchableOpacity activeOpacity={0.7} onPress={() => this.props.navigation.navigate("PersonalRequests")}>
+							<Text style={{ fontSize: RF(2.5) }}>Your Requests</Text>
+						</TouchableOpacity>
+
+					</View>
+
+					<View style={{
+						backgroundColor: "rgb(255,255,255)", borderTopWidth: 1, borderBottomWidth: 1, borderTopColor: "rgb(202, 202, 206)",
+						borderBottomColor: "rgb(202, 202, 206)", padding: 10
+					}}>
+
+						<TouchableOpacity activeOpacity={0.7} onPress={() => this.props.navigation.navigate('Settings')}>
+							<Text style={{ fontSize: RF(2.5) }}>Settings</Text>
+						</TouchableOpacity>
+
+					</View>
+
+					<View style={{
+						backgroundColor: "rgb(255,255,255)", borderTopWidth: 1, borderBottomWidth: 1, borderTopColor: "rgb(202, 202, 206)",
+						borderBottomColor: "rgb(202, 202, 206)", padding: 10
+					}}>
+
+						<TouchableOpacity activeOpacity={0.7} onPress={() => this.props.navigation.navigate('Help')}>
+							<Text style={{ fontSize: RF(2.5) }}>Help</Text>
+						</TouchableOpacity>
+
+					</View>
+				</View>
+
+			</ScrollView>
 		)
 	}
 }

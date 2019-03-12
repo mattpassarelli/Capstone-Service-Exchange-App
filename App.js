@@ -16,6 +16,7 @@ import Messages from "./Screens/Messages"
 import MessageThread from "./Screens/MessagesThread"
 import PersonalRequests from "./Screens/PersonalRequests"
 import RejectedDistance from "./Screens/RejectedDistance"
+import Help from "./Screens/Help"
 import geolib from 'geolib'
 import { YellowBox } from 'react-native';
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
@@ -73,13 +74,7 @@ class AccountScreen extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Account navigation={this.props.navigation} />
-
-        {/* //TODO: replace this inside Account.js*/}
-        <Button
-          title="Go to Settings"
-          onPress={() => this.props.navigation.navigate('Settings')}
-        />
+        <Account navigation={this.props.navigation} />        
       </React.Fragment>
     )
   }
@@ -186,6 +181,18 @@ class DistanceTooFarScreen extends React.Component {
   }
 }
 
+class HelpScreen extends React.Component {
+  static navigationOptions = {
+    title: "Help"
+  }
+
+  render(){
+    return(
+      <Help/>
+    )
+  }
+}
+
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
 });
@@ -193,7 +200,8 @@ const HomeStack = createStackNavigator({
 const AccountStack = createStackNavigator({
   Account: AccountScreen,
   Settings: SettingsScreen,
-  PersonalRequests: PersonalRequestsScreen
+  PersonalRequests: PersonalRequestsScreen,
+  Help: HelpScreen
 })
 
 const NotificationStack = createStackNavigator({
@@ -349,15 +357,15 @@ export default class App extends React.Component {
          */
 
 
-        // const distance = geolib.getDistance(position.coords, {
-        //   latitude: 37.063922,
-        //   longitude: -76.492951
-        // })
-
-        const distance = geolib.getDistance({ latitude: 37.066388, longitude: -76.488703 }, {
+        const distance = geolib.getDistance(position.coords, {
           latitude: 37.063922,
           longitude: -76.492951
         })
+
+        // const distance = geolib.getDistance({ latitude: 37.066388, longitude: -76.488703 }, {
+        //   latitude: 37.063922,
+        //   longitude: -76.492951
+        // })
 
         console.log('You are ' + distance + ' meters away from CNU')
 
