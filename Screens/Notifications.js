@@ -228,7 +228,7 @@ class Notifications extends React.Component {
 							this.state.notifications.map((item, key) => {
 								return (
 									<TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
-										<Card key={key}>
+										<Card key={key} containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)", top:20 }}>
 											<View>
 												{/* //TODO: Work out Time difference math */}
 												<Text>{item.props.title}</Text>

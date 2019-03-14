@@ -6,7 +6,7 @@ import { KeyboardAwareScrollView, } from 'react-native-keyboard-aware-scroll-vie
 import CustomButton from "../Components/CustomButton"
 import { CheckBox } from 'react-native-elements'
 import { AsyncStorage } from 'react-native';
-import { MY_EMAIL, APP_EMAIL } from "../Components/Constants"
+import { MY_EMAIL } from "../Components/Constants"
 import email from 'react-native-email'
 
 
@@ -91,11 +91,11 @@ class Help extends Component {
                 const to =[MY_EMAIL]
 
                 email(to,{
-                    cc: APP_EMAIL,
+                    cc: "",
                     bcc: "",
                     subject:"UExchange Feedback App",
                     body: deviceInfo
-                } ).catch(console.error)
+                }).then(this.clearAll()).catch(console.error)
             }
             else {
                 Alert.alert("Please type a message")
@@ -132,7 +132,7 @@ class Help extends Component {
 
                     <View style={{ flex: .1 }}>
                         <Text style={{ padding: 5, fontSize: RF(2) }}>
-                            Please shoot me an email with any feedback or bug reports! I'd love for you to!
+                            Please, shoot me an email with any feedback or bug reports! I would love to hear from you!
                             </Text>
                     </View>
 
@@ -177,6 +177,7 @@ class Help extends Component {
                             returnKeyLabel="Done"
                             returnKeyType='done'
                             blurOnSubmit={true}
+                            value={this.state.emailBody}
                         />
                     </View>
 

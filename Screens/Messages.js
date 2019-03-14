@@ -20,7 +20,7 @@ class Messages extends Component {
         super(props)
 
         this.state = {
-            name: "",
+            fullName: "",
             email: "",
             socket: apiEndpoint,
             conversationsJSON: [],
@@ -40,8 +40,13 @@ class Messages extends Component {
         this.state.socket.on("userIDGiven", (data) => this.setState({ user_ID: data }))
     }
 
+    /**
+     * TODO: componentDidUpdate(){pull messages}
+     * convert everything to DidMount()
+     */
+
     //Grab the full name from the phone's storage
-    userFullName = async () => {
+   async userFullName() {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
                 console.log("Name: " + value)
@@ -56,7 +61,7 @@ class Messages extends Component {
     }
 
     //grab user email from phone storage
-    userEmail = async () => {
+    async userEmail(){
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
                 console.log("Email:" + value)
@@ -94,8 +99,20 @@ class Messages extends Component {
         if (this.state.conversationsJSON.length > 0) {
             for (var i = 0; i < this.state.conversationsJSON.length; i++) {
 
-                var title = this.state.conversationsJSON[i].user1Name + " & " + this.state.conversationsJSON[i].user2Name
-
+                //Decide which name should be the title of the thread
+                //ie. don't make the user's name the title. It's confusing
+                let title = "PLACEHOLDER"
+                if(this.state.conversationsJSON[i].user1Name == this.state.fullName)
+                {
+                    console.log("TITLE WILL BE: " + this.state.conversationsJSON[i].user2Name)
+                    title = this.state.conversationsJSON[i].user2Name
+                }
+                else if(this.state.conversationsJSON[i].user2Name == this.state.fullName)
+                {
+                    console.log("TITLE WILL BE: " + this.state.conversationsJSON[i].user1Name)
+                    title = this.state.conversationsJSON[i].user1Name
+                }
+                console.log("TITLE: " + title)
 
                 var newConvo = (
                     <Message userNameTitle={title}
@@ -119,10 +136,8 @@ class Messages extends Component {
             refreshing: false
         })
 
-        console.log(this.state.conversations + " length is " + this.state.conversations.length)
+        console.log("Number of Conversations is " + this.state.conversations.length)
     }
-
-
 
     refreshFeed = () => {
         console.log("requesting messages")

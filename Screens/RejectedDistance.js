@@ -12,7 +12,7 @@ export default class RejectedDistance extends Component {
 	render() {
 		return (
 			<View style={{ flex: 1, justifyContent: "center", alignContent: 'center', }}>
-				<Text style={{ textAlign: "center", fontSize: RF(3) }}> You are too from campus to use this app.
+				<Text style={{ textAlign: "center", fontSize: RF(3) }}> You are too far from campus to use this app.
 		Please get within 1 mile of campus, restart the app, and try again. </Text>
 			</View>
 		);

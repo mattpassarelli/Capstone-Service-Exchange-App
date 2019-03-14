@@ -58,7 +58,7 @@ class SettingsScreen extends React.Component {
 
   render() {
     return (
-      <Settings />
+      <Settings navigation={this.props.navigation}/>
     );
   }
 }
@@ -201,7 +201,8 @@ const AccountStack = createStackNavigator({
   Account: AccountScreen,
   Settings: SettingsScreen,
   PersonalRequests: PersonalRequestsScreen,
-  Help: HelpScreen
+  Help: HelpScreen,
+  TOS: TermsOfServiceScreen
 })
 
 const NotificationStack = createStackNavigator({
@@ -357,15 +358,15 @@ export default class App extends React.Component {
          */
 
 
-        const distance = geolib.getDistance(position.coords, {
-          latitude: 37.063922,
-          longitude: -76.492951
-        })
-
-        // const distance = geolib.getDistance({ latitude: 37.066388, longitude: -76.488703 }, {
+        // const distance = geolib.getDistance(position.coords, {
         //   latitude: 37.063922,
         //   longitude: -76.492951
         // })
+
+        const distance = geolib.getDistance({ latitude: 37.066388, longitude: -76.488703 }, {
+          latitude: 37.063922,
+          longitude: -76.492951
+        })
 
         console.log('You are ' + distance + ' meters away from CNU')
 
