@@ -1,12 +1,13 @@
 import React from 'react';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator } from 'react-navigation';
 import { Alert, Button, Platform } from 'react-native'
+import { Permissions, Notifications } from "expo"
 import Icon from 'react-native-vector-icons/Ionicons';
 import AccountIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { AsyncStorage } from 'react-native';
 import Home from "./Screens/Home"
 import Settings from "./Screens/Settings"
-import Notifications from "./Screens/Notifications"
+import NotificationsComponent from "./Screens/Notifications"
 import Account from "./Screens/Account"
 import NewRequest from "./Screens/NewRequest"
 import Login from "./Screens/Login"
@@ -18,8 +19,12 @@ import PersonalRequests from "./Screens/PersonalRequests"
 import RejectedDistance from "./Screens/RejectedDistance"
 import Help from "./Screens/Help"
 import geolib from 'geolib'
+import { API_ENDPOINT } from "./Components/api-config"
 import { YellowBox } from 'react-native';
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
+
+const apiEndpoint = API_ENDPOINT
+
 
 class NotificationsScreen extends React.Component {
 
@@ -30,7 +35,7 @@ class NotificationsScreen extends React.Component {
 
   render() {
     return (
-      <Notifications />
+      <NotificationsComponent />
     );
   }
 }
@@ -58,7 +63,7 @@ class SettingsScreen extends React.Component {
 
   render() {
     return (
-      <Settings navigation={this.props.navigation}/>
+      <Settings navigation={this.props.navigation} />
     );
   }
 }
@@ -74,7 +79,7 @@ class AccountScreen extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Account navigation={this.props.navigation} />        
+        <Account navigation={this.props.navigation} />
       </React.Fragment>
     )
   }
@@ -186,9 +191,9 @@ class HelpScreen extends React.Component {
     title: "Help"
   }
 
-  render(){
-    return(
-      <Help/>
+  render() {
+    return (
+      <Help />
     )
   }
 }
@@ -322,6 +327,9 @@ export default class App extends React.Component {
       signedIn: false,
       checkedSignedIn: false,
       withinDistance: false,
+      socket: apiEndpoint,
+      email: "",
+      token: "",
     }
   }
 
@@ -386,8 +394,55 @@ export default class App extends React.Component {
       }
     )
 
+    this.registerForPushNotificationsAsync()
   }
 
+  async userEmail(){
+    try {
+        await AsyncStorage.getItem("userEmail").then((value) => {
+            console.log("Email:" + value)
+            this.setState({
+                email: value
+            })
+            this.state.socket.emit("addNotificationTokenToAccount", ({token: this.state.token, email: value}))
+        })
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
+  async registerForPushNotificationsAsync() {
+    // const { status: existingStatus } = await Permissions.getAsync(
+    //   Permissions.NOTIFICATIONS
+    // );
+    // let finalStatus = existingStatus;
+
+    // // only ask if permissions have not already been determined, because
+    // // iOS won't necessarily prompt the user a second time.
+    // if (existingStatus !== 'granted') {
+    //   // Android remote notification permissions are granted during the app
+    //   // install, so this will only ask on iOS
+    //   const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    //   finalStatus = status;
+    // }
+
+    // // Stop here if the user did not grant permissions
+    // if (finalStatus !== 'granted') {
+    //   return;
+    // }
+
+    //  let token = await Notifications.getExpoPushTokenAsync();
+    let token =  "ExponentPushToken[XeeNo9APZFj_gWwUnfJk2O]"
+
+    // console.log("TOKEN: " + token, "Sending token to user account")
+    this.setState({
+      token: token,
+    })
+    // this.state.socket.emit("addNotificationTokenToAccount", ({token: token, email: this.state.email}))
+    this.userEmail()
+
+  }
   render() {
     console.log("Are you WITHIN DISTANCE: " + this.state.withinDistance)
     console.log("SignedIn Boolean: " + this.state.signedIn)

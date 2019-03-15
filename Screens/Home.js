@@ -8,6 +8,7 @@ import { YellowBox } from 'react-native';
 import { API_ENDPOINT } from "../Components/api-config"
 import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
+import { NEW_NOTIFICATION_MESSAGE, NEW_NOTIFICATION_TITLE, NOTIFICATION_API } from "../Components/Constants"
 import { AsyncStorage } from "react-native"
 
 console.ignoredYellowBox = ["Remote Debugger"]
@@ -72,6 +73,7 @@ class Home extends Component {
             refreshing: false,
             fullName: "",
             email: "",
+            OPExpoToken: "",
         }
     }
 
@@ -130,12 +132,14 @@ class Home extends Component {
         console.log(item.props.subtitle)
         console.log(item.props.request_ID)
         console.log(item.props.posterName)
+        console.log("EXPO TOKEN: " + item.props.expoToken)
         this.setState({
             popupIsOpen: true,
             cardTitle: item.props.title,
             cardBody: item.props.subtitle,
             cardPoster: item.props.posterName,
             cardID: item.props.request_ID,
+            OPExpoToken: item.props.expoToken
         })
     }
 
@@ -167,6 +171,7 @@ class Home extends Component {
                 var newCard = (
                     <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}
                         posterName={this.state.requestsDataJSON[i].posterName} request_ID={this.state.requestsDataJSON[i]._id}
+                        expoToken={this.state.requestsDataJSON[i].posterExpoToken}
                         containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)" }}
                         wrapperStyle={{}}
                         titleStyle={{ fontSize: RF(2.5), fontWeight: "bold" }}
@@ -238,7 +243,27 @@ class Home extends Component {
     sendConnectRequest = (data) => {
         this.state.socket.emit("offerToConnect", (data))
         this.closeRequest()
+        this.sendPushNotification()
     }
+
+    sendPushNotification = () => {
+        console.log("Sending Push Notification", this.state.OPExpoToken)
+        let response = fetch(NOTIFICATION_API, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                to: this.state.OPExpoToken,
+                sound: 'default',
+                title: NEW_NOTIFICATION_TITLE,
+                body: NEW_NOTIFICATION_MESSAGE
+            })
+        })
+        console.log("Push Notification Sent", JSON.stringify(response))
+    }
+
 
     render() {
 

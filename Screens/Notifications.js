@@ -7,6 +7,7 @@ import { AsyncStorage } from "react-native"
 import { API_ENDPOINT } from '../Components/api-config';
 import RF from "react-native-responsive-fontsize"
 import CustomButton from "../Components/CustomButton"
+import {NOTIFICATION_API, NEW_CONVERSATION_MESSAGE, NEW_CONVERSATION_TITLE } from "../Components/Constants"
 
 const apiEndpoint = API_ENDPOINT
 
@@ -54,6 +55,8 @@ class Notifications extends React.Component {
 			popupIsOpen: false,
 			fulFiller_Name: "",
 			fulFiller_Email: "",
+			fulFiller_ExpoToken: "",
+			posterExpoToken:"",
 			request_ID: "",
 			requestType: "",
 			refreshing: false,
@@ -154,6 +157,8 @@ class Notifications extends React.Component {
 					 fulFiller_Name={this.state.notificationJSON[i].fulFiller_Name}
 					 request_ID={this.state.notificationJSON[i].request_ID}
 					 requestType={this.state.notificationJSON[i].requestTitle}
+					 posterExpoToken={this.state.notificationJSON[i].posterExpoToken}
+					 fulFiller_ExpoToken={this.state.notificationJSON[i].fulfiller_ExpoToken}
 					 ></Card>
 				)
 
@@ -179,11 +184,15 @@ class Notifications extends React.Component {
 		console.log(item.props.fulFiller_Name)
 		console.log(item.props.request_ID)
 		console.log(item.props.requestType)
+		console.log("Fulfiller ExpoToken: " + item.props.fulFiller_ExpoToken)
+		console.log("Poster Expo Token: " + item.props.posterExpoToken)
 		this.setState({
 			fulFiller_Name: item.props.fulFiller_Name,
 			fulFiller_Email: item.props.fulFiller_Email,
+			fulFiller_ExpoToken: item.props.fulFiller_ExpoToken,
 			request_ID: item.props.request_ID,
 			requestType: item.props.requestType,
+			posterExpoToken: item.props.posterExpoToken,
 			popupIsOpen: true
 		})
 	}
@@ -200,7 +209,8 @@ class Notifications extends React.Component {
 
 		var data = { user1: this.state.email, user1Name: this.state.fullName,
 			 user2: this.state.fulFiller_Email, user2Name: this.state.fulFiller_Name,
-			  request_ID: this.state.request_ID, requestType: this.state.requestType}
+			  request_ID: this.state.request_ID, requestType: this.state.requestType, 
+			  user1ExpoToken: this.state.posterExpoToken, user2ExpoToken: this.state.fulFiller_ExpoToken }
 
 		this.state.socket.emit("createConversation", (data))
 		this.state.socket.on("convoReturn", (data) => this.convoReturn(data))
@@ -210,12 +220,34 @@ class Notifications extends React.Component {
 		console.log("Convo Return: " + data)
 		if(data)
 		{
-			Alert.alert("Conversation already Exists", "A conversation about this request already exists")
+			Alert.alert("Conversation already exists", "A conversation about this request already exists", [
+				{text: "OK"},
+			],
+			{cancelable: false})
 		}
 		else{
 			this.closeRequest()
+			this.sendPushNotification()
 		}
 	}
+
+	sendPushNotification = () => {
+        console.log("Sending Push Notification", this.state.fulFiller_ExpoToken)
+        let response = fetch(NOTIFICATION_API, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                to: this.state.fulFiller_ExpoToken,
+                sound: 'default',
+                title: NEW_CONVERSATION_TITLE,
+                body: this.state.fullName + NEW_CONVERSATION_MESSAGE
+            })
+        })
+        console.log("Push Notification Sent", JSON.stringify(response))
+    }
 
 	render() {
 		return (
@@ -262,7 +294,7 @@ class Notifications extends React.Component {
 						}}>
 							<View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
 								<Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>Connect with {this.state.fulFiller_Name} about your request?</Text>
-								<Text style={{ fontSize: RF(2), textAlign: "center" }}>This will create a new coversation</Text>
+								<Text style={{ fontSize: RF(2), textAlign: "center" }}>This will create a new conversation</Text>
 							</View>
 
 

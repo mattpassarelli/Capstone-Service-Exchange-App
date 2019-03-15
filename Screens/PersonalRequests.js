@@ -25,7 +25,6 @@ class PersonalRequests extends Component {
             requests: [],
             popupIsOpen: false,
             requestTitle: "",
-            requestFulFiller: "No one yet!",
             requestSubtitle: "",
             requestDateCreated: "",
             request_ID: "",
@@ -87,7 +86,6 @@ class PersonalRequests extends Component {
                 var newCard = (
                     <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}
                         posterName={this.state.requestsDataJSON[i].posterName} request_ID={this.state.requestsDataJSON[i]._id}
-                        fulfiller_Name={this.state.requestsDataJSON[i].fulfiller_Name}
                         dateCreated={this.state.requestsDataJSON[i].dateCreated}
                         containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)" }}
                         wrapperStyle={{}}
@@ -129,30 +127,17 @@ class PersonalRequests extends Component {
     }
 
     openRequest = (item) => {
-        console.log("Fulfiller: " + item.props.fulfiller_Name)
         console.log("Date Created: " + new Date(item.props.dateCreated).toLocaleDateString())
         console.log("Request ID: " + item.props.request_ID)
 
-        if (item.props.fulfiller_Name != null) {
-            this.setState({
-                popupIsOpen: true,
-                requestDateCreated: new Date(item.props.dateCreated).toLocaleDateString(),
-                requestFulFiller: item.props.fulfiller_Name,
-                requestTitle: item.props.title,
-                requestSubtitle: item.props.subtitle,
-                request_ID: item.props.request_ID
-            })
-        }
-        else {
-            console.log("No Fulfiller Yet")
-            this.setState({
-                popupIsOpen: true,
-                requestDateCreated: new Date(item.props.dateCreated).toLocaleDateString(),
-                requestTitle: item.props.title,
-                requestSubtitle: item.props.subtitle,
-                request_ID: item.props.request_ID
-            })
-        }
+        this.setState({
+            popupIsOpen: true,
+            requestDateCreated: new Date(item.props.dateCreated).toLocaleDateString(),
+            requestTitle: item.props.title,
+            requestSubtitle: item.props.subtitle,
+            request_ID: item.props.request_ID
+        })
+
     }
 
     closeRequest() {
@@ -240,7 +225,6 @@ class PersonalRequests extends Component {
                             }}>
                                 <View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
                                     <Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>{this.state.requestTitle}</Text>
-                                    <Text style={{ fontSize: RF(1.5), textAlign: "center", }}>Being fulfilled by: {this.state.requestFulFiller}</Text>
                                     <Text style={{ fontSize: RF(1.5), textAlign: "center", paddingTop: 3 }}>Created on {this.state.requestDateCreated}</Text>
                                     <Text style={{ fontSize: RF(2.5), paddingTop: 15, textAlign: "center" }}>{this.state.requestSubtitle}</Text>
                                 </View>
