@@ -43,7 +43,7 @@ const styles = StyleSheet.create(
 
         buttonStyle: {
             padding: 10,
-            backgroundColor: '#202646',
+            backgroundColor: 'rgb(56, 73, 154)',
             borderRadius: 10,
             width: "80%",
         },
@@ -172,7 +172,7 @@ class Home extends Component {
                     <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}
                         posterName={this.state.requestsDataJSON[i].posterName} request_ID={this.state.requestsDataJSON[i]._id}
                         expoToken={this.state.requestsDataJSON[i].posterExpoToken}
-                        containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)" }}
+                        containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(255,255,255)" }}
                         wrapperStyle={{}}
                         titleStyle={{ fontSize: RF(2.5), fontWeight: "bold" }}
                     >

@@ -1,11 +1,13 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat'
+import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 import { AsyncStorage } from "react-native"
 import { API_ENDPOINT } from "../Components/api-config"
 import { withNavigation } from "react-navigation"
 import KeyboardSpacer from "react-native-keyboard-spacer"
+import Icon from 'react-native-vector-icons/Ionicons';
+import { NEW_MESSAGE_TITLE, NEW_MESSAGE_MESSAGE, NOTIFICATION_API } from "../Components/Constants"
 
 const apiEndpoint = API_ENDPOINT
 
@@ -20,14 +22,25 @@ class MessagesThread extends Component {
       email: "",
       messages: [],
       socket: apiEndpoint,
-      user2Name: "",
-      user2Email: "",
       convo_ID: this.props.navigation.state.params.convo_ID,
-      user_ID: this.props.navigation.state.params.user_ID
+      user_ID: this.props.navigation.state.params.user_ID,
+      userToReceivePushNotifications: this.props.navigation.state.params.expoToken,
+      user2Name: this.props.navigation.state.params.user2Name
     }
   }
 
   componentDidMount() {
+    this.props.navigation.setParams({
+      myTitle: this.state.user2Name,
+      close: (
+        <TouchableOpacity style={{ paddingRight: 10 }} activeOpacity={0.7} onPress={() => this.openCloseModal()}>
+          <Icon name={Platform.OS === "ios" ? "ios-close-circle-outline" : "md-close-circle-outline"}
+            color={"rgb(56, 73, 154)"}
+            size={32} />
+        </TouchableOpacity>
+      )
+    })
+
     this.userFullName()
     this.userEmail()
 
@@ -37,6 +50,8 @@ class MessagesThread extends Component {
 
     console.log("Convo ID: " + this.state.convo_ID)
     console.log("User ID: " + this.state.user_ID)
+    console.log("User Expo Token ", this.state.userToReceivePushNotifications)
+    console.log("Other User's Name: " + this.state.user2Name)
   }
 
   requestMessages() {
@@ -112,12 +127,45 @@ class MessagesThread extends Component {
     console.log(messages)
 
     this.state.socket.emit("addMessageToConvo", (data))
+
+    this.sendPushNotification()
   }
 
-  /**
-   * TODO: Add a header
-   */
+  sendPushNotification = () => {
+    console.log("Sending Push Notification", this.state.userToReceivePushNotifications)
+    let response = fetch(NOTIFICATION_API, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        to: this.state.userToReceivePushNotifications,
+        sound: 'default',
+        title: NEW_MESSAGE_TITLE,
+        body: NEW_MESSAGE_MESSAGE + this.state.user2Name
+      })
+    })
+    console.log("Push Notification Sent", JSON.stringify(response))
+  }
 
+  openCloseModal() {
+    console.log("Showing closing options")
+  }
+
+  renderBubble(props) {
+    return (
+      <Bubble {...props}
+        wrapperStyle={{
+          left: {
+
+          },
+          right: {
+            backgroundColor: "rgb(56, 73, 154)"
+          }
+        }}
+      />)
+  }
 
   render() {
     return (
@@ -130,6 +178,7 @@ class MessagesThread extends Component {
             // _avatar: "https://facebook.github.io/react/img/logo_og.png"
           }}
           onSend={(messages) => this.onSend(messages)}
+          renderBubble={this.renderBubble}
         />
         {Platform.OS === 'android' ? <KeyboardSpacer /> : null}
       </View>

@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
 
 	buttonStyle: {
 		padding: 10,
-		backgroundColor: '#202646',
+		backgroundColor: 'rgb(56, 73, 154)',
 		borderRadius: 10,
 		width: "20%",
 	},
@@ -260,7 +260,7 @@ class Notifications extends React.Component {
 							this.state.notifications.map((item, key) => {
 								return (
 									<TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
-										<Card key={key} containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)", top:20 }}>
+										<Card key={key} containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(255, 255, 255)", top:20 }}>
 											<View>
 												{/* //TODO: Work out Time difference math */}
 												<Text>{item.props.title}</Text>

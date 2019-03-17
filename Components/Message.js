@@ -13,7 +13,7 @@ class Message extends React.Component {
         const {userNameTitle, requestType} = this.props
 
         return (
-            <Card containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(249, 244, 244)" }}>
+            <Card containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(255, 255, 255)" }}>
                 <View>
                     <Text style={{fontSize: RF(2)}}>{userNameTitle}</Text>
                     <Text style={{fontSize: RF(1.5)}}>{requestType}</Text>

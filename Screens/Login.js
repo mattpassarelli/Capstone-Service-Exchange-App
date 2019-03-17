@@ -277,7 +277,7 @@ class Login extends Component {
 						<Text>
 
 							Don't have an account?
-						<Text style={{ color: 'rgb(0, 0, 255)' }} onPress={() => this.props.navigation.navigate("SignUp")}> Click here</Text>
+						<Text style={{ color: 'rgb(56, 73, 154)' }} onPress={() => this.props.navigation.navigate("SignUp")}> Click here</Text>
 
 						</Text>
 

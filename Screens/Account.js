@@ -122,7 +122,7 @@ class Account extends React.Component {
 								{ text: "No" },
 								{ text: "Yes", onPress: () => this.logout(this.props.navigation) }
 							])}>
-							<Text style={{ fontSize: RF(2), color: 'rgb(0, 0, 255)' }}>Logout</Text>
+							<Text style={{ fontSize: RF(2), color: 'rgb(56, 73, 154)' }}>Logout</Text>
 						</TouchableOpacity>
 					</View>
 				</View>

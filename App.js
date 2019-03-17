@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator } from 'react-navigation';
-import { Alert, Button, Platform } from 'react-native'
+import { Alert, Button, Platform, View } from 'react-native'
 import { Permissions, Notifications } from "expo"
 import Icon from 'react-native-vector-icons/Ionicons';
 import AccountIcon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -58,7 +58,12 @@ class SettingsScreen extends React.Component {
 
   static navigationOptions = {
     title: "Settings",
-    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+    headerTitleStyle: {
+      alignSelf: "center",
+      textAlign: "center",
+      flex: 1
+    },
+    headerRight: (<View></View>)
   }
 
   render() {
@@ -155,6 +160,19 @@ class MessagesScreen extends React.Component {
 }
 
 class MessageThreadScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    const { state: { params = {} } } = navigation;
+    return {
+      title: params.myTitle || "Messaging",
+      headerRight: params.close,
+      headerTitleStyle: {
+        alignSelf: "center",
+        textAlign: "center",
+        flex: 1
+      }
+    }
+  }
+
   render() {
     return (
       <MessageThread />
@@ -164,7 +182,13 @@ class MessageThreadScreen extends React.Component {
 
 class PersonalRequestsScreen extends React.Component {
   static navigationOptions = {
-    title: "Your Requests"
+    title: "Your Requests",
+    headerTitleStyle: {
+      alignSelf: "center",
+      textAlign: "center",
+      flex: 1
+    },
+    headerRight: (<View></View>)
   }
   render() {
     return (
@@ -188,7 +212,13 @@ class DistanceTooFarScreen extends React.Component {
 
 class HelpScreen extends React.Component {
   static navigationOptions = {
-    title: "Help"
+    title: "Help",
+    headerTitleStyle: {
+      alignSelf: "center",
+      textAlign: "center",
+      flex: 1
+    },
+    headerRight: (<View></View>)
   }
 
   render() {
@@ -286,7 +316,7 @@ const SignedIn = createBottomTabNavigator({
       tabBarVisible: true
     },
     tabBarOptions: {
-      activeTintColor: 'blue',
+      activeTintColor: 'rgb(56, 73, 154)',
       inactiveTintColor: 'grey'
     }
   })
@@ -356,6 +386,7 @@ export default class App extends React.Component {
 
 
     console.log("Getting Geo-Location")
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const location = JSON.stringify(position)
@@ -413,29 +444,29 @@ export default class App extends React.Component {
 }
 
   async registerForPushNotificationsAsync() {
-    // const { status: existingStatus } = await Permissions.getAsync(
-    //   Permissions.NOTIFICATIONS
-    // );
-    // let finalStatus = existingStatus;
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
+    let finalStatus = existingStatus;
 
-    // // only ask if permissions have not already been determined, because
-    // // iOS won't necessarily prompt the user a second time.
-    // if (existingStatus !== 'granted') {
-    //   // Android remote notification permissions are granted during the app
-    //   // install, so this will only ask on iOS
-    //   const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    //   finalStatus = status;
-    // }
+    // only ask if permissions have not already been determined, because
+    // iOS won't necessarily prompt the user a second time.
+    if (existingStatus !== 'granted') {
+      // Android remote notification permissions are granted during the app
+      // install, so this will only ask on iOS
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
 
-    // // Stop here if the user did not grant permissions
-    // if (finalStatus !== 'granted') {
-    //   return;
-    // }
+    // Stop here if the user did not grant permissions
+    if (finalStatus !== 'granted') {
+      return;
+    }
 
-    //  let token = await Notifications.getExpoPushTokenAsync();
-    let token =  "ExponentPushToken[XeeNo9APZFj_gWwUnfJk2O]"
+    let token = await Notifications.getExpoPushTokenAsync();
+    //let token =  "ExponentPushToken[XeeNo9APZFj_gWwUnfJk2O]"
 
-    // console.log("TOKEN: " + token, "Sending token to user account")
+    console.log("TOKEN: " + token, "Sending token to user account")
     this.setState({
       token: token,
     })

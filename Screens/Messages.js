@@ -26,7 +26,9 @@ class Messages extends Component {
             conversationsJSON: [],
             conversations: [],
             refreshing: false,
-            user_ID: 0
+            user_ID: 0,
+            userExpoToken: "",
+            otherUsersName: ""
         }
     }
 
@@ -37,6 +39,7 @@ class Messages extends Component {
 
     componentDidMount() {
         this.state.socket.on("conversationsFound", (data) => { this.setState({ conversationsJSON: data }), this.processConversations() })
+        //Get User's unique ID number from the DB
         this.state.socket.on("userIDGiven", (data) => this.setState({ user_ID: data }))
     }
 
@@ -102,15 +105,18 @@ class Messages extends Component {
                 //Decide which name should be the title of the thread
                 //ie. don't make the user's name the title. It's confusing
                 let title = "PLACEHOLDER"
+                let token = "OOF I HOPE NOT"
                 if(this.state.conversationsJSON[i].user1Name == this.state.fullName)
                 {
                     console.log("TITLE WILL BE: " + this.state.conversationsJSON[i].user2Name)
                     title = this.state.conversationsJSON[i].user2Name
+                    token = this.state.conversationsJSON[i].user2ExpoToken
                 }
                 else if(this.state.conversationsJSON[i].user2Name == this.state.fullName)
                 {
                     console.log("TITLE WILL BE: " + this.state.conversationsJSON[i].user1Name)
                     title = this.state.conversationsJSON[i].user1Name
+                    token = this.state.conversationsJSON[i].user1ExpoToken
                 }
                 console.log("TITLE: " + title)
 
@@ -122,7 +128,12 @@ class Messages extends Component {
                     </Message>
                 )
 
-                console.log(newConvo)
+                this.setState({
+                    userExpoToken: token,
+                    otherUsersName: title
+                })
+
+                console.log(newConvo, this.state.userExpoToken, this.state.otherUsersName)
 
                 tempArray.push(newConvo)
             }
@@ -163,7 +174,8 @@ class Messages extends Component {
                                     {
                                         type: "Navigate",
                                         routeName: "Thread",
-                                        params: { convo_ID: item.props.convo_ID, user_ID: this.state.user_ID }
+                                        params: { convo_ID: item.props.convo_ID, user_ID: this.state.user_ID, 
+                                            expoToken: this.state.userExpoToken, user2Name: this.state.otherUsersName }
                                     })}>
                                     <Message userNameTitle={item.props.userNameTitle} key={key} requestType={item.props.requestType} />
                                 </TouchableOpacity>
