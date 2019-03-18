@@ -30,10 +30,15 @@ class MessagesThread extends Component {
       user2Name: this.props.navigation.state.params.user2Name,
       request_ID: this.props.navigation.state.params.request_ID,
       popupIsOpen: false,
+      creatorEmail: "",
     }
   }
 
   componentDidMount() {
+    /**
+     * Passback the props for the navigation
+     * Header that is set in App.js
+     */
     this.props.navigation.setParams({
       myTitle: this.state.user2Name,
       close: (
@@ -52,14 +57,18 @@ class MessagesThread extends Component {
     this.state.socket.on("conversationMessagesReceived", (data) => this.processMessagesReceived(data))
     this.state.socket.on("pullNewMessage", () => this.requestMessages())
     this.state.socket.on("deletingRequestCallback", (data) => this.processRequestDeletion(data))
+    this.state.socket.on("removingConversationCallback", (data) => this.processConversationDeletion(data))
+    this.state.socket.emit("requestConversationRequestCreator", (this.state.request_ID))
+    this.state.socket.on("requestCreatorEmailReceived", (data) => this.setState({ creatorEmail: data }))
 
-    console.log("Convo ID: " + this.state.convo_ID)
-    console.log("User ID: " + this.state.user_ID)
-    console.log("User Expo Token ", this.state.userToReceivePushNotifications)
-    console.log("Other User's Name: " + this.state.user2Name)
-    console.log("Request_ID: " + this.state.request_ID)
+    // console.log("Convo ID: " + this.state.convo_ID)
+    // console.log("User ID: " + this.state.user_ID)
+    // console.log("User Expo Token ", this.state.userToReceivePushNotifications)
+    // console.log("Other User's Name: " + this.state.user2Name)
+    // console.log("Request_ID: " + this.state.request_ID)
   }
 
+  //Pull Messages for the thread from DB
   requestMessages() {
     console.log("Requesting Messages from Server")
 
@@ -68,6 +77,7 @@ class MessagesThread extends Component {
     this.state.socket.emit("requestConversationMessages", (data))
   }
 
+  //Process the Messages received and then sort them
   processMessagesReceived = (data = []) => {
     console.log("Messages Recevied: " + data)
 
@@ -117,12 +127,10 @@ class MessagesThread extends Component {
   }
 
   /**
-   * TODO: For now, I'm passing in the entire new state to the server and 
-   * replacing the message array everytime. I have no idea how taxing this
-   * will get on the front/back ends. If it proves too much, I can try sending
-   * only the message that is sent 
+   * Update the frontend with the new message
+   * and then send the entire messages array
+   * to the server for adding to DB
    */
-
   onSend(messages = []) {
     this.setState(previousState => ({
       messages: GiftedChat.append(previousState.messages, messages),
@@ -137,6 +145,11 @@ class MessagesThread extends Component {
     this.sendPushNotification()
   }
 
+  //Called from onSend()
+  /**
+   * Sends a push notification to the OTHER
+   * user that there is a new message
+   */
   sendPushNotification = () => {
     console.log("Sending Push Notification", this.state.userToReceivePushNotifications)
     let response = fetch(NOTIFICATION_API, {
@@ -155,67 +168,99 @@ class MessagesThread extends Component {
     console.log("Push Notification Sent", JSON.stringify(response))
   }
 
+  //Open the options modal
   openCloseModal() {
+    console.log("Request Creator is: " + this.state.creatorEmail)
+
     this.setState({
       popupIsOpen: true,
     })
   }
 
-  closeCloseRequest(){
+  //Close the options modal
+  closeCloseRequest() {
     this.setState({
       popupIsOpen: false,
     })
   }
 
-  closeChat(){
+  //Deletes only the conversation
+  closeChat() {
     console.log("User wants to close chat only")
     Alert.alert("Confirm", "Are you sure you want to remove this conversation? If this person is harassing you or breaking rules, please report them under Account > Help",
-            [
-                { text: "No" },
-                {
-                    text: "Yes", onPress: () => {
-                        console.log("Deleting Request")
-                        this.state.socket.emit("removeConversationOnly", (this.state.convo_ID))
-                        /**
-                         * TODO: Write this method in backend
-                         */
-                    }
-                }
-            ])
+      [
+        { text: "No" },
+        {
+          text: "Yes", onPress: () => {
+            console.log("Deleting Request")
+            this.state.socket.emit("removeConversationOnly", (this.state.convo_ID))
+          }
+        }
+      ])
   }
 
-  closeRequest(){
+  /** 
+   * Deletes Request, conversation,
+   * anything related to the request 
+   * and it's request_ID
+   * */
+  closeRequest() {
     console.log("User wants to close entire request")
     Alert.alert("Confirm", "Are you sure you want to remove this request? This will remove the conversation.",
-            [
-                { text: "No" },
-                {
-                    text: "Yes", onPress: () => {
-                        console.log("Deleting Request")
-                        this.state.socket.emit("deletePersonalRequest", (this.state.request_ID))
-                    }
-                }
-            ])
+      [
+        { text: "No" },
+        {
+          text: "Yes", onPress: () => {
+            console.log("Deleting Request")
+            this.state.socket.emit("deletePersonalRequest", (this.state.request_ID))
+          }
+        }
+      ])
   }
 
+  //Process callback for deletion
   processRequestDeletion = (data) => {
     console.log("Data from deleting request is: " + data)
     switch (data) {
-        case "error":
-            Alert.alert("Error", "There was an error removing the request. Please try again.",
-                [{ text: "OK", onPress: () => this.closeCloseRequest() }])
-            break;
-        case "success":
-            Alert.alert("Success", "Successfully deleted the request",
-                [{ text: "OK", onPress: () => this.closeModalThenGoBack()}])
-            break;
+      case "error":
+        Alert.alert("Error", "There was an error removing the request. Please try again.",
+          [{ text: "OK", onPress: () => this.closeCloseRequest() }])
+        break;
+      case "success":
+        Alert.alert("Success", "Successfully deleted the request",
+          [{ text: "OK", onPress: () => this.closeModalThenGoBack() }])
+        break;
     }
-}
+  }
 
-closeModalThenGoBack(){
-  this.closeCloseRequest()
-  this.props.navigation.navigate("Messages")
-}
+  //Process callback for deletion
+  processConversationDeletion = (data) => {
+    console.log("Data from deleting conversation is: " + data)
+    switch (data) {
+      case "error":
+        Alert.alert("Error", "There was an error removing the conversation. Please try again",
+          [{ text: "OK", onPress: () => this.closeCloseRequest() }])
+        break;
+      case "success":
+        Alert.alert("Success", "Successfully deleted the conversation",
+          [{ text: "OK", onPress: () => this.closeModalThenGoBack() }])
+        break;
+    }
+  }
+
+  /**
+   * Close the Modal and then navigate back to the
+   * Messages screen. Then it runs Messages.js's
+   * refreshFeed() method to update the conversations
+   * so users can click on the conversation that was just removed
+   */
+  closeModalThenGoBack() {
+    const { params } = this.props.navigation.state
+
+    this.closeCloseRequest()
+    this.props.navigation.navigate("Messages")
+    params.refreshFeed()
+  }
 
   renderBubble(props) {
     return (
@@ -249,56 +294,57 @@ closeModalThenGoBack(){
         </View>
 
         <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={this.state.popupIsOpen}
-                        onRequestClose={() => {
-                            this.closeCloseRequest()
-                        }}>
-                        <View style={[{
-                            flex: 1,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            paddingTop: 20,
-                            backgroundColor: '#ecf0f1',
-                        }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
-                            <View style={{
-                                backgroundColor: '#fff', padding: 20, height: "40%",
-                                width: "80%", borderRadius: 10, justifyContent: "space-between"
-                            }}>
-                                <View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
-                                    <Text style={{ fontWeight: "bold", fontSize: RF(2.5), textAlign: "center", padding: 3 }}>Close Request?</Text>
-                                    <Text style={{ fontSize: RF(2), paddingTop: 5, textAlign: "center" }}>
-                                    Here you can choose to close the request, or just this conversation. Closing the request will mark it as done and remove
-                                    it from the app. Closing this conversation will delete only this conversation and keep your request open for others to
-                                    offer to fulfill it. 
+          animationType="slide"
+          transparent={true}
+          visible={this.state.popupIsOpen}
+          onRequestClose={() => {
+            this.closeCloseRequest()
+          }}>
+          <View style={[{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingTop: 20,
+            backgroundColor: '#ecf0f1',
+          }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+            <View style={{
+              backgroundColor: '#fff', padding: 20, height: "40%",
+              width: "80%", borderRadius: 10, justifyContent: "space-between"
+            }}>
+              <View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
+                <Text style={{ fontWeight: "bold", fontSize: RF(2.5), textAlign: "center", padding: 3 }}>Close Request?</Text>
+                <Text style={{ fontSize: RF(2), paddingTop: 5, textAlign: "center" }}>
+                  Here you can choose to close the request, or just this conversation. Closing the request will mark it as done and remove
+                  it from the app. Closing this conversation will delete only this conversation and keep your request open for others to
+                  offer to fulfill it. Only the creator of the request can close the request itself.
                                     </Text>
-                                </View>
+              </View>
 
-                                <View>
-                                  <Text style={{textAlign: "center", fontSize: RF(2), paddingBottom: 2.5, paddingTop: 2.5}}>
-                                  What would you like to do?
+              <View>
+                <Text style={{ textAlign: "center", fontSize: RF(2), paddingBottom: 2.5, paddingTop: 2.5 }}>
+                  What would you like to do?
                                   </Text>
-                                </View>
+              </View>
 
 
-                                <View style={{ flex: .3, flexDirection: "row", alignItems: "center", justifyContent: "space-between", height: "10%" }}>
-                                <CustomButton text='None'
-                                    onPress={() => this.closeCloseRequest()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle}
-                                />
+              <View style={{ flex: .3, flexDirection: "row", alignItems: "center", justifyContent: "space-between", height: "10%" }}>
+                <CustomButton text='None'
+                  onPress={() => this.closeCloseRequest()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle}
+                />
 
-                                <CustomButton text="Chat"
-                                onPress={() => this.closeChat()} 
-                                buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle}/>
+                <CustomButton text="Chat"
+                  onPress={() => this.closeChat()}
+                  buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
 
-                                <CustomButton text="Request"
-                                    onPress={() => this.closeRequest()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
-                            </View>
-                            </View>
+                <CustomButton text="Request"
+                  onPress={() => this.closeRequest()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle}
+                  disabled={this.state.creatorEmail === this.state.email ? false : true} />
+              </View>
+            </View>
 
 
-                        </View>
-                    </Modal>
+          </View>
+        </Modal>
       </React.Fragment>
     );
   }
@@ -330,13 +376,13 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'rgb(56, 73, 154)',
     borderRadius: 10
-},
+  },
 
-buttonTextStyle: {
+  buttonTextStyle: {
     fontSize: RF(2),
     color: '#ffffff',
     textAlign: 'center'
-}
+  }
 });
 
 

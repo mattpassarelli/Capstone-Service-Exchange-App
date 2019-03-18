@@ -170,7 +170,7 @@ class Messages extends Component {
                                         params: {
                                             convo_ID: item.props.convo_ID, user_ID: this.state.user_ID,
                                             expoToken: this.state.userExpoToken, user2Name: this.state.otherUsersName,
-                                            request_ID: this.state.request_ID
+                                            request_ID: this.state.request_ID, refreshFeed: this.refreshFeed.bind(this)
                                         }
                                     })}>
                                     <Message userNameTitle={item.props.userNameTitle} key={key} requestType={item.props.requestType} />
