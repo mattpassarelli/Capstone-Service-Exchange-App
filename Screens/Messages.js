@@ -10,7 +10,8 @@ import { API_ENDPOINT } from '../Components/api-config';
 const apiEndpoint = API_ENDPOINT
 
 /**
- * TODO: Pretty this up
+ * TODO: Find a way to forceUpdate
+ * on navigation to this page
  */
 
 
@@ -28,28 +29,21 @@ class Messages extends Component {
             refreshing: false,
             user_ID: 0,
             userExpoToken: "",
-            otherUsersName: ""
+            otherUsersName: "",
+            request_ID: "",
         }
-    }
-
-    componentWillMount() {
-        this.userEmail()
-        this.userFullName()
     }
 
     componentDidMount() {
         this.state.socket.on("conversationsFound", (data) => { this.setState({ conversationsJSON: data }), this.processConversations() })
         //Get User's unique ID number from the DB
         this.state.socket.on("userIDGiven", (data) => this.setState({ user_ID: data }))
+        this.userEmail()
+        this.userFullName()
     }
 
-    /**
-     * TODO: componentDidUpdate(){pull messages}
-     * convert everything to DidMount()
-     */
-
     //Grab the full name from the phone's storage
-   async userFullName() {
+    async userFullName() {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
                 console.log("Name: " + value)
@@ -64,7 +58,7 @@ class Messages extends Component {
     }
 
     //grab user email from phone storage
-    async userEmail(){
+    async userEmail() {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
                 console.log("Email:" + value)
@@ -106,14 +100,12 @@ class Messages extends Component {
                 //ie. don't make the user's name the title. It's confusing
                 let title = "PLACEHOLDER"
                 let token = "OOF I HOPE NOT"
-                if(this.state.conversationsJSON[i].user1Name == this.state.fullName)
-                {
+                if (this.state.conversationsJSON[i].user1Name == this.state.fullName) {
                     console.log("TITLE WILL BE: " + this.state.conversationsJSON[i].user2Name)
                     title = this.state.conversationsJSON[i].user2Name
                     token = this.state.conversationsJSON[i].user2ExpoToken
                 }
-                else if(this.state.conversationsJSON[i].user2Name == this.state.fullName)
-                {
+                else if (this.state.conversationsJSON[i].user2Name == this.state.fullName) {
                     console.log("TITLE WILL BE: " + this.state.conversationsJSON[i].user1Name)
                     title = this.state.conversationsJSON[i].user1Name
                     token = this.state.conversationsJSON[i].user1ExpoToken
@@ -130,10 +122,11 @@ class Messages extends Component {
 
                 this.setState({
                     userExpoToken: token,
-                    otherUsersName: title
+                    otherUsersName: title,
+                    request_ID: this.state.conversationsJSON[i].request_ID
                 })
 
-                console.log(newConvo, this.state.userExpoToken, this.state.otherUsersName)
+                console.log(newConvo, this.state.userExpoToken, this.state.otherUsersName, this.state.request_ID)
 
                 tempArray.push(newConvo)
             }
@@ -174,8 +167,11 @@ class Messages extends Component {
                                     {
                                         type: "Navigate",
                                         routeName: "Thread",
-                                        params: { convo_ID: item.props.convo_ID, user_ID: this.state.user_ID, 
-                                            expoToken: this.state.userExpoToken, user2Name: this.state.otherUsersName }
+                                        params: {
+                                            convo_ID: item.props.convo_ID, user_ID: this.state.user_ID,
+                                            expoToken: this.state.userExpoToken, user2Name: this.state.otherUsersName,
+                                            request_ID: this.state.request_ID
+                                        }
                                     })}>
                                     <Message userNameTitle={item.props.userNameTitle} key={key} requestType={item.props.requestType} />
                                 </TouchableOpacity>

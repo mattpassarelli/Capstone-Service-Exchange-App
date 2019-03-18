@@ -1,12 +1,14 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Platform, TouchableOpacity, Modal, Alert } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 import { AsyncStorage } from "react-native"
 import { API_ENDPOINT } from "../Components/api-config"
 import { withNavigation } from "react-navigation"
 import KeyboardSpacer from "react-native-keyboard-spacer"
 import Icon from 'react-native-vector-icons/Ionicons';
+import CustomButton from "../Components/CustomButton"
+import RF from "react-native-responsive-fontsize"
 import { NEW_MESSAGE_TITLE, NEW_MESSAGE_MESSAGE, NOTIFICATION_API } from "../Components/Constants"
 
 const apiEndpoint = API_ENDPOINT
@@ -25,7 +27,9 @@ class MessagesThread extends Component {
       convo_ID: this.props.navigation.state.params.convo_ID,
       user_ID: this.props.navigation.state.params.user_ID,
       userToReceivePushNotifications: this.props.navigation.state.params.expoToken,
-      user2Name: this.props.navigation.state.params.user2Name
+      user2Name: this.props.navigation.state.params.user2Name,
+      request_ID: this.props.navigation.state.params.request_ID,
+      popupIsOpen: false,
     }
   }
 
@@ -47,11 +51,13 @@ class MessagesThread extends Component {
     this.requestMessages()
     this.state.socket.on("conversationMessagesReceived", (data) => this.processMessagesReceived(data))
     this.state.socket.on("pullNewMessage", () => this.requestMessages())
+    this.state.socket.on("deletingRequestCallback", (data) => this.processRequestDeletion(data))
 
     console.log("Convo ID: " + this.state.convo_ID)
     console.log("User ID: " + this.state.user_ID)
     console.log("User Expo Token ", this.state.userToReceivePushNotifications)
     console.log("Other User's Name: " + this.state.user2Name)
+    console.log("Request_ID: " + this.state.request_ID)
   }
 
   requestMessages() {
@@ -143,15 +149,73 @@ class MessagesThread extends Component {
         to: this.state.userToReceivePushNotifications,
         sound: 'default',
         title: NEW_MESSAGE_TITLE,
-        body: NEW_MESSAGE_MESSAGE + this.state.user2Name
+        body: NEW_MESSAGE_MESSAGE + this.state.fullName
       })
     })
     console.log("Push Notification Sent", JSON.stringify(response))
   }
 
   openCloseModal() {
-    console.log("Showing closing options")
+    this.setState({
+      popupIsOpen: true,
+    })
   }
+
+  closeCloseRequest(){
+    this.setState({
+      popupIsOpen: false,
+    })
+  }
+
+  closeChat(){
+    console.log("User wants to close chat only")
+    Alert.alert("Confirm", "Are you sure you want to remove this conversation? If this person is harassing you or breaking rules, please report them under Account > Help",
+            [
+                { text: "No" },
+                {
+                    text: "Yes", onPress: () => {
+                        console.log("Deleting Request")
+                        this.state.socket.emit("removeConversationOnly", (this.state.convo_ID))
+                        /**
+                         * TODO: Write this method in backend
+                         */
+                    }
+                }
+            ])
+  }
+
+  closeRequest(){
+    console.log("User wants to close entire request")
+    Alert.alert("Confirm", "Are you sure you want to remove this request? This will remove the conversation.",
+            [
+                { text: "No" },
+                {
+                    text: "Yes", onPress: () => {
+                        console.log("Deleting Request")
+                        this.state.socket.emit("deletePersonalRequest", (this.state.request_ID))
+                    }
+                }
+            ])
+  }
+
+  processRequestDeletion = (data) => {
+    console.log("Data from deleting request is: " + data)
+    switch (data) {
+        case "error":
+            Alert.alert("Error", "There was an error removing the request. Please try again.",
+                [{ text: "OK", onPress: () => this.closeCloseRequest() }])
+            break;
+        case "success":
+            Alert.alert("Success", "Successfully deleted the request",
+                [{ text: "OK", onPress: () => this.closeModalThenGoBack()}])
+            break;
+    }
+}
+
+closeModalThenGoBack(){
+  this.closeCloseRequest()
+  this.props.navigation.navigate("Messages")
+}
 
   renderBubble(props) {
     return (
@@ -169,19 +233,73 @@ class MessagesThread extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <GiftedChat
-          messages={this.state.messages}
-          user={{
-            _id: this.state.user_ID,
-            name: this.state.fullName,
-            // _avatar: "https://facebook.github.io/react/img/logo_og.png"
-          }}
-          onSend={(messages) => this.onSend(messages)}
-          renderBubble={this.renderBubble}
-        />
-        {Platform.OS === 'android' ? <KeyboardSpacer /> : null}
-      </View>
+      <React.Fragment>
+        <View style={styles.container}>
+          <GiftedChat
+            messages={this.state.messages}
+            user={{
+              _id: this.state.user_ID,
+              name: this.state.fullName,
+              // _avatar: "https://facebook.github.io/react/img/logo_og.png"
+            }}
+            onSend={(messages) => this.onSend(messages)}
+            renderBubble={this.renderBubble}
+          />
+          {Platform.OS === 'android' ? <KeyboardSpacer /> : null}
+        </View>
+
+        <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={this.state.popupIsOpen}
+                        onRequestClose={() => {
+                            this.closeCloseRequest()
+                        }}>
+                        <View style={[{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            paddingTop: 20,
+                            backgroundColor: '#ecf0f1',
+                        }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+                            <View style={{
+                                backgroundColor: '#fff', padding: 20, height: "40%",
+                                width: "80%", borderRadius: 10, justifyContent: "space-between"
+                            }}>
+                                <View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
+                                    <Text style={{ fontWeight: "bold", fontSize: RF(2.5), textAlign: "center", padding: 3 }}>Close Request?</Text>
+                                    <Text style={{ fontSize: RF(2), paddingTop: 5, textAlign: "center" }}>
+                                    Here you can choose to close the request, or just this conversation. Closing the request will mark it as done and remove
+                                    it from the app. Closing this conversation will delete only this conversation and keep your request open for others to
+                                    offer to fulfill it. 
+                                    </Text>
+                                </View>
+
+                                <View>
+                                  <Text style={{textAlign: "center", fontSize: RF(2), paddingBottom: 2.5, paddingTop: 2.5}}>
+                                  What would you like to do?
+                                  </Text>
+                                </View>
+
+
+                                <View style={{ flex: .3, flexDirection: "row", alignItems: "center", justifyContent: "space-between", height: "10%" }}>
+                                <CustomButton text='None'
+                                    onPress={() => this.closeCloseRequest()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle}
+                                />
+
+                                <CustomButton text="Chat"
+                                onPress={() => this.closeChat()} 
+                                buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle}/>
+
+                                <CustomButton text="Request"
+                                    onPress={() => this.closeRequest()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+                            </View>
+                            </View>
+
+
+                        </View>
+                    </Modal>
+      </React.Fragment>
     );
   }
 }
@@ -206,7 +324,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'black',
     padding: 15
-  }
+  },
+
+  buttonStyle: {
+    padding: 10,
+    backgroundColor: 'rgb(56, 73, 154)',
+    borderRadius: 10
+},
+
+buttonTextStyle: {
+    fontSize: RF(2),
+    color: '#ffffff',
+    textAlign: 'center'
+}
 });
 
 
