@@ -186,6 +186,8 @@ class Home extends Component {
                 tempRequests.push(newCard)
             }
 
+            tempRequests.reverse()
+
             this.setState({
                 requests: tempRequests
             })
