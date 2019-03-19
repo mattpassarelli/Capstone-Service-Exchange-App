@@ -99,7 +99,7 @@ class NewRequestScreen extends React.Component {
 
   render() {
     return (
-      <NewRequest />
+      <NewRequest navigation={this.props.navigation}/>
     )
   }
 }
@@ -397,15 +397,15 @@ export default class App extends React.Component {
          */
 
 
-        // const distance = geolib.getDistance(position.coords, {
-        //   latitude: 37.063922,
-        //   longitude: -76.492951
-        // })
-
-        const distance = geolib.getDistance({ latitude: 37.066388, longitude: -76.488703 }, {
+        const distance = geolib.getDistance(position.coords, {
           latitude: 37.063922,
           longitude: -76.492951
         })
+
+        // const distance = geolib.getDistance({ latitude: 37.066388, longitude: -76.488703 }, {
+        //   latitude: 37.063922,
+        //   longitude: -76.492951
+        // })
 
         console.log('You are ' + distance + ' meters away from CNU')
 

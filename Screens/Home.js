@@ -74,6 +74,7 @@ class Home extends Component {
             fullName: "",
             email: "",
             OPExpoToken: "",
+            posterEmail: "",
         }
     }
 
@@ -133,13 +134,15 @@ class Home extends Component {
         console.log(item.props.request_ID)
         console.log(item.props.posterName)
         console.log("EXPO TOKEN: " + item.props.expoToken)
+        console.log("Poster email: " + item.props.posterEmail)
         this.setState({
             popupIsOpen: true,
             cardTitle: item.props.title,
             cardBody: item.props.subtitle,
             cardPoster: item.props.posterName,
             cardID: item.props.request_ID,
-            OPExpoToken: item.props.expoToken
+            OPExpoToken: item.props.expoToken,
+            posterEmail: item.props.posterEmail
         })
     }
 
@@ -171,7 +174,7 @@ class Home extends Component {
                 var newCard = (
                     <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}
                         posterName={this.state.requestsDataJSON[i].posterName} request_ID={this.state.requestsDataJSON[i]._id}
-                        expoToken={this.state.requestsDataJSON[i].posterExpoToken}
+                        expoToken={this.state.requestsDataJSON[i].posterExpoToken} posterEmail={this.state.requestsDataJSON[i].posterEmail}
                         containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(255,255,255)" }}
                         wrapperStyle={{}}
                         titleStyle={{ fontSize: RF(2.5), fontWeight: "bold" }}
@@ -226,18 +229,16 @@ class Home extends Component {
     connectWithRequester() {
         var data = { request_ID: this.state.cardID, fulfiller: this.state.email, fulFiller_Name: this.state.fullName }
 
-        //TODO: Re-enable this
-
-        // if (this.state.cardPoster === this.state.fullName) {
-        //     Alert.alert("You cannot request to fulfill your own request")
-        // }
-        // else {
-        Alert.alert("Confirm", "Offer to help this person?",
-            [
-                { text: "No", onPress: () => this.closeRequest() },
-                { text: "Yes", onPress: () => this.sendConnectRequest(data) }
-            ])
-        // }
+        if (this.state.posterEmail === this.state.email) {
+            Alert.alert("You cannot request to fulfill your own request")
+        }
+        else {
+            Alert.alert("Confirm", "Offer to help this person?",
+                [
+                    { text: "No", onPress: () => this.closeRequest() },
+                    { text: "Yes", onPress: () => this.sendConnectRequest(data) }
+                ])
+        }
     }
 
     sendConnectRequest = (data) => {

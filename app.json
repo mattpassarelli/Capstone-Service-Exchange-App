@@ -23,7 +23,8 @@
       "bundleIdentifier": "com.mattpassarelli.uexchange"
     },
     "android": {
-      "package": "com.mattpassarelli.uexchange"
+      "package": "com.mattpassarelli.uexchange",
+      "googleServicesFile": "./google-services.json"
     },
     "description": ""
   }

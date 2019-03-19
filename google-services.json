@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "612153953841",
+    "firebase_url": "https://uexchange-97f4b.firebaseio.com",
+    "project_id": "uexchange-97f4b",
+    "storage_bucket": "uexchange-97f4b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612153953841:android:6ba860864de0a651",
+        "android_client_info": {
+          "package_name": "com.mattpassarelli.uexchange"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612153953841-pak4opt6180c425vetgrifkjvsimra3a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDl3tU8hrDu-dyE6pnoYXf03FY7PNIPsFQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

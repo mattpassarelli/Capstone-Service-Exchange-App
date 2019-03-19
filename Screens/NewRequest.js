@@ -52,6 +52,8 @@ class NewRequest extends PureComponent {
     componentDidMount() {
         this.userFullName()
         this.userEmail()
+
+        this.state.socket.on("requestAddCallback", (data) => this.processRequestCallback(data))
     }
 
     //Grab the full name from the phone's storage
@@ -124,6 +126,7 @@ class NewRequest extends PureComponent {
         else {
             Alert.alert("Please fill in all fields")
         }
+
     }
 
     //closes preview modal
@@ -172,6 +175,19 @@ class NewRequest extends PureComponent {
             requestDescription: ""
         })
         this.textInput.clear()
+    }
+
+    processRequestCallback = (data) => {
+        console.log("Request Feedback is: " + data)
+        switch (data) {
+            case "success":
+                console.log("Success!")
+                this.props.navigation.navigate("Home")
+                break;
+            default:
+                console.log("Oh no")
+                break;
+        }
     }
 
     render() {
