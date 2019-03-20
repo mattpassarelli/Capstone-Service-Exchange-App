@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, TextInput, Text, findNodeHandle, Alert, Modal } from 'react-native';
+import { View, StyleSheet, Image, TextInput, Text, findNodeHandle, Alert, Modal, AsyncStorage } from 'react-native';
 import { withNavigation } from 'react-navigation'
 import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
@@ -53,13 +53,36 @@ class RegisterAccount extends Component {
 			pinString: "",
 			pinCode: 0,
 			tosAgreed: false,
-			socket: apiEndpoint
+			socket: apiEndpoint,
+			expoToken: "",
 		};
 	}
 
 	componentDidMount() {
 		this.state.socket.on("isAccountVerified", (data) => this.checkVerifiedAccount(data))
 		this.state.socket.on("creationReturn", (data) => this.creationReturnData(data))
+		this.getExpoTokenFromStorage()
+	}
+
+	async getExpoTokenFromStorage(){
+		try {
+			await AsyncStorage.getItem("expoToken").then((value) => {
+				console.log("Expo Token found: " + value)
+				if (value !== null) {
+					console.log("expoToken found from app launch. Saving for use")
+					this.setState({
+						expoToken: value
+					})
+					//console.log("Expo State: " + this.state.expoToken)
+				}
+				else {
+					console.log("No expo Token found. Will attempt again on relaunch")
+				}
+			})
+		}
+		catch (error) {
+			console.error(error)
+		}
 	}
 
 	handleFirstNameChange = (first) => {
@@ -115,9 +138,11 @@ class RegisterAccount extends Component {
 		if (fieldsAreNotEmpty && emailHasAtSign && emailEndsInEDU && passwordsMatch && this.state.tosAgreed) {
 			var data = {
 				firstName: this.state.firstName, lastName: this.state.lastName,
-				email: this.state.email, phoneNumber: this.state.phoneNumber, password: this.state.password
+				email: this.state.email, password: this.state.password, 
+				expoNotificationToken: this.state.expoToken
 			}
 
+			console.log("Submitting new user AND Expo Token" + this.state.expoToken)
 			this.state.socket.emit("newUserRegistration", (data))
 		}
 	}

@@ -357,6 +357,7 @@ export default class App extends React.Component {
       signedIn: false,
       checkedSignedIn: false,
       withinDistance: false,
+      loading: false,
       socket: apiEndpoint,
       email: "",
       token: "",
@@ -397,15 +398,15 @@ export default class App extends React.Component {
          */
 
 
-        const distance = geolib.getDistance(position.coords, {
-          latitude: 37.063922,
-          longitude: -76.492951
-        })
-
-        // const distance = geolib.getDistance({ latitude: 37.066388, longitude: -76.488703 }, {
+        // const distance = geolib.getDistance(position.coords, {
         //   latitude: 37.063922,
         //   longitude: -76.492951
         // })
+
+        const distance = geolib.getDistance({ latitude: 37.066388, longitude: -76.488703 }, {
+          latitude: 37.063922,
+          longitude: -76.492951
+        })
 
         console.log('You are ' + distance + ' meters away from CNU')
 
@@ -425,7 +426,7 @@ export default class App extends React.Component {
       }
     )
 
-    this.registerForPushNotificationsAsync()
+    this.checkForTokenStorage()
   }
 
   async userEmail(){
@@ -433,7 +434,7 @@ export default class App extends React.Component {
         await AsyncStorage.getItem("userEmail").then((value) => {
             console.log("Email:" + value)
             this.setState({
-                email: value
+                email: value,
             })
             this.state.socket.emit("addNotificationTokenToAccount", ({token: this.state.token, email: value}))
         })
@@ -442,6 +443,18 @@ export default class App extends React.Component {
         console.log(error)
     }
 }
+
+  checkForTokenStorage() {
+   AsyncStorage.getItem("expoToken").then((value) => {
+    if (value !== null) {
+        console.log("Expo Token found in storage")
+      }
+      else {
+        console.log("No Expo Token found. Asking for token/permissions")
+        this.registerForPushNotificationsAsync()
+      }
+    })
+  }
 
   async registerForPushNotificationsAsync() {
     const { status: existingStatus } = await Permissions.getAsync(
@@ -466,7 +479,11 @@ export default class App extends React.Component {
     let token = await Notifications.getExpoPushTokenAsync();
     //let token =  "ExponentPushToken[XeeNo9APZFj_gWwUnfJk2O]"
 
-    console.log("TOKEN: " + token, "Sending token to user account")
+    console.log("TOKEN: " + token, "Sending token to user account and saving to STORAGE")
+
+    AsyncStorage.setItem("expoToken", token)
+    console.log("Expo Token saved to Phone Storage")
+
     this.setState({
       token: token,
     })
@@ -474,6 +491,7 @@ export default class App extends React.Component {
     this.userEmail()
 
   }
+  
   render() {
     console.log("Are you WITHIN DISTANCE: " + this.state.withinDistance)
     console.log("SignedIn Boolean: " + this.state.signedIn)

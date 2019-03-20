@@ -92,6 +92,7 @@ class Account extends React.Component {
 			await AsyncStorage.removeItem("loginKey")
 			await AsyncStorage.removeItem("userEmail")
 			await AsyncStorage.removeItem("fullAccountName")
+			await AsyncStorage.removeItem("expoToken")
 			console.log("Login information Removed")
 			navigation.navigate("SignedOut")
 		}
