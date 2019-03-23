@@ -64,7 +64,7 @@ class RegisterAccount extends Component {
 		this.getExpoTokenFromStorage()
 	}
 
-	async getExpoTokenFromStorage(){
+	async getExpoTokenFromStorage() {
 		try {
 			await AsyncStorage.getItem("expoToken").then((value) => {
 				console.log("Expo Token found: " + value)
@@ -122,23 +122,30 @@ class RegisterAccount extends Component {
 		var emailHasAtSign = this.checkEmailForAtSign()
 		var emailEndsInEDU = this.checkEmailForEDU()
 		var passwordsMatch = this.checkPasswordsMatch()
+		var emailHasNoPlus = this.checkEmailForPlus()
+		var emailHasNoSpaces = this.checkEmailForSpaces()
 
 		console.log("Completeness " + fieldsAreNotEmpty)
 		console.log("Email Has @: " + emailHasAtSign)
 		console.log("Email ends in EDU: " + emailEndsInEDU)
 		console.log("Do passwords match? " + passwordsMatch)
+		console.log("Does email have a space?" + emailHasNoSpaces)
+		console.log("Does email have a + ?" + emailHasNoPlus)
 
 		if (!fieldsAreNotEmpty) { Alert.alert("Fill in all fields") }
 		if (!emailHasAtSign) { Alert.alert("Make sure your email contains an @") }
 		if (!emailEndsInEDU) { Alert.alert("Your email must end in 'edu'") }
 		if (!passwordsMatch) { Alert.alert("Your passwords do not match") }
 		if (!this.state.tosAgreed) { Alert.alert("Please accept the Terms of Service") }
+		if (emailHasNoSpaces) { Alert.alert("Your email cannot have spaces") }
+		if (!emailHasNoPlus) { Alert.alert("You cannot use an email with a \"+\"" + " in it. Please try again.") }
 
 
-		if (fieldsAreNotEmpty && emailHasAtSign && emailEndsInEDU && passwordsMatch && this.state.tosAgreed) {
+		if (fieldsAreNotEmpty && emailHasAtSign && emailEndsInEDU && passwordsMatch && this.state.tosAgreed && !emailHasNoSpaces
+			&& emailHasNoPlus) {
 			var data = {
 				firstName: this.state.firstName, lastName: this.state.lastName,
-				email: this.state.email, password: this.state.password, 
+				email: this.state.email, password: this.state.password,
 				expoNotificationToken: this.state.expoToken
 			}
 
@@ -155,6 +162,9 @@ class RegisterAccount extends Component {
 				break;
 			case "Email Not Used":
 				this.openRequest()
+				break;
+			case "Error with Email":
+				Alert.alert("Oof. Aah.", "There was an error validating your email. Please try again.")
 				break;
 			default:
 				console.log("Oh No")
@@ -180,6 +190,25 @@ class RegisterAccount extends Component {
 			return false
 		}
 		return true
+	}
+
+	/**
+	 * We need to make sure the emails
+	 * do not contain any spaces or "+"
+	 * signs to thwart any duplication
+	 * accounts
+	 */
+	checkEmailForPlus() {
+		if (this.state.email.includes("+")) {
+			return false
+		}
+		else {
+			return true
+		}
+	}
+
+	checkEmailForSpaces() {
+		return /\s/g.test(this.state.email);
 	}
 
 	//We check to make sure the email ends in EDU since it's the only way
@@ -326,7 +355,7 @@ class RegisterAccount extends Component {
 						style={styles.textInput}
 						ref={(input) => { this.emailInput = input }}
 						returnKeyType={"next"}
-						onSubmitEditing={() => this.phoneInput.focus()}
+						onSubmitEditing={() => this.passwordInput.focus()}
 						blurOnSubmit={true}
 						onChangeText={(text) => this.handleEmailTextChange(text)}
 						onFocus={(event) => {
@@ -406,7 +435,7 @@ class RegisterAccount extends Component {
 						backgroundColor: '#ecf0f1',
 					}, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
 						<View style={{
-							backgroundColor: '#fff', padding: 20, height: "30%", width: "80%",
+							backgroundColor: '#fff', padding: 20, height: "40%", width: "80%",
 							justifyContent: "space-between", alignItems: "center", borderRadius: 10
 						}}>
 

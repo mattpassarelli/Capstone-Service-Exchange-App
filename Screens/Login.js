@@ -100,9 +100,7 @@ class Login extends Component {
 
 	sendLoginRequest() {
 
-		/**
-		 * TODO: 
-		 * 
+		/** 
 		 * Checks for email and password
 		 * 
 		 * Return function for when server emits callback
@@ -224,9 +222,6 @@ class Login extends Component {
 						this.scroll = ref
 					}}
 					enableOnAndroid={true}>
-
-
-					{/* TODO: Replace icon with the LOGO from Holly */}
 
 					<Image
 						style={{ flex: 1, width: 200, height: 200, paddingTop: 125 }}
