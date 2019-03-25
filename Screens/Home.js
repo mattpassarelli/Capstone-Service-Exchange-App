@@ -261,7 +261,10 @@ class Home extends Component {
                 to: this.state.OPExpoToken,
                 sound: 'default',
                 title: NEW_NOTIFICATION_TITLE,
-                body: NEW_NOTIFICATION_MESSAGE
+                body: NEW_NOTIFICATION_MESSAGE,
+                data: {
+                    message: "Someone's offered to help!"
+                  }
             })
         })
         console.log("Push Notification Sent", JSON.stringify(response))

@@ -20,6 +20,7 @@ import RejectedDistance from "./Screens/RejectedDistance"
 import Help from "./Screens/Help"
 import geolib from 'geolib'
 import { API_ENDPOINT } from "./Components/api-config"
+import Toast from 'react-native-root-toast';
 import { YellowBox } from 'react-native';
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
 
@@ -99,7 +100,7 @@ class NewRequestScreen extends React.Component {
 
   render() {
     return (
-      <NewRequest navigation={this.props.navigation}/>
+      <NewRequest navigation={this.props.navigation} />
     )
   }
 }
@@ -361,10 +362,13 @@ export default class App extends React.Component {
       socket: apiEndpoint,
       email: "",
       token: "",
+      notification: {},
     }
   }
 
   componentWillMount() {
+
+
 
     //Check for loginKey to log user's back in
     AsyncStorage.getItem("loginKey").then((value) => {
@@ -427,26 +431,34 @@ export default class App extends React.Component {
     )
 
     this.checkForTokenStorage()
+
+    // Handle notifications that are received or selected while the app
+    // is open. If the app was closed and then opened by tapping the
+    // notification (rather than just tapping the app icon to open it),
+    // this function will fire on the next tick after the app starts
+    // with the notification data.
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
   }
 
-  async userEmail(){
+  async userEmail() {
     try {
-        await AsyncStorage.getItem("userEmail").then((value) => {
-            console.log("Email:" + value)
-            this.setState({
-                email: value,
-            })
-            this.state.socket.emit("addNotificationTokenToAccount", ({token: this.state.token, email: value}))
+      await AsyncStorage.getItem("userEmail").then((value) => {
+        console.log("Email:" + value)
+        this.setState({
+          email: value,
         })
+        this.state.socket.emit("addNotificationTokenToAccount", ({ token: this.state.token, email: value }))
+      })
     }
     catch (error) {
-        console.log(error)
+      console.log(error)
     }
-}
+  }
 
+  //Check phone storage for a possible Expo Token
   checkForTokenStorage() {
-   AsyncStorage.getItem("expoToken").then((value) => {
-    if (value !== null) {
+    AsyncStorage.getItem("expoToken").then((value) => {
+      if (value !== null) {
         console.log("Expo Token found in storage")
       }
       else {
@@ -456,6 +468,8 @@ export default class App extends React.Component {
     })
   }
 
+  //Request notifications permissions and, if yes,
+  //send Expo Token to account in DB
   async registerForPushNotificationsAsync() {
     const { status: existingStatus } = await Permissions.getAsync(
       Permissions.NOTIFICATIONS
@@ -491,7 +505,12 @@ export default class App extends React.Component {
     this.userEmail()
 
   }
-  
+
+  _handleNotification = (notification) => {
+    console.log("Incoming notification: " + JSON.stringify(notification))
+    Toast.show(notification.data.message)
+  };
+
   render() {
     console.log("Are you WITHIN DISTANCE: " + this.state.withinDistance)
     console.log("SignedIn Boolean: " + this.state.signedIn)

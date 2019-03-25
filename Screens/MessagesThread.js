@@ -9,7 +9,7 @@ import KeyboardSpacer from "react-native-keyboard-spacer"
 import Icon from 'react-native-vector-icons/Ionicons';
 import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
-import { NEW_MESSAGE_TITLE, NEW_MESSAGE_MESSAGE, NOTIFICATION_API } from "../Components/Constants"
+import { NEW_MESSAGE_TITLE, NEW_MESSAGE_MESSAGE, NOTIFICATION_API, NEW_MESSAGE_TOAST_MESSAGE } from "../Components/Constants"
 
 const apiEndpoint = API_ENDPOINT
 
@@ -162,7 +162,10 @@ class MessagesThread extends Component {
         to: this.state.userToReceivePushNotifications,
         sound: 'default',
         title: NEW_MESSAGE_TITLE,
-        body: NEW_MESSAGE_MESSAGE + this.state.fullName
+        body: NEW_MESSAGE_MESSAGE + this.state.fullName,
+        data: {
+          message: NEW_MESSAGE_TOAST_MESSAGE + this.state.fullName
+        }
       })
     })
     console.log("Push Notification Sent", JSON.stringify(response))
