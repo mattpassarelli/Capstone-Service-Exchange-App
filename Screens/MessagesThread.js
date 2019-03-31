@@ -318,15 +318,14 @@ class MessagesThread extends Component {
                 <Text style={{ fontWeight: "bold", fontSize: RF(2.5), textAlign: "center", padding: 3 }}>Close Request?</Text>
                 <Text style={{ fontSize: RF(2), paddingTop: 5, textAlign: "center" }}>
                   Here you can choose to close the request, or just this conversation. Closing the request will mark it as done and remove
-                  it from the app. Closing this conversation will delete only this conversation and keep your request open for others to
-                  offer to fulfill it. Only the creator of the request can close the request itself.
+                  it from the app. Closing this conversation will delete only this conversation and keep your request open. Only the creator of the request can close the request itself.
                                     </Text>
               </View>
 
               <View>
                 <Text style={{ textAlign: "center", fontSize: RF(2), paddingBottom: 2.5, paddingTop: 2.5 }}>
-                  What would you like to do?
-                                  </Text>
+                  Which would you like to delete?
+                 </Text>
               </View>
 
 
@@ -340,7 +339,9 @@ class MessagesThread extends Component {
                   buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
 
                 <CustomButton text="Request"
-                  onPress={() => this.closeRequest()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle}
+                  onPress={() => this.closeRequest()} 
+                  buttonStyle={this.state.creatorEmail === this.state.email ? styles.buttonStyle : styles.buttonStyleFaded} 
+                  textStyle={styles.buttonTextStyle}
                   disabled={this.state.creatorEmail === this.state.email ? false : true} />
               </View>
             </View>
@@ -378,6 +379,12 @@ const styles = StyleSheet.create({
   buttonStyle: {
     padding: 10,
     backgroundColor: 'rgb(56, 73, 154)',
+    borderRadius: 10
+  },
+
+  buttonStyleFaded: {
+    padding: 10,
+    backgroundColor: 'rgba(56, 73, 154, .6)',
     borderRadius: 10
   },
 

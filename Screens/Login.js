@@ -63,12 +63,12 @@ class Login extends Component {
 	 * Stores a loginKey to save from having to reenter credentials each time
 	 * Also stores, Full name and email for use throughout the app
 	 */
-	saveLogin = async (fullName) => {
+	async saveLogin (fullName) {
 
 		try {
-			await AsyncStorage.setItem('loginKey', 'loginExists')
-			await AsyncStorage.setItem("fullAccountName", fullName)
-			await AsyncStorage.setItem("userEmail", this.state.email)
+			AsyncStorage.setItem('loginKey', 'loginExists')
+			AsyncStorage.setItem("fullAccountName", fullName)
+			AsyncStorage.setItem("userEmail", this.state.email)
 			console.log("Login Key and info Saved")
 		}
 		catch (error) {
@@ -114,6 +114,7 @@ class Login extends Component {
 	processLogin = (data) => {
 		console.log("Return Data: " + data.firstName + " " + data.lastName)
 		const fullName = data.firstName + " " + data.lastName
+		console.log("FULLNAME: " + fullName)
 
 		switch (data.message) {
 			case "Login Accepted":

@@ -87,11 +87,11 @@ class NewRequest extends PureComponent {
         }
     }
 
-    removeLastName(){
-        var index = this.state.fullName.indexOf(" " )
+    removeLastName() {
+        var index = this.state.fullName.indexOf(" ")
         var firstName = this.state.fullName.substring(0, index)
         var lastName = this.state.fullName.substring(index + 1)
-        var firstIntialofLast = lastName.substring(0,1)
+        var firstIntialofLast = lastName.substring(0, 1)
         var name = firstName + " " + firstIntialofLast
 
         this.setState({
@@ -101,9 +101,12 @@ class NewRequest extends PureComponent {
 
     //Handles selection from the Picker for title
     handlePickerChange = (itemValue, itemIndex) => {
-        this.setState({
-            selectedItem: itemValue,
-        })
+        // Keeps the placeholder from being selected
+        if (itemValue != "0") {
+            this.setState({
+                selectedItem: itemValue,
+            })
+        }
     }
 
     //Handles text input in the textInput for requestDescription
@@ -211,6 +214,9 @@ class NewRequest extends PureComponent {
 
                                     {/* TODO: Add in request items */}
 
+                                    {/* Placeholder Item */}
+                                    <Picker.Item label="Please Select a Request..." value="0" />
+
                                     <Picker.Item label="Need Help Moving Something" value="Need Help Moving Something" />
                                     <Picker.Item label="Need A Ride" value="Need A Ride" />
                                     <Picker.Item label="Selling Textbook" value="Selling Textbook" />
@@ -222,12 +228,10 @@ class NewRequest extends PureComponent {
 
                         </View>
 
-                        {/* TODO: Attempt to replace this with KeyboardAwareScrollView */}
                         <View style={{ flex: 2, }}>
 
-
+                            {/* Character Counter */}
                             <Text style={{ position: "absolute", right: 0, backgroundColor: "transparent", color: "rgba(137, 132, 132, 0.5)", alignItems: "flex-end" }}>{this.state.requestDescription.length}/100</Text>
-
 
                             <TextInput placeholder="Type a description..." multiline={true}
                                 style={{

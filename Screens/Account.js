@@ -50,13 +50,8 @@ class Account extends React.Component {
 		this.userEmail()
 	}
 
-	/**
-	 * TODO: 
-	 * Copy these methods to every other class that requires it
-	 */
-
 	//Grab the full name from the phone's storage
-	userFullName = async () => {
+	async userFullName() {
 		try {
 			await AsyncStorage.getItem("fullAccountName").then(async (value) => {
 				console.log("Name: " + value)
@@ -71,7 +66,7 @@ class Account extends React.Component {
 	}
 
 	//grab user email from phone storage
-	userEmail = async () => {
+	async userEmail() {
 		try {
 			await AsyncStorage.getItem("userEmail").then((value) => {
 				console.log("Email:" + value)

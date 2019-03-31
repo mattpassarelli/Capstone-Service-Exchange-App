@@ -9,12 +9,6 @@ import { API_ENDPOINT } from '../Components/api-config';
 
 const apiEndpoint = API_ENDPOINT
 
-/**
- * TODO: Find a way to forceUpdate
- * on navigation to this page
- */
-
-
 // create a component
 class Messages extends Component {
     constructor(props) {
@@ -152,7 +146,6 @@ class Messages extends Component {
 
         this.state.socket.emit("requestConversations", ({ email: this.state.email }))
     }
-
 
     render() {
         return (

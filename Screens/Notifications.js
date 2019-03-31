@@ -7,7 +7,8 @@ import { AsyncStorage } from "react-native"
 import { API_ENDPOINT } from '../Components/api-config';
 import RF from "react-native-responsive-fontsize"
 import CustomButton from "../Components/CustomButton"
-import {NOTIFICATION_API, NEW_CONVERSATION_MESSAGE, NEW_CONVERSATION_TITLE } from "../Components/Constants"
+import { NOTIFICATION_API, NEW_CONVERSATION_MESSAGE, NEW_CONVERSATION_TITLE } from "../Components/Constants"
+import moment from "moment"
 
 const apiEndpoint = API_ENDPOINT
 
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
 		padding: 10,
 		backgroundColor: 'rgb(56, 73, 154)',
 		borderRadius: 10,
-		width: "20%",
+		width: "40%",
 	},
 
 	buttonTextStyle: {
@@ -56,10 +57,12 @@ class Notifications extends React.Component {
 			fulFiller_Name: "",
 			fulFiller_Email: "",
 			fulFiller_ExpoToken: "",
-			posterExpoToken:"",
+			posterExpoToken: "",
 			request_ID: "",
 			requestType: "",
 			refreshing: false,
+			dateCreated: "",
+			notification_ID: "",
 		}
 	}
 	componentDidMount() {
@@ -67,6 +70,7 @@ class Notifications extends React.Component {
 		this.userFullName()
 		this.userEmail()
 		this.state.socket.on("receiveNotifications", (data) => { this.setState({ notificationJSON: data }), this.addNotifications() })
+		this.state.socket.on("NoteDeleteCallback", (data) => { this.processDeletionCallback(data) })
 	}
 
 	/**
@@ -94,7 +98,7 @@ class Notifications extends React.Component {
 	}
 
 	//Grab the full name from the phone's storage
-	userFullName = async () => {
+	async userFullName() {
 		try {
 			await AsyncStorage.getItem("fullAccountName").then(async (value) => {
 				console.log("Name: " + value)
@@ -109,7 +113,7 @@ class Notifications extends React.Component {
 	}
 
 	//grab user email from phone storage
-	userEmail = async () => {
+	async userEmail() {
 		try {
 			await AsyncStorage.getItem("userEmail").then((value) => {
 				console.log("Email:" + value)
@@ -152,14 +156,17 @@ class Notifications extends React.Component {
 				var title = this.state.notificationJSON[i].fulFiller_Name + " has offered to help you with your request: " + this.state.notificationJSON[i].requestTitle
 				console.log("Request_ID: " + this.state.notificationJSON[i].request_ID)
 				var newCard = (
-					<Card title={title} 
-					fulFiller_Email={this.state.notificationJSON[i].fulFiller_Email}
-					 fulFiller_Name={this.state.notificationJSON[i].fulFiller_Name}
-					 request_ID={this.state.notificationJSON[i].request_ID}
-					 requestType={this.state.notificationJSON[i].requestTitle}
-					 posterExpoToken={this.state.notificationJSON[i].posterExpoToken}
-					 fulFiller_ExpoToken={this.state.notificationJSON[i].fulfiller_ExpoToken}
-					 ></Card>
+					<Card title={title}
+						fulFiller_Email={this.state.notificationJSON[i].fulFiller_Email}
+						fulFiller_Name={this.state.notificationJSON[i].fulFiller_Name}
+						request_ID={this.state.notificationJSON[i].request_ID}
+						requestType={this.state.notificationJSON[i].requestTitle}
+						posterExpoToken={this.state.notificationJSON[i].posterExpoToken}
+						fulFiller_ExpoToken={this.state.notificationJSON[i].fulfiller_ExpoToken}
+						dateCreated={this.state.notificationJSON[i].dateOfNotification}
+						timeDifference={moment(this.state.notificationJSON[i].dateOfNotification).utc().from(moment(new Date()).utc())}
+						notification_ID={this.state.notificationJSON[i]._id}
+					></Card>
 				)
 
 				tempNotifications.push(newCard)
@@ -186,6 +193,10 @@ class Notifications extends React.Component {
 		console.log(item.props.requestType)
 		console.log("Fulfiller ExpoToken: " + item.props.fulFiller_ExpoToken)
 		console.log("Poster Expo Token: " + item.props.posterExpoToken)
+		console.log("Date Created: " + moment(item.props.dateCreated).format("dddd, MMMM Do YYYY, h:mm:ss a"))
+		console.log("Time from now: " + moment(item.props.dateCreated).from(new Date()))
+		console.log("Notification ID: " + item.props.notification_ID)
+
 		this.setState({
 			fulFiller_Name: item.props.fulFiller_Name,
 			fulFiller_Email: item.props.fulFiller_Email,
@@ -193,7 +204,9 @@ class Notifications extends React.Component {
 			request_ID: item.props.request_ID,
 			requestType: item.props.requestType,
 			posterExpoToken: item.props.posterExpoToken,
-			popupIsOpen: true
+			popupIsOpen: true,
+			dateCreated: item.props.dateCreated,
+			notification_ID: item.props.notification_ID
 		})
 	}
 
@@ -207,71 +220,100 @@ class Notifications extends React.Component {
 	createConversation() {
 		console.log("Attempting to create conversation between: " + this.state.email + " and " + this.state.fulFiller_Email)
 
-		var data = { user1: this.state.email, user1Name: this.state.fullName,
-			 user2: this.state.fulFiller_Email, user2Name: this.state.fulFiller_Name,
-			  request_ID: this.state.request_ID, requestType: this.state.requestType, 
-			  user1ExpoToken: this.state.posterExpoToken, user2ExpoToken: this.state.fulFiller_ExpoToken }
+		var data = {
+			user1: this.state.email, user1Name: this.state.fullName,
+			user2: this.state.fulFiller_Email, user2Name: this.state.fulFiller_Name,
+			request_ID: this.state.request_ID, requestType: this.state.requestType,
+			user1ExpoToken: this.state.posterExpoToken, user2ExpoToken: this.state.fulFiller_ExpoToken
+		}
 
 		this.state.socket.emit("createConversation", (data))
 		this.state.socket.on("convoReturn", (data) => this.convoReturn(data))
 	}
 
-	convoReturn(data){
+	convoReturn = (data) => {
 		console.log("Convo Return: " + data)
-		if(data)
-		{
+		if (data) {
 			Alert.alert("Conversation already exists", "A conversation about this request already exists", [
-				{text: "OK"},
+				{ text: "OK", onPress: () => this.setState({ popupIsOpen: false }) },
 			],
-			{cancelable: false})
+				{ cancelable: false })
 		}
-		else{
+		else {
 			this.closeRequest()
 			this.sendPushNotification()
 		}
 	}
 
 	sendPushNotification = () => {
-        console.log("Sending Push Notification", this.state.fulFiller_ExpoToken)
-        let response = fetch(NOTIFICATION_API, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                to: this.state.fulFiller_ExpoToken,
-                sound: 'default',
-                title: NEW_CONVERSATION_TITLE,
-                body: this.state.fullName + NEW_CONVERSATION_MESSAGE
-            })
-        })
-        console.log("Push Notification Sent", JSON.stringify(response))
-    }
+		console.log("Sending Push Notification", this.state.fulFiller_ExpoToken)
+		let response = fetch(NOTIFICATION_API, {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				to: this.state.fulFiller_ExpoToken,
+				sound: 'default',
+				title: NEW_CONVERSATION_TITLE,
+				body: this.state.fullName + NEW_CONVERSATION_MESSAGE,
+				data: {
+					message: this.state.fullName + NEW_CONVERSATION_MESSAGE
+				}
+			})
+		})
+		console.log("Push Notification Sent", JSON.stringify(response))
+	}
+
+	deleteNotification = () => {
+		console.log("Deleting notification from DB")
+
+		this.state.socket.emit("DeleteNotification", { ID: this.state.notification_ID, email: this.state.email })
+	}
+
+	//Handle what the server throws back when
+	//trying to delete a notification
+	processDeletionCallback = (data) => {
+		console.log("Callback: " + data);
+
+		switch (data) {
+			case "Success":
+				this.setState({
+					popupIsOpen: false,
+				})
+				this.refreshFeed()
+				break;
+			case "Error":
+				Alert.alert("Error", "There was an error processing this requests. Please try again later");
+				break;
+			default:
+				Alert.alert("Error", "There was an error processing this requests. Please try again later");
+				break;
+		}
+	}
 
 	render() {
 		return (
 			<React.Fragment>
-				{/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}> */}
-					<ScrollView refreshControl={
-						<RefreshControl refreshing={this.state.refreshing} onRefresh={this.refreshFeed} />
-					}>
-						{
-							this.state.notifications.map((item, key) => {
-								return (
-									<TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
-										<Card key={key} containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(255, 255, 255)", top:20 }}>
-											<View>
-												{/* //TODO: Work out Time difference math */}
-												<Text>{item.props.title}</Text>
-												<Text style={{ position: "absolute", right: 0, bottom: 0, fontSize: RF(1.2) }}>Time diff here</Text>
-											</View>
-										</Card>
-									</TouchableOpacity>
-								)
-							})
-						}
-					</ScrollView>
+				<ScrollView refreshControl={
+					<RefreshControl refreshing={this.state.refreshing} onRefresh={this.refreshFeed} />
+				}>
+					{
+						this.state.notifications.map((item, key) => {
+							return (
+								<TouchableOpacity key={key} activeOpacity={0.7} onPress={() => this.openRequest(item)}>
+									<Card key={key} containerStyle={{ borderRadius: 0, margin: 5, borderRadius: 10, backgroundColor: "rgb(255, 255, 255)", top: 20 }}>
+										<View>
+											<Text>{item.props.title}</Text>
+											<Text style={{ position: "absolute", right: 0, bottom: 0, fontSize: RF(1.2) }}>{item.props.timeDifference}</Text>
+										</View>
+									</Card>
+								</TouchableOpacity>
+							)
+						})
+					}
+				</ScrollView>
 				{/* </View> */}
 
 				<Modal
@@ -299,12 +341,17 @@ class Notifications extends React.Component {
 
 
 							<View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-								<CustomButton text="No"
-									onPress={() => this.closeRequest()}
+
+								<CustomButton text="Delete Notification"
+									onPress={() => this.deleteNotification()}
 									buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
 
-								<CustomButton text="Yes"
-									onPress={() => this.createConversation()}
+								<CustomButton text="Create Conversation"
+									onPress={() => Alert.alert("Confirm",
+										"Create the conversation?",
+										[{ text: "No" },
+										{ text: "Yes", onPress: () => this.createConversation() }]
+									)}
 									buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
 							</View>
 						</View>

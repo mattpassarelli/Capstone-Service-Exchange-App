@@ -85,18 +85,15 @@ class Home extends Component {
      * can connect properly
      */
     componentDidMount() {
+        this.userFullName()
+        this.userEmail()
+        this.state.socket.emit("requestRequests")
         console.log("Component Mounted")
         this.state.socket.on("requestData", (data) => { this.setState({ requestsDataJSON: data }), this.addRequestsFromServer() })
     }
 
-    componentWillMount() {
-        this.state.socket.emit("requestRequests")
-        this.userFullName()
-        this.userEmail()
-    }
-
     //Grab the full name from the phone's storage
-    userFullName = async () => {
+    async userFullName() {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
                 console.log("Name: " + value)
@@ -111,7 +108,7 @@ class Home extends Component {
     }
 
     //grab user email from phone storage
-    userEmail = async () => {
+    async userEmail() {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
                 console.log("Email:" + value)
