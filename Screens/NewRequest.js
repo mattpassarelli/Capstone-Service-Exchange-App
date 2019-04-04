@@ -36,7 +36,8 @@ const styles = StyleSheet.create({
 // create a component
 class NewRequest extends PureComponent {
 
-     homeInstance = Home;
+    homeInstance = Home
+    _isMounted = false
 
     constructor(props) {
         super(props)
@@ -54,20 +55,27 @@ class NewRequest extends PureComponent {
     }
 
     componentDidMount() {
+        this._isMounted = true
         this.userFullName()
         this.userEmail()
 
         this.state.socket.on("requestAddCallback", (data) => this.processRequestCallback(data))
     }
 
+    componentWillUnmount() {
+        this._isMounted = false
+    }
+
     //Grab the full name from the phone's storage
-    userFullName = async () => {
+    async userFullName() {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
                 console.log("Name: " + value)
-                this.setState({
-                    fullName: value
-                })
+                if (this._isMounted) {
+                    this.setState({
+                        fullName: value
+                    })
+                }
                 this.removeLastName()
             })
         }
@@ -77,13 +85,15 @@ class NewRequest extends PureComponent {
     }
 
     //grab user email from phone storage
-    userEmail = async () => {
+    async userEmail() {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
                 console.log("Email:" + value)
-                this.setState({
-                    email: value
-                })
+                if (this._isMounted) {
+                    this.setState({
+                        email: value
+                    })
+                }
             })
         }
         catch (error) {
@@ -98,26 +108,32 @@ class NewRequest extends PureComponent {
         var firstIntialofLast = lastName.substring(0, 1)
         var name = firstName + " " + firstIntialofLast
 
-        this.setState({
-            firstNameLastInitial: name
-        })
+        if (this._isMounted) {
+            this.setState({
+                firstNameLastInitial: name
+            })
+        }
     }
 
     //Handles selection from the Picker for title
     handlePickerChange = (itemValue, itemIndex) => {
         // Keeps the placeholder from being selected
         if (itemValue != "0") {
-            this.setState({
-                selectedItem: itemValue,
-            })
+            if (this._isMounted) {
+                this.setState({
+                    selectedItem: itemValue,
+                })
+            }
         }
     }
 
     //Handles text input in the textInput for requestDescription
     handleDescriptionChange = (text) => {
-        this.setState({
-            requestDescription: text
-        })
+        if (this._isMounted) {
+            this.setState({
+                requestDescription: text
+            })
+        }
     }
 
     //Opens preview modal
@@ -126,9 +142,11 @@ class NewRequest extends PureComponent {
         var checked = this.checkForEmptyStates()
 
         if (checked) {
-            this.setState({
-                isPreviewOpen: true
-            })
+            if (this._isMounted) {
+                this.setState({
+                    isPreviewOpen: true
+                })
+            }
         }
         else {
             Alert.alert("Please fill in all fields")
@@ -138,9 +156,11 @@ class NewRequest extends PureComponent {
 
     //closes preview modal
     closePreview() {
-        this.setState({
-            isPreviewOpen: false
-        })
+        if (this._isMounted) {
+            this.setState({
+                isPreviewOpen: false
+            })
+        }
     }
 
     /**Checks to make sure Pick has a valid option selected
@@ -177,10 +197,12 @@ class NewRequest extends PureComponent {
 
         this.closePreview()
 
-        this.setState({
-            selectedItem: "",
-            requestDescription: ""
-        })
+        if (this._isMounted) {
+            this.setState({
+                selectedItem: "",
+                requestDescription: ""
+            })
+        }
         this.textInput.clear()
     }
 

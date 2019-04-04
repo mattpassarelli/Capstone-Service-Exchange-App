@@ -109,7 +109,7 @@ class RegisterAccountScreen extends React.Component {
   static navigationOptions = {
     title: "Create Account",
     headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', },
-    headerRight:(<View></View>)
+    headerRight: (<View></View>)
   }
 
   render() {
@@ -125,7 +125,7 @@ class TermsOfServiceScreen extends React.Component {
   static navigationOptions = {
     title: "Terms of Service",
     headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', },
-    headerRight:(<View></View>)
+    headerRight: (<View></View>)
   }
   render() {
     return (
@@ -353,6 +353,9 @@ export const rejectedDistanceRoot = () => {
 }
 
 export default class App extends React.Component {
+
+  _isMounted = false;
+
   constructor(props) {
     super(props);
 
@@ -376,17 +379,20 @@ export default class App extends React.Component {
       if (value !== null) {
         console.log("Login key found!")
 
-        this.setState({
-          signedIn: true
-        })
-
+        if (this._isMounted) {
+          this.setState({
+            signedIn: true
+          })
+        }
       }
       else {
         console.log("Login key not found")
 
-        this.setState({
-          signedIn: false
-        })
+        if (this._isMounted) {
+          this.setState({
+            signedIn: false
+          })
+        }
       }
     })
 
@@ -416,11 +422,15 @@ export default class App extends React.Component {
         console.log('You are ' + distance + ' meters away from CNU')
 
         if (distance <= 1610) {
-          this.setState({
-            withinDistance: true
-          })
+          if (this._isMounted) {
+            this.setState({
+              withinDistance: true
+            })
+          }
         }
-        this.setState({ isReady: true })
+        if (this._isMounted) {
+          this.setState({ isReady: true })
+        }
       },
       function (error) {
         Alert.alert(error.message)
@@ -443,16 +453,23 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true
     SplashScreen.preventAutoHide()
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
   }
 
   async userEmail() {
     try {
       await AsyncStorage.getItem("userEmail").then((value) => {
         console.log("Email:" + value)
-        this.setState({
-          email: value,
-        })
+        if (this._isMounted) {
+          this.setState({
+            email: value,
+          })
+        }
         this.state.socket.emit("addNotificationTokenToAccount", ({ token: this.state.token, email: value }))
       })
     }
@@ -504,9 +521,11 @@ export default class App extends React.Component {
     AsyncStorage.setItem("expoToken", token)
     console.log("Expo Token saved to Phone Storage")
 
-    this.setState({
-      token: token,
-    })
+    if (this._isMounted) {
+      this.setState({
+        token: token,
+      })
+    }
     // this.state.socket.emit("addNotificationTokenToAccount", ({token: token, email: this.state.email}))
     this.userEmail()
 
@@ -569,7 +588,7 @@ export default class App extends React.Component {
       else {
         const Layout = rejectedDistanceRoot()
         return <Layout />
-     }
+      }
     }
   }
 }

@@ -44,6 +44,8 @@ const ScrollStyle = StyleSheet.create({
 
 class Notifications extends React.Component {
 
+	_isMounted = false
+
 	constructor(props) {
 		super(props)
 
@@ -66,11 +68,21 @@ class Notifications extends React.Component {
 		}
 	}
 	componentDidMount() {
+		this._isMounted = true
 		this.userFullName()
 		this.userEmail()
-		this.state.socket.on("receiveNotifications", (data) => { this.setState({ notificationJSON: data }), this.addNotifications() })
+		this.state.socket.on("receiveNotifications", (data) => {
+			if (this._isMounted) {
+				this.setState({ notificationJSON: data }),
+					this.addNotifications()
+			}
+		})
 		this.state.socket.on("NoteDeleteCallback", (data) => { this.processDeletionCallback(data) })
 		this.state.socket.on("convoReturn", (data) => this.convoReturn(data))
+	}
+
+	componentWillUnmount() {
+		this._isMounted = false
 	}
 
 	/**
@@ -85,9 +97,11 @@ class Notifications extends React.Component {
          * Clear requests (in case they've all been deleted lol),
          * Then pull in all of the requests again
          */
-		this.setState({
-			refreshing: true
-		})
+		if (this._isMounted) {
+			this.setState({
+				refreshing: true
+			})
+		}
 
 		this.state.socket.emit("pullNotifications", (this.state.email))
 
@@ -102,9 +116,11 @@ class Notifications extends React.Component {
 		try {
 			await AsyncStorage.getItem("fullAccountName").then(async (value) => {
 				console.log("Name: " + value)
-				this.setState({
-					fullName: value
-				})
+				if (this._isMounted) {
+					this.setState({
+						fullName: value
+					})
+				}
 			})
 		}
 		catch (error) {
@@ -117,9 +133,11 @@ class Notifications extends React.Component {
 		try {
 			await AsyncStorage.getItem("userEmail").then((value) => {
 				console.log("Email:" + value)
-				this.setState({
-					email: value
-				})
+				if (this._isMounted) {
+					this.setState({
+						email: value
+					})
+				}
 				/**
 				 * Since I can't come up with a decent way of storing these
 				 * values in state before the socket emits, we'll just emit
@@ -143,9 +161,11 @@ class Notifications extends React.Component {
 	addNotifications = () => {
 		console.log("Recevied notification data: " + JSON.stringify(this.state.notificationJSON, null, 2))
 
-		this.setState({
-			notifications: []
-		})
+		if (this._isMounted) {
+			this.setState({
+				notifications: []
+			})
+		}
 
 		if (this.state.notificationJSON.length > 0) {
 
@@ -175,14 +195,18 @@ class Notifications extends React.Component {
 			//flip the array so the latest Notifications are at the top
 			tempNotifications.reverse()
 
-			this.setState({
-				notifications: tempNotifications,
-			})
+			if (this._isMounted) {
+				this.setState({
+					notifications: tempNotifications,
+				})
+			}
 		}
 
-		this.setState({
-			refreshing: false
-		})
+		if (this._isMounted) {
+			this.setState({
+				refreshing: false
+			})
+		}
 	}
 
 	openRequest = (item) => {
@@ -197,23 +221,27 @@ class Notifications extends React.Component {
 		console.log("Time from now: " + moment(item.props.dateCreated).from(new Date()))
 		console.log("Notification ID: " + item.props.notification_ID)
 
-		this.setState({
-			fulFiller_Name: item.props.fulFiller_Name,
-			fulFiller_Email: item.props.fulFiller_Email,
-			fulFiller_ExpoToken: item.props.fulFiller_ExpoToken,
-			request_ID: item.props.request_ID,
-			requestType: item.props.requestType,
-			posterExpoToken: item.props.posterExpoToken,
-			popupIsOpen: true,
-			dateCreated: item.props.dateCreated,
-			notification_ID: item.props.notification_ID
-		})
+		if (this._isMounted) {
+			this.setState({
+				fulFiller_Name: item.props.fulFiller_Name,
+				fulFiller_Email: item.props.fulFiller_Email,
+				fulFiller_ExpoToken: item.props.fulFiller_ExpoToken,
+				request_ID: item.props.request_ID,
+				requestType: item.props.requestType,
+				posterExpoToken: item.props.posterExpoToken,
+				popupIsOpen: true,
+				dateCreated: item.props.dateCreated,
+				notification_ID: item.props.notification_ID
+			})
+		}
 	}
 
 	closeRequest() {
-		this.setState({
-			popupIsOpen: false,
-		})
+		if (this._isMounted) {
+			this.setState({
+				popupIsOpen: false,
+			})
+		}
 	}
 
 
@@ -234,9 +262,15 @@ class Notifications extends React.Component {
 		console.log("Convo Return: " + data)
 		if (data) {
 			Alert.alert("Conversation already exists", "A conversation about this request already exists", [
-				{ text: "OK", onPress: () => this.setState({ popupIsOpen: false }) },
+				{
+					text: "OK", onPress: () => {
+						if (this._isMounted) {
+							this.setState({ popupIsOpen: false })
+						}
+					}
+				},
 			],
-				{ cancelable: false })	
+				{ cancelable: false })
 		}
 		else {
 			this.closeRequest()
@@ -278,9 +312,11 @@ class Notifications extends React.Component {
 
 		switch (data) {
 			case "Success":
-				this.setState({
-					popupIsOpen: false,
-				})
+				if (this._isMounted) {
+					this.setState({
+						popupIsOpen: false,
+					})
+				}
 				this.refreshFeed()
 				break;
 			case "Error":

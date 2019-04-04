@@ -58,6 +58,9 @@ const styles = StyleSheet.create(
 
 // create a component
 class Home extends Component {
+
+    _isMounted = false;
+
     constructor(props) {
         super(props)
 
@@ -85,11 +88,20 @@ class Home extends Component {
      * can connect properly
      */
     componentDidMount() {
+        this._isMounted = true
         this.userFullName()
         this.userEmail()
         this.state.socket.emit("requestRequests")
         console.log("Component Mounted")
-        this.state.socket.on("requestData", (data) => { this.setState({ requestsDataJSON: data }), this.addRequestsFromServer() })
+        this.state.socket.on("requestData", (data) => {
+            if (this._isMounted) {
+                this.setState({ requestsDataJSON: data }), this.addRequestsFromServer()
+            }
+        })
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false
     }
 
     //Grab the full name from the phone's storage
@@ -97,9 +109,11 @@ class Home extends Component {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
                 console.log("Name: " + value)
-                this.setState({
-                    fullName: value
-                })
+                if (this._isMounted) {
+                    this.setState({
+                        fullName: value
+                    })
+                }
             })
         }
         catch (error) {
@@ -112,9 +126,11 @@ class Home extends Component {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
                 console.log("Email:" + value)
-                this.setState({
-                    email: value
-                })
+                if (this._isMounted) {
+                    this.setState({
+                        email: value
+                    })
+                }
             })
         }
         catch (error) {
@@ -132,22 +148,26 @@ class Home extends Component {
         console.log(item.props.posterName)
         console.log("EXPO TOKEN: " + item.props.expoToken)
         console.log("Poster email: " + item.props.posterEmail)
-        this.setState({
-            popupIsOpen: true,
-            cardTitle: item.props.title,
-            cardBody: item.props.subtitle,
-            cardPoster: item.props.posterName,
-            cardID: item.props.request_ID,
-            OPExpoToken: item.props.expoToken,
-            posterEmail: item.props.posterEmail
-        })
+        if (this._isMounted) {
+            this.setState({
+                popupIsOpen: true,
+                cardTitle: item.props.title,
+                cardBody: item.props.subtitle,
+                cardPoster: item.props.posterName,
+                cardID: item.props.request_ID,
+                OPExpoToken: item.props.expoToken,
+                posterEmail: item.props.posterEmail
+            })
+        }
     }
 
     //Closes the Request modal
     closeRequest = () => {
-        this.setState({
-            popupIsOpen: false,
-        })
+        if (this._isMounted) {
+            this.setState({
+                popupIsOpen: false,
+            })
+        }
     }
 
     //Gathers the requests from the backend for adding into
@@ -157,9 +177,11 @@ class Home extends Component {
         console.log("Gotten Request data from server")
         // console.log(this.state.requestsDataJSON)
 
-        this.setState({
-            requests: []
-        })
+        if (this._isMounted) {
+            this.setState({
+                requests: []
+            })
+        }
 
         if (this.state.requestsDataJSON.length > 0) {
             //console.log(this.state.requestsDataJSON)
@@ -185,9 +207,11 @@ class Home extends Component {
 
             tempRequests.reverse()
 
-            this.setState({
-                requests: tempRequests
-            })
+            if (this._isMounted) {
+                this.setState({
+                    requests: tempRequests
+                })
+            }
 
             //console.log("Finished adding requests. Total is now: " + this.state.requests.length)
 
@@ -196,9 +220,11 @@ class Home extends Component {
             console.log("No requests in DB. Or is connection bad?")
         }
 
-        this.setState({
-            refreshing: false
-        })
+        if (this._isMounted) {
+            this.setState({
+                refreshing: false
+            })
+        }
     }
 
     /**
@@ -213,11 +239,17 @@ class Home extends Component {
          * Clear requests (in case they've all been deleted lol),
          * Then pull in all of the requests again
          */
-        this.setState({
-            refreshing: true
-        })
+        if (this._isMounted) {
+            this.setState({
+                refreshing: true
+            })
+        }
 
-        this.state.socket.emit("requestRequests", (data) => { this.setState({ requestsDataJSON: data }) })
+        this.state.socket.emit("requestRequests", (data) => {
+            if (this._isMounted) {
+                this.setState({ requestsDataJSON: data })
+            }
+        })
 
         console.log("Data received from server is: " + this.state.requestsDataJSON)
 
@@ -261,7 +293,7 @@ class Home extends Component {
                 body: NEW_NOTIFICATION_MESSAGE,
                 data: {
                     message: "Someone's offered to help!"
-                  }
+                }
             })
         })
         console.log("Push Notification Sent", JSON.stringify(response))

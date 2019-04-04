@@ -47,6 +47,9 @@ const styles = StyleSheet.create({
 
 
 class Login extends Component {
+
+	_isMounted = false
+
 	constructor(props) {
 		super(props);
 
@@ -63,7 +66,7 @@ class Login extends Component {
 	 * Stores a loginKey to save from having to reenter credentials each time
 	 * Also stores, Full name and email for use throughout the app
 	 */
-	async saveLogin (fullName) {
+	async saveLogin(fullName) {
 
 		try {
 			AsyncStorage.setItem('loginKey', 'loginExists')
@@ -77,20 +80,29 @@ class Login extends Component {
 	}
 
 	componentDidMount() {
+		this._isMounted = true
 		this.state.socket.on("isAccountVerified", (data) => this.checkVerifiedAccount(data))
 		this.state.socket.on("loginReturn", (data) => this.processLogin(data))
 	}
 
+	componentWillUnmount() {
+		this._isMounted = false
+	}
+
 	handleEmailTextChange = (email) => {
-		this.setState({
-			email: email
-		})
+		if (this._isMounted) {
+			this.setState({
+				email: email
+			})
+		}
 	}
 
 	handlePasswordTextChange = (pass) => {
-		this.setState({
-			password: pass
-		})
+		if (this._isMounted) {
+			this.setState({
+				password: pass
+			})
+		}
 	}
 
 	_scrollToInput(reactNode) {
@@ -120,9 +132,11 @@ class Login extends Component {
 			case "Login Accepted":
 				//Only clear password for any potential security reasons
 				//Keep email so we can store it across the the app
-				this.setState({
-					password: ""
-				})
+				if (this._isMounted) {
+					this.setState({
+						password: ""
+					})
+				}
 
 				this.saveLogin(fullName)
 
@@ -147,22 +161,28 @@ class Login extends Component {
 	}
 
 	openRequest = () => {
-		this.setState({
-			popupIsOpen: true,
-		})
+		if (this._isMounted) {
+			this.setState({
+				popupIsOpen: true,
+			})
+		}
 	}
 
 	//Closes the Request modal
 	closeRequest = () => {
-		this.setState({
-			popupIsOpen: false,
-		})
+		if (this._isMounted) {
+			this.setState({
+				popupIsOpen: false,
+			})
+		}
 	}
 
 	handlePinCodeChange = (code) => {
-		this.setState({
-			pinString: code,
-		})
+		if (this._isMounted) {
+			this.setState({
+				pinString: code,
+			})
+		}
 	}
 
 	crossCheckCode = () => {
@@ -282,7 +302,7 @@ class Login extends Component {
 
 
 				{/* Modal that we are going to 
-				use to verify the user account */}	
+				use to verify the user account */}
 				<Modal
 					animationType="slide"
 					transparent={true}

@@ -13,6 +13,8 @@ import email from 'react-native-email'
 // create a component
 class Help extends Component {
 
+    _isMounted = false
+
     constructor(props) {
         super(props)
 
@@ -27,6 +29,11 @@ class Help extends Component {
     componentWillMount() {
         this.userEmail()
         this.userFullName()
+        this._isMounted = true
+    }
+
+    componentWillUnmount(){
+        this._isMounted = false
     }
 
     //Grab the full name from the phone's storage
@@ -34,9 +41,11 @@ class Help extends Component {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
                 console.log("Name: " + value)
-                this.setState({
-                    fullName: value
-                })
+                if (this._isMounted) {
+                    this.setState({
+                        fullName: value
+                    })
+                }
             })
         }
         catch (error) {
@@ -49,9 +58,11 @@ class Help extends Component {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
                 console.log("Email:" + value)
-                this.setState({
-                    email: value
-                })
+                if (this._isMounted) {
+                    this.setState({
+                        email: value
+                    })
+                }
             })
         }
         catch (error) {
@@ -60,9 +71,11 @@ class Help extends Component {
     }
 
     handleBodyChange = (text) => {
-        this.setState({
-            emailBody: text
-        })
+        if (this._isMounted) {
+            this.setState({
+                emailBody: text
+            })
+        }
     }
 
     sendEmail() {
@@ -88,12 +101,12 @@ class Help extends Component {
                 console.log("Sending email")
                 console.log("INFO: " + deviceInfo)
 
-                const to =[MY_EMAIL]
+                const to = [MY_EMAIL]
 
-                email(to,{
+                email(to, {
                     cc: "",
                     bcc: "",
-                    subject:"UExchange Feedback App",
+                    subject: "UExchange Feedback App",
                     body: deviceInfo
                 }).then(this.clearAll()).catch(console.error)
             }
@@ -103,26 +116,32 @@ class Help extends Component {
         }
     }
 
-    clearAll(){
-        this.setState({
-            emailBody: "",
-            isiPhone: false,
-            isAndroid: false,
-        })
+    clearAll() {
+        if (this._isMounted) {
+            this.setState({
+                emailBody: "",
+                isiPhone: false,
+                isAndroid: false,
+            })
+        }
     }
 
     handleAndroidChoice() {
-        this.setState({
-            isAndroid: true,
-            isiPhone: false
-        })
+        if (this._isMounted) {
+            this.setState({
+                isAndroid: true,
+                isiPhone: false
+            })
+        }
     }
 
     handleiPhoneChoice() {
-        this.setState({
-            isAndroid: false,
-            isiPhone: true
-        })
+        if (this._isMounted) {
+            this.setState({
+                isAndroid: false,
+                isiPhone: true
+            })
+        }
     }
 
     render() {

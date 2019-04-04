@@ -11,6 +11,9 @@ const apiEndpoint = API_ENDPOINT
 
 // create a component
 class Messages extends Component {
+
+    _isMounted = false
+
     constructor(props) {
         super(props)
 
@@ -29,11 +32,25 @@ class Messages extends Component {
     }
 
     componentDidMount() {
-        this.state.socket.on("conversationsFound", (data) => { this.setState({ conversationsJSON: data }), this.processConversations() })
+        this._isMounted = true
+        this.state.socket.on("conversationsFound", (data) => {
+            if (this._isMounted) {
+                this.setState({ conversationsJSON: data }),
+                    this.processConversations()
+            }
+        })
         //Get User's unique ID number from the DB
-        this.state.socket.on("userIDGiven", (data) => this.setState({ user_ID: data }))
+        this.state.socket.on("userIDGiven", (data) => {
+            if (this._isMounted) {
+                this.setState({ user_ID: data })
+            }
+        })
         this.userEmail()
         this.userFullName()
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false
     }
 
     //Grab the full name from the phone's storage
@@ -41,9 +58,11 @@ class Messages extends Component {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
                 console.log("Name: " + value)
-                this.setState({
-                    fullName: value
-                })
+                if (this._isMounted) {
+                    this.setState({
+                        fullName: value
+                    })
+                }
             })
         }
         catch (error) {
@@ -56,9 +75,11 @@ class Messages extends Component {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
                 console.log("Email:" + value)
-                this.setState({
-                    email: value
-                })
+                if (this._isMounted) {
+                    this.setState({
+                        email: value
+                    })
+                }
 				/**
 				 * Since I can't come up with a decent way of storing these
 				 * values in state before the socket emits, we'll just emit
@@ -78,9 +99,11 @@ class Messages extends Component {
     processConversations() {
         console.log(this.state.conversationsJSON)
 
-        this.setState({
-            conversations: []
-        })
+        if (this._isMounted) {
+            this.setState({
+                conversations: []
+            })
+        }
 
         console.log("sorting JSON")
         var tempArray = []
@@ -114,11 +137,13 @@ class Messages extends Component {
                     </Message>
                 )
 
-                this.setState({
-                    userExpoToken: token,
-                    otherUsersName: title,
-                    request_ID: this.state.conversationsJSON[i].request_ID
-                })
+                if (this._isMounted) {
+                    this.setState({
+                        userExpoToken: token,
+                        otherUsersName: title,
+                        request_ID: this.state.conversationsJSON[i].request_ID
+                    })
+                }
 
                 console.log(newConvo, this.state.userExpoToken, this.state.otherUsersName, this.state.request_ID)
 
@@ -129,10 +154,12 @@ class Messages extends Component {
         tempArray.reverse()
 
 
-        this.setState({
-            conversations: tempArray,
-            refreshing: false
-        })
+        if (this._isMounted) {
+            this.setState({
+                conversations: tempArray,
+                refreshing: false
+            })
+        }
 
         console.log("Number of Conversations is " + this.state.conversations.length)
     }
@@ -140,9 +167,11 @@ class Messages extends Component {
     refreshFeed = () => {
         console.log("requesting messages")
 
-        this.setState({
-            refreshing: true
-        })
+        if (this._isMounted) {
+            this.setState({
+                refreshing: true
+            })
+        }
 
         this.state.socket.emit("requestConversations", ({ email: this.state.email }))
     }

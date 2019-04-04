@@ -16,6 +16,8 @@ const apiEndpoint = API_ENDPOINT
 // create a component
 class MessagesThread extends Component {
 
+  _isMounted = false
+
   constructor(props) {
     super(props)
 
@@ -35,6 +37,9 @@ class MessagesThread extends Component {
   }
 
   componentDidMount() {
+
+    this._isMounted = true
+
     /**
      * Passback the props for the navigation
      * Header that is set in App.js
@@ -59,13 +64,21 @@ class MessagesThread extends Component {
     this.state.socket.on("deletingRequestCallback", (data) => this.processRequestDeletion(data))
     this.state.socket.on("removingConversationCallback", (data) => this.processConversationDeletion(data))
     this.state.socket.emit("requestConversationRequestCreator", (this.state.request_ID))
-    this.state.socket.on("requestCreatorEmailReceived", (data) => this.setState({ creatorEmail: data }))
+    this.state.socket.on("requestCreatorEmailReceived", (data) => {
+      if (this._isMounted) {
+        this.setState({ creatorEmail: data })
+      }
+    })
 
     // console.log("Convo ID: " + this.state.convo_ID)
     // console.log("User ID: " + this.state.user_ID)
     // console.log("User Expo Token ", this.state.userToReceivePushNotifications)
     // console.log("Other User's Name: " + this.state.user2Name)
     // console.log("Request_ID: " + this.state.request_ID)
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
   }
 
   //Pull Messages for the thread from DB
@@ -87,13 +100,17 @@ class MessagesThread extends Component {
      * that is yet to be confirmed. Just keep it in mind
      */
 
-    this.setState({
-      messages: []
-    })
+    if (this._isMounted) {
+      this.setState({
+        messages: []
+      })
+    }
 
-    this.setState(previousState => ({
-      messages: GiftedChat.append(previousState.messages, data),
-    }))
+    if (this._isMounted) {
+      this.setState(previousState => ({
+        messages: GiftedChat.append(previousState.messages, data),
+      }))
+    }
   }
 
   //Grab the full name from the phone's storage
@@ -101,9 +118,11 @@ class MessagesThread extends Component {
     try {
       await AsyncStorage.getItem("fullAccountName").then(async (value) => {
         console.log("Name: " + value)
-        this.setState({
-          fullName: value
-        })
+        if (this._isMounted) {
+          this.setState({
+            fullName: value
+          })
+        }
       })
     }
     catch (error) {
@@ -116,9 +135,11 @@ class MessagesThread extends Component {
     try {
       await AsyncStorage.getItem("userEmail").then((value) => {
         console.log("Email:" + value)
-        this.setState({
-          email: value
-        })
+        if (this._isMounted) {
+          this.setState({
+            email: value
+          })
+        }
       })
     }
     catch (error) {
@@ -132,9 +153,11 @@ class MessagesThread extends Component {
    * to the server for adding to DB
    */
   onSend(messages = []) {
-    this.setState(previousState => ({
-      messages: GiftedChat.append(previousState.messages, messages),
-    }))
+    if (this._isMounted) {
+      this.setState(previousState => ({
+        messages: GiftedChat.append(previousState.messages, messages),
+      }))
+    }
 
     var data = { messages: messages, _ID: this.state.convo_ID }
 
@@ -175,16 +198,20 @@ class MessagesThread extends Component {
   openCloseModal() {
     console.log("Request Creator is: " + this.state.creatorEmail)
 
-    this.setState({
-      popupIsOpen: true,
-    })
+    if (this._isMounted) {
+      this.setState({
+        popupIsOpen: true,
+      })
+    }
   }
 
   //Close the options modal
   closeCloseRequest() {
-    this.setState({
-      popupIsOpen: false,
-    })
+    if (this._isMounted) {
+      this.setState({
+        popupIsOpen: false,
+      })
+    }
   }
 
   //Deletes only the conversation

@@ -13,6 +13,8 @@ const apiEndpoint = API_ENDPOINT
 // create a component
 class PersonalRequests extends Component {
 
+    _isMounted = true
+
     constructor(props) {
         super(props)
 
@@ -31,14 +33,21 @@ class PersonalRequests extends Component {
         }
     }
 
-    componentWillMount() {
+    componentDidMount() {
+        this._isMounted = true
         this.userFullName()
         this.userEmail()
+        this.state.socket.on("personalRequestsReceived", (data) => {
+            if (this._isMounted) {
+                this.setState({ requestsDataJSON: data }),
+                    this.processRequests()
+            }
+        })
+        this.state.socket.on("deletingRequestCallback", (data) => this.processRequestDeletion(data))
     }
 
-    componentDidMount() {
-        this.state.socket.on("personalRequestsReceived", (data) => { this.setState({ requestsDataJSON: data }), this.processRequests() })
-        this.state.socket.on("deletingRequestCallback", (data) => this.processRequestDeletion(data))
+    componentWillUnmount() {
+        this._isMounted = false
     }
 
     //Grab the full name from the phone's storage
@@ -46,9 +55,11 @@ class PersonalRequests extends Component {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
                 console.log("Name: " + value)
-                this.setState({
-                    fullName: value
-                })
+                if (this._isMounted) {
+                    this.setState({
+                        fullName: value
+                    })
+                }
             })
         }
         catch (error) {
@@ -61,9 +72,11 @@ class PersonalRequests extends Component {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
                 console.log("Email:" + value)
-                this.setState({
-                    email: value
-                })
+                if (this._isMounted) {
+                    this.setState({
+                        email: value
+                    })
+                }
                 this.state.socket.emit("requestPersonalRequests", (value))
             })
         }
@@ -73,9 +86,11 @@ class PersonalRequests extends Component {
     }
 
     processRequests = () => {
-        this.setState({
-            requests: []
-        })
+        if (this._isMounted) {
+            this.setState({
+                requests: []
+            })
+        }
 
         if (this.state.requestsDataJSON.length > 0) {
             console.log("Requests received: " + this.state.requestsDataJSON)
@@ -98,52 +113,58 @@ class PersonalRequests extends Component {
                 temp.push(newCard)
             }
 
-            this.setState({
-                requests: temp
-            })
+            if (this._isMounted) {
+                this.setState({
+                    requests: temp
+                })
+            }
 
         }
         else {
             console.log("No requests for user. Or is DB connection bad?")
         }
 
-        this.setState({
-            refreshing: false
-        })
+        if (this._isMounted) {
+            this.setState({
+                refreshing: false
+            })
+        }
     }
 
     refreshFeed = () => {
-        this.setState({
-            refreshing: true
-        })
+        if (this._isMounted) {
+            this.setState({
+                refreshing: true
+            })
+        }
 
         console.log("Refreshing. Email: " + this.state.email)
 
         this.state.socket.emit("requestPersonalRequests", (this.state.email))
-
-        this.setState({
-            refreshing: false
-        })
     }
 
     openRequest = (item) => {
         console.log("Date Created: " + new Date(item.props.dateCreated).toLocaleDateString())
         console.log("Request ID: " + item.props.request_ID)
 
-        this.setState({
-            popupIsOpen: true,
-            requestDateCreated: new Date(item.props.dateCreated).toLocaleDateString(),
-            requestTitle: item.props.title,
-            requestSubtitle: item.props.subtitle,
-            request_ID: item.props.request_ID
-        })
+        if (this._isMounted) {
+            this.setState({
+                popupIsOpen: true,
+                requestDateCreated: new Date(item.props.dateCreated).toLocaleDateString(),
+                requestTitle: item.props.title,
+                requestSubtitle: item.props.subtitle,
+                request_ID: item.props.request_ID
+            })
+        }
 
     }
 
     closeRequest() {
-        this.setState({
-            popupIsOpen: false
-        })
+        if (this._isMounted) {
+            this.setState({
+                popupIsOpen: false
+            })
+        }
     }
 
     deleteRequest() {
@@ -197,7 +218,7 @@ class PersonalRequests extends Component {
                                 )
                             })
                             :
-                            <Text style={{ textAlign: "center", fontSize: RF(2.5), top:"50%", bottom: "50%" }}>This is where you'll find any open requests you've made. It looks like you don't have any yet.</Text>
+                            <Text style={{ textAlign: "center", fontSize: RF(2.5), top: "50%", bottom: "50%" }}>This is where you'll find any open requests you've made. It looks like you don't have any yet.</Text>
                     }
 
                 </ScrollView>

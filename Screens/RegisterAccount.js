@@ -40,6 +40,9 @@ const styles = StyleSheet.create({
 });
 
 class RegisterAccount extends Component {
+
+	_isMounted = false
+
 	constructor(props) {
 		super(props);
 
@@ -60,9 +63,14 @@ class RegisterAccount extends Component {
 	}
 
 	componentDidMount() {
+		this._isMounted = true
 		this.state.socket.on("isAccountVerified", (data) => this.checkVerifiedAccount(data))
 		this.state.socket.on("creationReturn", (data) => this.creationReturnData(data))
 		this.getExpoTokenFromStorage()
+	}
+
+	componentWillUnmount() {
+		this._isMounted = false
 	}
 
 	async getExpoTokenFromStorage() {
@@ -71,9 +79,11 @@ class RegisterAccount extends Component {
 				console.log("Expo Token found: " + value)
 				if (value !== null) {
 					console.log("expoToken found from app launch. Saving for use")
-					this.setState({
-						expoToken: value
-					})
+					if (this._isMounted) {
+						this.setState({
+							expoToken: value
+						})
+					}
 					//console.log("Expo State: " + this.state.expoToken)
 				}
 				else {
@@ -87,33 +97,43 @@ class RegisterAccount extends Component {
 	}
 
 	handleFirstNameChange = (first) => {
-		this.setState({
-			firstName: first
-		})
+		if (this._isMounted) {
+			this.setState({
+				firstName: first
+			})
+		}
 	}
 
 	handleLastNameChange = (last) => {
-		this.setState({
-			lastName: last
-		})
+		if (this._isMounted) {
+			this.setState({
+				lastName: last
+			})
+		}
 	}
 
 	handleEmailTextChange = (email) => {
-		this.setState({
-			email: email
-		})
+		if (this._isMounted) {
+			this.setState({
+				email: email
+			})
+		}
 	}
 
 	handlePasswordTextChange = (pass) => {
-		this.setState({
-			password: pass
-		})
+		if (this._isMounted) {
+			this.setState({
+				password: pass
+			})
+		}
 	}
 
 	handlePasswordConfirmChange = (confirm) => {
-		this.setState({
-			passwordConfirm: confirm
-		})
+		if (this._isMounted) {
+			this.setState({
+				passwordConfirm: confirm
+			})
+		}
 	}
 
 	//Checks against various needed conditions and if all match, create account
@@ -239,22 +259,28 @@ class RegisterAccount extends Component {
 	}
 
 	openRequest = () => {
-		this.setState({
-			popupIsOpen: true,
-		})
+		if (this._isMounted) {
+			this.setState({
+				popupIsOpen: true,
+			})
+		}
 	}
 
 	//Closes the Request modal
 	closeRequest = () => {
-		this.setState({
-			popupIsOpen: false,
-		})
+		if (this._isMounted) {
+			this.setState({
+				popupIsOpen: false,
+			})
+		}
 	}
 
 	handlePinCodeChange = (code) => {
-		this.setState({
-			pinString: code,
-		})
+		if (this._isMounted) {
+			this.setState({
+				pinString: code,
+			})
+		}
 	}
 
 
@@ -286,9 +312,11 @@ class RegisterAccount extends Component {
 	}
 
 	handleTOSChange() {
-		this.setState({
-			tosAgreed: !this.state.tosAgreed
-		})
+		if (this._isMounted) {
+			this.setState({
+				tosAgreed: !this.state.tosAgreed
+			})
+		}
 	}
 
 	crossCheckCode = () => {
@@ -308,7 +336,7 @@ class RegisterAccount extends Component {
 			<React.Fragment>
 
 				<KeyboardAwareScrollView
-				style={{flex: 1}}
+					style={{ flex: 1 }}
 					enableOnAndroid={true}
 					enableAutomaticScroll={(Platform.OS === 'ios' ? true : false)}
 					innerRef={ref => {
@@ -318,7 +346,7 @@ class RegisterAccount extends Component {
 
 					<ScrollView style={{ flex: 1, paddingTop: 125 }}
 						contentContainerStyle={styles.container}
-						>
+					>
 						<TextInput placeholder="First Name"
 							style={styles.textInput}
 							ref={(input) => { this.firstNameInput = input }}

@@ -36,6 +36,9 @@ const ScrollStyle = StyleSheet.create({
 
 // create a component
 class Account extends React.Component {
+
+	_isMounted = false;
+
 	constructor(props) {
 		super(props)
 
@@ -48,6 +51,11 @@ class Account extends React.Component {
 	componentDidMount() {
 		this.userFullName()
 		this.userEmail()
+		this._isMounted = true
+	}
+
+	componentWillUnmount() {
+		this._isMounted = false
 	}
 
 	//Grab the full name from the phone's storage
@@ -55,9 +63,11 @@ class Account extends React.Component {
 		try {
 			await AsyncStorage.getItem("fullAccountName").then(async (value) => {
 				console.log("Name: " + value)
-				this.setState({
-					fullName: value
-				})
+				if (this._isMounted) {
+					this.setState({
+						fullName: value
+					})
+				}
 			})
 		}
 		catch (error) {
@@ -70,9 +80,11 @@ class Account extends React.Component {
 		try {
 			await AsyncStorage.getItem("userEmail").then((value) => {
 				console.log("Email:" + value)
-				this.setState({
-					email: value
-				})
+				if (this._isMounted) {
+					this.setState({
+						email: value
+					})
+				}
 			})
 		}
 		catch (error) {

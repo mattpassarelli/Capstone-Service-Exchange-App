@@ -33,24 +33,13 @@ class Settings extends Component {
     constructor(props) {
         super(props)
 
-        this.state = {
-            darkMode: false
-        }
-    }
-
-    toggleDarkMode = (value) => {
-
-        this.setState({
-            darkMode: value
-        })
-        console.log("DARK MODE STATE IS NOW: " + value)
     }
 
     render() {
         return (
             <React.Fragment>
                 <View style={styles.container}>
-                    <View style={styles.option}>
+                    {/* <View style={styles.option}>
                     
                         <Text style={{ textAlign: "center", fontSize: RF(2.5), justifyContent: "center" }}>Dark Mode</Text>
 
@@ -58,7 +47,7 @@ class Settings extends Component {
                             value={this.state.darkMode}
                             onValueChange={(value) => this.toggleDarkMode(value)}
                             style={{ transform: [{ scaleX: .9 }, { scaleY: .9 }] }} />
-                    </View>
+                    </View> */}
 
                     <View style={styles.option}>
                         <TouchableOpacity activeOpacity={0.7} onPress={() => this.props.navigation.navigate("TOS")}>
