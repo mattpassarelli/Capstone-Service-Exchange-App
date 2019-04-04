@@ -339,8 +339,8 @@ class MessagesThread extends Component {
                   buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
 
                 <CustomButton text="Request"
-                  onPress={() => this.closeRequest()} 
-                  buttonStyle={this.state.creatorEmail === this.state.email ? styles.buttonStyle : styles.buttonStyleFaded} 
+                  onPress={() => this.closeRequest()}
+                  buttonStyle={this.state.creatorEmail === this.state.email ? styles.buttonStyle : styles.buttonStyleFaded}
                   textStyle={styles.buttonTextStyle}
                   disabled={this.state.creatorEmail === this.state.email ? false : true} />
               </View>

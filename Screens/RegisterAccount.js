@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, TextInput, Text, findNodeHandle, Alert, Modal, AsyncStorage } from 'react-native';
+import { View, StyleSheet, Image, TextInput, Text, findNodeHandle, Alert, Modal, AsyncStorage, Platform } from 'react-native';
 import { withNavigation } from 'react-navigation'
 import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-aware-scroll-view'
 import { API_ENDPOINT } from "../Components/api-config"
 import { CheckBox } from 'react-native-elements'
+import { ScrollView } from 'react-native-gesture-handler';
 
 const apiEndpoint = API_ENDPOINT
 
@@ -307,115 +308,118 @@ class RegisterAccount extends Component {
 			<React.Fragment>
 
 				<KeyboardAwareScrollView
-					style={{ flex: 1, paddingTop: 125 }}
-					resetScrollToCoords={{ x: 0, y: 0 }}
-					contentContainerStyle={styles.container}
-					scrollEnabled={false}
+				style={{flex: 1}}
+					enableOnAndroid={true}
+					enableAutomaticScroll={(Platform.OS === 'ios' ? true : false)}
 					innerRef={ref => {
 						this.scroll = ref
-					}}
-					enableOnAndroid={true}>
+					}}>
 
 
-					<TextInput placeholder="First Name"
-						style={styles.textInput}
-						ref={(input) => { this.firstNameInput = input }}
-						returnKeyType={"next"}
-						onSubmitEditing={() => this.firstLastInput.focus()}
-						blurOnSubmit={true}
-						onChangeText={(text) => this.handleFirstNameChange(text)}
-						onFocus={(event) => {
-							// `bind` the function if you're using ES6 classes
-							this._scrollToInput(findNodeHandle(event.target))
-						}}
-						autoCorrect={false}
-						autoCapitalize="words"
-					/>
-
-					<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
-
-					<TextInput placeholder="Last Name"
-						style={styles.textInput}
-						ref={(input) => { this.firstLastInput = input }}
-						returnKeyType={"next"}
-						onSubmitEditing={() => this.emailInput.focus()}
-						blurOnSubmit={true}
-						onChangeText={(text) => this.handleLastNameChange(text)}
-						onFocus={(event) => {
-							// `bind` the function if you're using ES6 classes
-							this._scrollToInput(findNodeHandle(event.target))
-						}}
-						autoCorrect={false}
-						autoCapitalize="words"
-					/>
-
-					<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
-
-					<TextInput placeholder="Email Ending In edu"
-						style={styles.textInput}
-						ref={(input) => { this.emailInput = input }}
-						returnKeyType={"next"}
-						onSubmitEditing={() => this.passwordInput.focus()}
-						blurOnSubmit={true}
-						onChangeText={(text) => this.handleEmailTextChange(text)}
-						onFocus={(event) => {
-							// `bind` the function if you're using ES6 classes
-							this._scrollToInput(findNodeHandle(event.target))
-						}}
-						keyboardType={"email-address"}
-						autoCorrect={false}
-						autoCapitalize={"none"}
-					/>
-
-					<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
-
-					<TextInput placeholder="Password"
-						ref={(input) => { this.passwordInput = input; }}
-						style={styles.textInput}
-						returnKeyType={"next"}
-						onChangeText={(text) => this.handlePasswordTextChange(text)}
-						blurOnSubmit={true}
-						onSubmitEditing={() => this.passwordConfirmInput.focus()}
-						onFocus={(event) => {
-							// `bind` the function if you're using ES6 classes
-							this._scrollToInput(findNodeHandle(event.target))
-						}}
-						secureTextEntry={true}
-					/>
-
-					<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
-
-					<TextInput placeholder="Confirm Password"
-						ref={(input) => { this.passwordConfirmInput = input; }}
-						style={styles.textInput}
-						returnKeyType={"go"}
-						onChangeText={(text) => this.handlePasswordConfirmChange(text)}
-						blurOnSubmit={true}
-						onFocus={(event) => {
-							// `bind` the function if you're using ES6 classes
-							this._scrollToInput(findNodeHandle(event.target))
-						}}
-						secureTextEntry={true}
-					/>
-
-					<View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-						<CheckBox
-							checkedIcon='dot-circle-o'
-							uncheckedIcon='circle-o'
-							checked={this.state.tosAgreed}
-							containerStyle={{ backgroundColor: "transparent" }}
-							onPress={() => this.handleTOSChange()}
+					<ScrollView style={{ flex: 1, paddingTop: 125 }}
+						contentContainerStyle={styles.container}
+						>
+						<TextInput placeholder="First Name"
+							style={styles.textInput}
+							ref={(input) => { this.firstNameInput = input }}
+							returnKeyType={"next"}
+							onSubmitEditing={() => this.firstLastInput.focus()}
+							blurOnSubmit={true}
+							onChangeText={(text) => this.handleFirstNameChange(text)}
+							onFocus={(event) => {
+								// `bind` the function if you're using ES6 classes
+								this._scrollToInput(findNodeHandle(event.target))
+							}}
+							autoCorrect={false}
+							autoCapitalize="words"
 						/>
-						<Text style={{ fontSize: RF(2), color: '#00F' }} onPress={() => this.props.navigation.navigate("TOS")}>Accept Terms of Serivce</Text>
-					</View>
 
-					<View style={{ flex: 1, flexDirection: "column", width: "100%", alignItems: "center", justifyContent: "space-between", paddingBottom: 30, paddingTop: 20 }}>
-						<CustomButton text="Create Account" onPress={() => { this.createAccount() }}
-							buttonStyle={styles.buttonStyle}
-							textStyle={styles.buttonTextStyle} />
+						<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
+
+						<TextInput placeholder="Last Name"
+							style={styles.textInput}
+							ref={(input) => { this.firstLastInput = input }}
+							returnKeyType={"next"}
+							onSubmitEditing={() => this.emailInput.focus()}
+							blurOnSubmit={true}
+							onChangeText={(text) => this.handleLastNameChange(text)}
+							onFocus={(event) => {
+								// `bind` the function if you're using ES6 classes
+								this._scrollToInput(findNodeHandle(event.target))
+							}}
+							autoCorrect={false}
+							autoCapitalize="words"
+						/>
+
+						<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
+
+						<TextInput placeholder="Email Ending In edu"
+							style={styles.textInput}
+							ref={(input) => { this.emailInput = input }}
+							returnKeyType={"next"}
+							onSubmitEditing={() => this.passwordInput.focus()}
+							blurOnSubmit={true}
+							onChangeText={(text) => this.handleEmailTextChange(text)}
+							onFocus={(event) => {
+								// `bind` the function if you're using ES6 classes
+								this._scrollToInput(findNodeHandle(event.target))
+							}}
+							keyboardType={"email-address"}
+							autoCorrect={false}
+							autoCapitalize={"none"}
+						/>
+
+						<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
+
+						<TextInput placeholder="Password"
+							ref={(input) => { this.passwordInput = input; }}
+							style={styles.textInput}
+							returnKeyType={"next"}
+							onChangeText={(text) => this.handlePasswordTextChange(text)}
+							blurOnSubmit={true}
+							onSubmitEditing={() => this.passwordConfirmInput.focus()}
+							onFocus={(event) => {
+								// `bind` the function if you're using ES6 classes
+								this._scrollToInput(findNodeHandle(event.target))
+							}}
+							secureTextEntry={true}
+						/>
+
+						<View style={{ paddingTop: 5, paddingBottom: 5 }}></View>
+
+						<TextInput placeholder="Confirm Password"
+							ref={(input) => { this.passwordConfirmInput = input; }}
+							style={styles.textInput}
+							returnKeyType={"go"}
+							onChangeText={(text) => this.handlePasswordConfirmChange(text)}
+							blurOnSubmit={true}
+							onFocus={(event) => {
+								// `bind` the function if you're using ES6 classes
+								this._scrollToInput(findNodeHandle(event.target))
+							}}
+							secureTextEntry={true}
+						/>
+
+						<View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+							<CheckBox
+								checkedIcon='dot-circle-o'
+								uncheckedIcon='circle-o'
+								checked={this.state.tosAgreed}
+								containerStyle={{ backgroundColor: "transparent" }}
+								onPress={() => this.handleTOSChange()}
+							/>
+							<Text style={{ fontSize: RF(2), color: '#00F' }} onPress={() => this.props.navigation.navigate("TOS")}>Accept Terms of Serivce</Text>
+						</View>
+
+						<View style={{ flex: 1, flexDirection: "column", width: "100%", alignItems: "center", justifyContent: "space-between", paddingBottom: 30, paddingTop: 20 }}>
+							<CustomButton text="Create Account" onPress={() => { this.createAccount() }}
+								buttonStyle={styles.buttonStyle}
+								textStyle={styles.buttonTextStyle} />
 
 
-					</View>
+						</View>
+					</ScrollView>
+
 				</KeyboardAwareScrollView>
 
 

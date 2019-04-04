@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator } from 'react-navigation';
-import { Alert, Button, Platform, View } from 'react-native'
-import { Permissions, Notifications } from "expo"
+import { Alert, Button, Platform, View, Image, ActivityIndicator, Text } from 'react-native'
+import { Permissions, Notifications, SplashScreen, Asset } from "expo"
 import Icon from 'react-native-vector-icons/Ionicons';
 import AccountIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { AsyncStorage } from 'react-native';
@@ -18,7 +18,7 @@ import MessageThread from "./Screens/MessagesThread"
 import PersonalRequests from "./Screens/PersonalRequests"
 import RejectedDistance from "./Screens/RejectedDistance"
 import Help from "./Screens/Help"
-import geolib from 'geolib'
+import geolib, { getCenter } from 'geolib'
 import { API_ENDPOINT } from "./Components/api-config"
 import Toast from 'react-native-root-toast';
 import { YellowBox } from 'react-native';
@@ -108,7 +108,8 @@ class NewRequestScreen extends React.Component {
 class RegisterAccountScreen extends React.Component {
   static navigationOptions = {
     title: "Create Account",
-    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', },
+    headerRight:(<View></View>)
   }
 
   render() {
@@ -123,7 +124,8 @@ class RegisterAccountScreen extends React.Component {
 class TermsOfServiceScreen extends React.Component {
   static navigationOptions = {
     title: "Terms of Service",
-    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', }
+    headerTitleStyle: { flex: 1, textAlign: 'center', alignSelf: 'center', },
+    headerRight:(<View></View>)
   }
   render() {
     return (
@@ -363,12 +365,11 @@ export default class App extends React.Component {
       email: "",
       token: "",
       notification: {},
+      isReady: false,
     }
   }
 
   componentWillMount() {
-
-
 
     //Check for loginKey to log user's back in
     AsyncStorage.getItem("loginKey").then((value) => {
@@ -419,6 +420,7 @@ export default class App extends React.Component {
             withinDistance: true
           })
         }
+        this.setState({ isReady: true })
       },
       function (error) {
         Alert.alert(error.message)
@@ -438,6 +440,10 @@ export default class App extends React.Component {
     // this function will fire on the next tick after the app starts
     // with the notification data.
     this._notificationSubscription = Notifications.addListener(this._handleNotification);
+  }
+
+  componentDidMount() {
+    SplashScreen.preventAutoHide()
   }
 
   async userEmail() {
@@ -506,6 +512,26 @@ export default class App extends React.Component {
 
   }
 
+  _cacheSplashResourcesAsync = async () => {
+    const gif = require('./assets/splash.png');
+    return Asset.fromModule(gif).downloadAsync()
+  }
+
+  _cacheResourcesAsync = async () => {
+    SplashScreen.hide();
+    const images = [
+      require('./assets/roundedIcon.png'),
+      require('./assets/icon.png'),
+      require('./assets/splash.png')
+    ];
+
+    const cacheImages = images.map((image) => {
+      return Asset.fromModule(image).downloadAsync();
+    });
+
+    await Promise.all(cacheImages);
+  }
+
   _handleNotification = (notification) => {
     console.log("Incoming notification: " + JSON.stringify(notification))
     Toast.show(notification.data.message)
@@ -515,13 +541,35 @@ export default class App extends React.Component {
     console.log("Are you WITHIN DISTANCE: " + this.state.withinDistance)
     console.log("SignedIn Boolean: " + this.state.signedIn)
 
-    if (this.state.withinDistance) {
-      const Layout = createRootNavigator(this.state.signedIn)
-      return <Layout />
+    if (!this.state.isReady) {
+      return (
+
+        <View style={{ flex: 1, justifyContent: "center" }}>
+          <Image style={{ flex: 1, width: undefined, height: undefined }}
+            source={require('./assets/splash.png')}
+            onLoad={this._cacheResourcesAsync}
+            resizeMode="cover"
+            resizeMethod="scale"
+          />
+          <View style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+            justifyContent: 'center', alignItems: 'center'
+          }}>
+            <ActivityIndicator size="large" color="rgb(255,255,255)" />
+            <Text style={{ textAlign: "center", color: "rgb(255,255,255)", paddingTop: 5 }}>Loading...</Text>
+          </View>
+        </View>
+      )
     }
     else {
-      const Layout = rejectedDistanceRoot()
-      return <Layout />
+      if (this.state.withinDistance) {
+        const Layout = createRootNavigator(this.state.signedIn)
+        return <Layout />
+      }
+      else {
+        const Layout = rejectedDistanceRoot()
+        return <Layout />
+     }
     }
   }
 }

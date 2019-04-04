@@ -66,11 +66,11 @@ class Notifications extends React.Component {
 		}
 	}
 	componentDidMount() {
-
 		this.userFullName()
 		this.userEmail()
 		this.state.socket.on("receiveNotifications", (data) => { this.setState({ notificationJSON: data }), this.addNotifications() })
 		this.state.socket.on("NoteDeleteCallback", (data) => { this.processDeletionCallback(data) })
+		this.state.socket.on("convoReturn", (data) => this.convoReturn(data))
 	}
 
 	/**
@@ -228,7 +228,6 @@ class Notifications extends React.Component {
 		}
 
 		this.state.socket.emit("createConversation", (data))
-		this.state.socket.on("convoReturn", (data) => this.convoReturn(data))
 	}
 
 	convoReturn = (data) => {
@@ -237,7 +236,7 @@ class Notifications extends React.Component {
 			Alert.alert("Conversation already exists", "A conversation about this request already exists", [
 				{ text: "OK", onPress: () => this.setState({ popupIsOpen: false }) },
 			],
-				{ cancelable: false })
+				{ cancelable: false })	
 		}
 		else {
 			this.closeRequest()

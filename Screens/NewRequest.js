@@ -7,6 +7,7 @@ import RF from "react-native-responsive-fontsize"
 import CustomButton from "../Components/CustomButton"
 import { API_ENDPOINT } from "../Components/api-config"
 import { AsyncStorage } from 'react-native';
+import Home from "./Home"
 
 
 const apiEndpoint = API_ENDPOINT
@@ -35,8 +36,11 @@ const styles = StyleSheet.create({
 // create a component
 class NewRequest extends PureComponent {
 
+     homeInstance = Home;
+
     constructor(props) {
         super(props)
+        this.homeInstance = new Home(props)
 
         this.state = {
             selectedItem: "",
@@ -185,6 +189,7 @@ class NewRequest extends PureComponent {
         switch (data) {
             case "success":
                 console.log("Success!")
+                this.homeInstance.refreshFeed()
                 this.props.navigation.navigate("Home")
                 break;
             default:
