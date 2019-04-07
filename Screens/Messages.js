@@ -96,6 +96,12 @@ class Messages extends Component {
         }
     }
 
+    /**
+     * Processes all of the message threads 
+     * from the server that the user's email 
+     * is a part of and then properly sorts
+     * and displays them
+     */
     processConversations() {
         console.log(this.state.conversationsJSON)
 
@@ -164,6 +170,7 @@ class Messages extends Component {
         console.log("Number of Conversations is " + this.state.conversations.length)
     }
 
+    //Refreshes the feed
     refreshFeed = () => {
         console.log("requesting messages")
 

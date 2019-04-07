@@ -85,6 +85,10 @@ class PersonalRequests extends Component {
         }
     }
 
+    /**
+     * Process all personal requests this account
+     * has created and sort and display them
+     */
     processRequests = () => {
         if (this._isMounted) {
             this.setState({
@@ -131,6 +135,7 @@ class PersonalRequests extends Component {
         }
     }
 
+    //refresh feed
     refreshFeed = () => {
         if (this._isMounted) {
             this.setState({
@@ -143,6 +148,7 @@ class PersonalRequests extends Component {
         this.state.socket.emit("requestPersonalRequests", (this.state.email))
     }
 
+    //Open the Request Modal
     openRequest = (item) => {
         console.log("Date Created: " + new Date(item.props.dateCreated).toLocaleDateString())
         console.log("Request ID: " + item.props.request_ID)
@@ -159,6 +165,7 @@ class PersonalRequests extends Component {
 
     }
 
+    //Clost the Modal
     closeRequest() {
         if (this._isMounted) {
             this.setState({
@@ -167,6 +174,8 @@ class PersonalRequests extends Component {
         }
     }
 
+    //Sends a request the Server to delete
+    //the request
     deleteRequest() {
         Alert.alert("Confirm", "Are you sure you want to remove this request? It will also remove the conversation about it if it exists.",
             [
@@ -180,6 +189,7 @@ class PersonalRequests extends Component {
             ])
     }
 
+    //If request was deleted, refresh
     processRequestDeletion = (data) => {
         console.log("Data from deleting request is: " + data)
 

@@ -209,6 +209,7 @@ class Notifications extends React.Component {
 		}
 	}
 
+	//Open the noitifcation modal
 	openRequest = (item) => {
 		console.log(item.props.title)
 		console.log(item.props.fulFiller_Email)
@@ -236,6 +237,7 @@ class Notifications extends React.Component {
 		}
 	}
 
+	//close the Modal
 	closeRequest() {
 		if (this._isMounted) {
 			this.setState({
@@ -244,7 +246,11 @@ class Notifications extends React.Component {
 		}
 	}
 
-
+	/**
+	 * If selected, Submit a socket to create the
+	 * conversation between the request poster
+	 * and the fulfiller
+	 */
 	createConversation() {
 		console.log("Attempting to create conversation between: " + this.state.email + " and " + this.state.fulFiller_Email)
 
@@ -258,6 +264,9 @@ class Notifications extends React.Component {
 		this.state.socket.emit("createConversation", (data))
 	}
 
+	//Callback to handle the server's sent data
+	//Checks to make sure there isn't already a
+	//conversation about this request
 	convoReturn = (data) => {
 		console.log("Convo Return: " + data)
 		if (data) {
@@ -278,6 +287,8 @@ class Notifications extends React.Component {
 		}
 	}
 
+	//On successful creation of the conversation
+	//Send a push noitifcation to the fulfiller
 	sendPushNotification = () => {
 		console.log("Sending Push Notification", this.state.fulFiller_ExpoToken)
 		let response = fetch(NOTIFICATION_API, {
@@ -299,6 +310,8 @@ class Notifications extends React.Component {
 		console.log("Push Notification Sent", JSON.stringify(response))
 	}
 
+	//Deletes the notification from the backend
+	//and then refreshes
 	deleteNotification = () => {
 		console.log("Deleting notification from DB")
 

@@ -257,6 +257,10 @@ class Home extends Component {
         this.addRequestsFromServer()
     }
 
+    /**
+     * Checks to make sure the user fulfilling
+     * is not the OP of the request
+     */
     connectWithRequester() {
         var data = { request_ID: this.state.cardID, fulfiller: this.state.email, fulFiller_Name: this.state.fullName }
 
@@ -271,13 +275,20 @@ class Home extends Component {
                 ])
         }
     }
-
+    /**
+     * submits a request to the server to add
+     * the user who sent this socket to the request
+     * as a fulfiller
+     */
     sendConnectRequest = (data) => {
         this.state.socket.emit("offerToConnect", (data))
         this.closeRequest()
         this.sendPushNotification()
     }
 
+    //Upon submitting the offer to help
+    //we send a push notification to that
+    //request's OP
     sendPushNotification = () => {
         console.log("Sending Push Notification", this.state.OPExpoToken)
         let response = fetch(NOTIFICATION_API, {

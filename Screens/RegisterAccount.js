@@ -73,6 +73,7 @@ class RegisterAccount extends Component {
 		this._isMounted = false
 	}
 
+	//Grab the Expo token from phone storage
 	async getExpoTokenFromStorage() {
 		try {
 			await AsyncStorage.getItem("expoToken").then((value) => {
@@ -96,6 +97,7 @@ class RegisterAccount extends Component {
 		}
 	}
 
+	//Handles the First Name text input
 	handleFirstNameChange = (first) => {
 		if (this._isMounted) {
 			this.setState({
@@ -104,6 +106,7 @@ class RegisterAccount extends Component {
 		}
 	}
 
+	//Handle the last name input
 	handleLastNameChange = (last) => {
 		if (this._isMounted) {
 			this.setState({
@@ -112,6 +115,7 @@ class RegisterAccount extends Component {
 		}
 	}
 
+	//Handles the email input
 	handleEmailTextChange = (email) => {
 		if (this._isMounted) {
 			this.setState({
@@ -120,6 +124,7 @@ class RegisterAccount extends Component {
 		}
 	}
 
+	//Handles the password field
 	handlePasswordTextChange = (pass) => {
 		if (this._isMounted) {
 			this.setState({
@@ -128,6 +133,7 @@ class RegisterAccount extends Component {
 		}
 	}
 
+	//Handles the password confirm field
 	handlePasswordConfirmChange = (confirm) => {
 		if (this._isMounted) {
 			this.setState({
@@ -175,6 +181,10 @@ class RegisterAccount extends Component {
 		}
 	}
 
+	/**
+	 * Callback from the Server with proper
+	 * switch cases for alerts
+	 */
 	creationReturnData = (data) => {
 		console.log(data)
 		switch (data) {
@@ -275,6 +285,7 @@ class RegisterAccount extends Component {
 		}
 	}
 
+	//Handles the pincode input
 	handlePinCodeChange = (code) => {
 		if (this._isMounted) {
 			this.setState({
@@ -282,8 +293,11 @@ class RegisterAccount extends Component {
 			})
 		}
 	}
-
-
+	
+	/**
+	 * Callback from Server with
+	 * account verification information
+	 */
 	checkVerifiedAccount = (data) => {
 
 		switch (data) {
@@ -311,6 +325,8 @@ class RegisterAccount extends Component {
 		}
 	}
 
+
+	//Handles the TOS agreement radio
 	handleTOSChange() {
 		if (this._isMounted) {
 			this.setState({
@@ -319,6 +335,7 @@ class RegisterAccount extends Component {
 		}
 	}
 
+	//Make sure the PIN is formatted right
 	crossCheckCode = () => {
 		var code = parseInt(this.state.pinString)
 		var data = { email: this.state.email, pinCode: code }

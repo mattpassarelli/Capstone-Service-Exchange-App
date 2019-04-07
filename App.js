@@ -551,6 +551,7 @@ export default class App extends React.Component {
     await Promise.all(cacheImages);
   }
 
+  //Handle receiving a push notification while the app is in the foreground
   _handleNotification = (notification) => {
     console.log("Incoming notification: " + JSON.stringify(notification))
     Toast.show(notification.data.message)

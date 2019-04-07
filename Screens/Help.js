@@ -26,7 +26,7 @@ class Help extends Component {
         }
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.userEmail()
         this.userFullName()
         this._isMounted = true
@@ -37,7 +37,7 @@ class Help extends Component {
     }
 
     //Grab the full name from the phone's storage
-    userFullName = async () => {
+    async userFullName() {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
                 console.log("Name: " + value)
@@ -54,7 +54,7 @@ class Help extends Component {
     }
 
     //grab user email from phone storage
-    userEmail = async () => {
+    async userEmail() {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
                 console.log("Email:" + value)
@@ -70,6 +70,7 @@ class Help extends Component {
         }
     }
 
+    //handles the body text box
     handleBodyChange = (text) => {
         if (this._isMounted) {
             this.setState({
@@ -78,6 +79,8 @@ class Help extends Component {
         }
     }
 
+    //Opens the default email app and autofills fields with
+    //cooresponding indo
     sendEmail() {
         let device = ""
 
@@ -116,6 +119,7 @@ class Help extends Component {
         }
     }
 
+    //Clears all fields after send
     clearAll() {
         if (this._isMounted) {
             this.setState({
@@ -126,6 +130,7 @@ class Help extends Component {
         }
     }
 
+    //is the android radio selected
     handleAndroidChoice() {
         if (this._isMounted) {
             this.setState({
@@ -135,6 +140,7 @@ class Help extends Component {
         }
     }
 
+    //is the iOS radio selected
     handleiPhoneChoice() {
         if (this._isMounted) {
             this.setState({

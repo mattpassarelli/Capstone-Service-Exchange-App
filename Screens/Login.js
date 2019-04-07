@@ -88,7 +88,8 @@ class Login extends Component {
 	componentWillUnmount() {
 		this._isMounted = false
 	}
-
+	
+	//handle the email text input
 	handleEmailTextChange = (email) => {
 		if (this._isMounted) {
 			this.setState({
@@ -97,6 +98,7 @@ class Login extends Component {
 		}
 	}
 
+	//handle the password text input
 	handlePasswordTextChange = (pass) => {
 		if (this._isMounted) {
 			this.setState({
@@ -105,11 +107,13 @@ class Login extends Component {
 		}
 	}
 
+	//Used to scroll to the next or previous, input field
 	_scrollToInput(reactNode) {
 		// Add a 'scroll' ref to your ScrollView
 		this.scroll.props.scrollToFocusedInput(reactNode)
 	}
 
+	//submits the login info to the server
 	sendLoginRequest() {
 
 		/** 
@@ -123,6 +127,12 @@ class Login extends Component {
 		this.state.socket.emit("requestLogin", (data))
 	}
 
+	/**
+	 * Handles the callback from the server. If
+	 * the info is correct and matches an account,
+	 * the app forwards the user to the Home screen
+	 * and saves the login state on the phone
+	 */
 	processLogin = (data) => {
 		console.log("Return Data: " + data.firstName + " " + data.lastName)
 		const fullName = data.firstName + " " + data.lastName
@@ -160,6 +170,7 @@ class Login extends Component {
 		}
 	}
 
+	//Open the Verification modal if needed
 	openRequest = () => {
 		if (this._isMounted) {
 			this.setState({
@@ -177,6 +188,7 @@ class Login extends Component {
 		}
 	}
 
+	//Handles the Pin Code text input
 	handlePinCodeChange = (code) => {
 		if (this._isMounted) {
 			this.setState({
@@ -185,6 +197,8 @@ class Login extends Component {
 		}
 	}
 
+	//Checks the code to make sure it 
+	//is a valid format
 	crossCheckCode = () => {
 		var code = parseInt(this.state.pinString)
 		var data = { email: this.state.email, pinCode: code }
@@ -197,6 +211,7 @@ class Login extends Component {
 		}
 	}
 
+	//Callback from the server with verification info
 	checkVerifiedAccount = (data) => {
 
 		switch (data) {

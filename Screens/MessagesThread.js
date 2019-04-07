@@ -292,6 +292,8 @@ class MessagesThread extends Component {
     params.refreshFeed()
   }
 
+  //Override the bubble component so I 
+  //can match the blue to my app color
   renderBubble(props) {
     return (
       <Bubble {...props}

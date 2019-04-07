@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component, PureComponent } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert, Modal, TouchableWithoutFeedback, Keyboard, Platform } from 'react-native';
 import { Card } from 'react-native-elements'
 import Picker from 'react-native-universal-picker'
 import RF from "react-native-responsive-fontsize"
@@ -101,6 +101,12 @@ class NewRequest extends PureComponent {
         }
     }
 
+    /**
+     * Removes every character from the
+     * last Name so it's only the first character.
+     * There are probably better ways to do this, 
+     * but oh well
+     */
     removeLastName() {
         var index = this.state.fullName.indexOf(" ")
         var firstName = this.state.fullName.substring(0, index)
@@ -206,6 +212,10 @@ class NewRequest extends PureComponent {
         this.textInput.clear()
     }
 
+    /**
+     * Handles the callback from the server
+     * so that we can process what to do next
+     */
     processRequestCallback = (data) => {
         console.log("Request Feedback is: " + data)
         switch (data) {
@@ -260,7 +270,9 @@ class NewRequest extends PureComponent {
                             {/* Character Counter */}
                             <Text style={{ position: "absolute", right: 0, backgroundColor: "transparent", color: "rgba(137, 132, 132, 0.5)", alignItems: "flex-end" }}>{this.state.requestDescription.length}/100</Text>
 
-                            <TextInput placeholder="Type a description..." multiline={true}
+                            <TextInput 
+                            placeholder="Type a description..." 
+                            multiline={true}
                                 style={{
                                     backgroundColor: "rgba(137, 132, 132, 0.1)", height: "100%", textAlignVertical: "top", fontSize: RF(2.5),
                                     borderTopWidth: 1, borderTopColor: "#bfbfbf", paddingTop: 15, paddingLeft: 10
@@ -271,6 +283,7 @@ class NewRequest extends PureComponent {
                                 returnKeyType="done"
                                 blurOnSubmit={true}
                                 ref={input => { this.textInput = input }}
+                                keyboardType={Platform.OS === 'android' ? 'email-address' : 'ascii-capable'}
                             />
                         </View>
 
