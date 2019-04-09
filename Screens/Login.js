@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, TextInput, Text, findNodeHandle, Alert, Modal } from 'react-native';
+import { View, StyleSheet, Image, TextInput, Text, findNodeHandle, Alert, Modal, TouchableWithoutFeedback } from 'react-native';
 import { withNavigation } from 'react-navigation'
 import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
@@ -326,6 +326,7 @@ class Login extends Component {
 						this.closeRequest()
 					}
 					}>
+					<TouchableWithoutFeedback onPress={() => this.closeRequest()}>
 					<View style={[{
 						flex: 1,
 						alignItems: 'center',
@@ -361,6 +362,7 @@ class Login extends Component {
 							/>
 						</View>
 					</View>
+					</TouchableWithoutFeedback>
 				</Modal>
 			</React.Fragment>
 		);

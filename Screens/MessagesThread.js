@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Platform, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View, Text, StyleSheet, Platform, TouchableOpacity, Modal, Alert, TouchableWithoutFeedback } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 import { AsyncStorage } from "react-native"
 import { API_ENDPOINT } from "../Components/api-config"
@@ -217,7 +217,7 @@ class MessagesThread extends Component {
   //Deletes only the conversation
   closeChat() {
     console.log("User wants to close chat only")
-    Alert.alert("Confirm", "Are you sure you want to remove this conversation? If this person is harassing you or breaking rules, please report them under Account > Help",
+    Alert.alert("Confirm", "Do you want to remove this conversation? If this person is harassing you or breaking rules, please report them under Account > Help",
       [
         { text: "No" },
         {
@@ -236,7 +236,7 @@ class MessagesThread extends Component {
    * */
   closeRequest() {
     console.log("User wants to close entire request")
-    Alert.alert("Confirm", "Are you sure you want to remove this request? This will remove the conversation.",
+    Alert.alert("Confirm", "Are you sure you want to remove this request?",
       [
         { text: "No" },
         {
@@ -332,6 +332,7 @@ class MessagesThread extends Component {
           onRequestClose={() => {
             this.closeCloseRequest()
           }}>
+          <TouchableWithoutFeedback onPress={() => this.closeCloseRequest()}>
           <View style={[{
             flex: 1,
             alignItems: 'center',
@@ -340,14 +341,16 @@ class MessagesThread extends Component {
             backgroundColor: '#ecf0f1',
           }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
             <View style={{
-              backgroundColor: '#fff', padding: 20, height: "40%",
+              backgroundColor: '#fff', padding: 20, height: "60%",
               width: "80%", borderRadius: 10, justifyContent: "space-between"
             }}>
               <View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
                 <Text style={{ fontWeight: "bold", fontSize: RF(2.5), textAlign: "center", padding: 3 }}>Close Request?</Text>
                 <Text style={{ fontSize: RF(2), paddingTop: 5, textAlign: "center" }}>
-                  Here you can choose to close the request, or just this conversation. Closing the request will mark it as done and remove
-                  it from the app. Closing this conversation will delete only this conversation and keep your request open. Only the creator of the request can close the request itself.
+                  Here you can choose to close the request, or just this conversation.
+                  Closing the request will fulfill it and remove it from the app.
+                  Closing the conversation will delete only this conversation and keep your request open.
+                  Only the creator of the request can close the request itself.
                                     </Text>
               </View>
 
@@ -375,8 +378,8 @@ class MessagesThread extends Component {
               </View>
             </View>
 
-
           </View>
+          </TouchableWithoutFeedback>
         </Modal>
       </React.Fragment>
     );

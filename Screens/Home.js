@@ -1,9 +1,7 @@
 //import liraries
 import React, { Component } from 'react';
-import { Modal, View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import { Modal, View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Alert, RefreshControl, TouchableWithoutFeedback } from 'react-native';
 import { Card } from 'react-native-elements'
-//import RequestPopup from './RequestPopup'
-import GestureRecognizer from 'react-native-swipe-gestures';
 import { YellowBox } from 'react-native';
 import { API_ENDPOINT } from "../Components/api-config"
 import CustomButton from "../Components/CustomButton"
@@ -313,11 +311,6 @@ class Home extends Component {
 
     render() {
 
-        const gestureConfig = {
-            velocityThreshold: 0.3,
-            directionalOffsetThreshold: 80
-        };
-
         return (
 
             <React.Fragment>
@@ -341,8 +334,6 @@ class Home extends Component {
                     </ScrollView>
                 </View>
 
-                {/* The gesture recognition so we can swipe down to dismiss the modal */}
-                <GestureRecognizer onSwipeDown={() => this.closeRequest()} config={gestureConfig}>
 
                     {/*Modal for the requests*/}
                     <Modal
@@ -352,36 +343,34 @@ class Home extends Component {
                         onRequestClose={() => {
                             this.closeRequest()
                         }}>
-                        <View style={[{
-                            flex: 1,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            paddingTop: 20,
-                            backgroundColor: '#ecf0f1',
-                        }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
-                            <View style={{
-                                backgroundColor: '#fff', padding: 20, height: "40%",
-                                width: "80%", borderRadius: 10, justifyContent: "space-between"
-                            }}>
-                                <View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
-                                    <Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>{this.state.cardTitle}</Text>
-                                    <Text style={{ fontSize: RF(1.5), textAlign: "center" }}>Posted by: {this.state.cardPoster}</Text>
-                                    <Text style={{ fontSize: RF(2.5), paddingTop: 15, textAlign: "center" }}>{this.state.cardBody}</Text>
-                                </View>
+                        <TouchableWithoutFeedback onPress={() => this.closeRequest()}>
+                            <View style={[{
+                                flex: 1,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                paddingTop: 20,
+                                backgroundColor: '#ecf0f1',
+                            }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+                                <View style={{
+                                    backgroundColor: '#fff', padding: 20, height: "40%",
+                                    width: "80%", borderRadius: 10, justifyContent: "space-between"
+                                }}>
+                                    <View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
+                                        <Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>{this.state.cardTitle}</Text>
+                                        <Text style={{ fontSize: RF(1.5), textAlign: "center" }}>Posted by: {this.state.cardPoster}</Text>
+                                        <Text style={{ fontSize: RF(2.5), paddingTop: 15, textAlign: "center" }}>{this.state.cardBody}</Text>
+                                    </View>
 
 
-                                <View style={{ alignItems: "center" }}>
-                                    <CustomButton text="Fulfill Request"
-                                        onPress={() => this.connectWithRequester()}
-                                        buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+                                    <View style={{ alignItems: "center" }}>
+                                        <CustomButton text="Fulfill Request"
+                                            onPress={() => this.connectWithRequester()}
+                                            buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+                                    </View>
                                 </View>
                             </View>
-
-
-                        </View>
+                        </TouchableWithoutFeedback>
                     </Modal>
-                </GestureRecognizer>
-
 
             </React.Fragment>
         );

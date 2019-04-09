@@ -1,12 +1,11 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, RefreshControl, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View, Text, StyleSheet, RefreshControl, ScrollView, TouchableOpacity, Modal, Alert, TouchableWithoutFeedback } from 'react-native';
 import CustomButton from "../Components/CustomButton"
 import { Card } from 'react-native-elements'
 import RF from "react-native-responsive-fontsize"
 import { AsyncStorage } from 'react-native';
 import { API_ENDPOINT } from "../Components/api-config"
-import GestureRecognizer from 'react-native-swipe-gestures';
 
 const apiEndpoint = API_ENDPOINT
 
@@ -208,10 +207,7 @@ class PersonalRequests extends Component {
 
     render() {
 
-        const gestureConfig = {
-            velocityThreshold: 0.3,
-            directionalOffsetThreshold: 80
-        };
+        
 
         return (
             <React.Fragment>
@@ -233,17 +229,17 @@ class PersonalRequests extends Component {
 
                 </ScrollView>
 
-                {/* The gesture recognition so we can swipe down to dismiss the modal */}
-                <GestureRecognizer onSwipeDown={() => this.closeRequest()} config={gestureConfig}>
+             
 
-                    {/*Modal for the requests*/}
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={this.state.popupIsOpen}
-                        onRequestClose={() => {
-                            this.closeRequest()
-                        }}>
+                {/*Modal for the requests*/}
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.popupIsOpen}
+                    onRequestClose={() => {
+                        this.closeRequest()
+                    }}>
+                    <TouchableWithoutFeedback onPress={() => this.closeRequest()}>
                         <View style={[{
                             flex: 1,
                             alignItems: 'center',
@@ -271,8 +267,9 @@ class PersonalRequests extends Component {
 
 
                         </View>
-                    </Modal>
-                </GestureRecognizer>
+                        </TouchableWithoutFeedback>
+                </Modal>
+
             </React.Fragment>
 
         );

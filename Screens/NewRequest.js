@@ -270,9 +270,9 @@ class NewRequest extends PureComponent {
                             {/* Character Counter */}
                             <Text style={{ position: "absolute", right: 0, backgroundColor: "transparent", color: "rgba(137, 132, 132, 0.5)", alignItems: "flex-end" }}>{this.state.requestDescription.length}/100</Text>
 
-                            <TextInput 
-                            placeholder="Type a description..." 
-                            multiline={true}
+                            <TextInput
+                                placeholder="Type a description..."
+                                multiline={true}
                                 style={{
                                     backgroundColor: "rgba(137, 132, 132, 0.1)", height: "100%", textAlignVertical: "top", fontSize: RF(2.5),
                                     borderTopWidth: 1, borderTopColor: "#bfbfbf", paddingTop: 15, paddingLeft: 10
@@ -296,36 +296,37 @@ class NewRequest extends PureComponent {
 
 
                 <Modal animationType="slide" transparent={true} visible={this.state.isPreviewOpen} onRequestClose={() => this.closePreview()}>
-                    <View style={[{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        paddingTop: 20,
-                        backgroundColor: '#ecf0f1',
-                    }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+                    <TouchableWithoutFeedback onPress={() => this.closePreview()}>
+                        <View style={[{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            paddingTop: 20,
+                            backgroundColor: '#ecf0f1',
+                        }, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
 
-                        <View style={{
-                            backgroundColor: '#fff', padding: 20, height: "40%",
-                            width: "80%", borderRadius: 10, justifyContent: "space-between"
-                        }}>
-                            <View style={{ flex: 1 }}>
-                                <Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>{this.state.selectedItem}</Text>
-                                <Text style={{ fontSize: RF(1.5), textAlign: "center" }}>Posted by: {this.state.firstNameLastInitial}</Text>
-                                <Text style={{ fontSize: RF(2.5), paddingTop: 15, textAlign: "center" }}>{this.state.requestDescription}</Text>
-                            </View>
-                            <View style={{ flex: .3, flexDirection: "row", alignItems: "center", justifyContent: "space-between", height: "10%" }}>
-                                <CustomButton text='Close'
-                                    onPress={() => this.closePreview()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle}
-                                />
+                            <View style={{
+                                backgroundColor: '#fff', padding: 20, height: "40%",
+                                width: "80%", borderRadius: 10, justifyContent: "space-between"
+                            }}>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>{this.state.selectedItem}</Text>
+                                    <Text style={{ fontSize: RF(1.5), textAlign: "center" }}>Posted by: {this.state.firstNameLastInitial}</Text>
+                                    <Text style={{ fontSize: RF(2.5), paddingTop: 15, textAlign: "center" }}>{this.state.requestDescription}</Text>
+                                </View>
+                                <View style={{ flex: .3, flexDirection: "row", alignItems: "center", justifyContent: "space-between", height: "10%" }}>
+                                    <CustomButton text='Close'
+                                        onPress={() => this.closePreview()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle}
+                                    />
 
-                                <CustomButton text="Submit"
-                                    onPress={() => this.sendRequestToDatabase()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+                                    <CustomButton text="Submit"
+                                        onPress={() => this.sendRequestToDatabase()} buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+                                </View>
                             </View>
+
+
                         </View>
-
-
-                    </View>
-
+                    </TouchableWithoutFeedback>
                 </Modal>
 
 

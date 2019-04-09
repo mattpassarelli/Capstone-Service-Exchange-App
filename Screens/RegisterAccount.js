@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, TextInput, Text, findNodeHandle, Alert, Modal, AsyncStorage, Platform } from 'react-native';
+import { View, StyleSheet, Image, TextInput, Text, findNodeHandle, Alert, Modal, AsyncStorage, Platform, ScrollView } from 'react-native';
 import { withNavigation } from 'react-navigation'
 import CustomButton from "../Components/CustomButton"
 import RF from "react-native-responsive-fontsize"
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-aware-scroll-view'
 import { API_ENDPOINT } from "../Components/api-config"
 import { CheckBox } from 'react-native-elements'
-import { ScrollView } from 'react-native-gesture-handler';
 
 const apiEndpoint = API_ENDPOINT
 

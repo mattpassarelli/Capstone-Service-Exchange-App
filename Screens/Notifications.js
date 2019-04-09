@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button, TouchableOpacity, Modal, RefreshControl, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Modal, RefreshControl, Alert } from 'react-native';
 import { Card } from "react-native-elements"
 import { createStackNavigator } from 'react-navigation'
 import { AsyncStorage } from "react-native"
@@ -67,6 +67,7 @@ class Notifications extends React.Component {
 			notification_ID: "",
 		}
 	}
+
 	componentDidMount() {
 		this._isMounted = true
 		this.userFullName()
@@ -313,7 +314,7 @@ class Notifications extends React.Component {
 	//Deletes the notification from the backend
 	//and then refreshes
 	deleteNotification = () => {
-		console.log("Deleting notification from DB")
+		console.log("Deleting notification from DB" + this.state.notification_ID)
 
 		this.state.socket.emit("DeleteNotification", { ID: this.state.notification_ID, email: this.state.email })
 	}
@@ -364,6 +365,7 @@ class Notifications extends React.Component {
 				</ScrollView>
 				{/* </View> */}
 
+
 				<Modal
 					animationType="slide"
 					transparent={true}
@@ -371,39 +373,42 @@ class Notifications extends React.Component {
 					onRequestClose={() => {
 						this.closeRequest()
 					}}>
-					<View style={[{
-						flex: 1,
-						alignItems: 'center',
-						justifyContent: 'center',
-						paddingTop: 20,
-						backgroundColor: '#ecf0f1',
-					}, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
-						<View style={{
-							backgroundColor: '#fff', padding: 20, height: "40%",
-							width: "80%", borderRadius: 10, justifyContent: "space-between"
-						}}>
-							<View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
-								<Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>Connect with {this.state.fulFiller_Name} about your request?</Text>
-								<Text style={{ fontSize: RF(2), textAlign: "center" }}>This will create a new conversation</Text>
-							</View>
+					<TouchableWithoutFeedback onPress={() => this.closeRequest()}>
+						<View style={[{
+							flex: 1,
+							alignItems: 'center',
+							justifyContent: 'center',
+							paddingTop: 20,
+							backgroundColor: '#ecf0f1',
+						}, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+							<View style={{
+								backgroundColor: '#fff', padding: 20, height: "40%",
+								width: "80%", borderRadius: 10, justifyContent: "space-between"
+							}}>
+								<View style={{ flex: 1, flexDirection: "column", alignItems: "center" }}>
+									<Text style={{ fontWeight: "bold", fontSize: RF(3), textAlign: "center", padding: 3 }}>Connect with {this.state.fulFiller_Name} about your request?</Text>
+									<Text style={{ fontSize: RF(2), textAlign: "center" }}>This will create a new conversation</Text>
+								</View>
 
 
-							<View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+								<View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
 
-								<CustomButton text="Delete Notification"
-									onPress={() => this.deleteNotification()}
-									buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+									<CustomButton text="Delete Notification"
+										onPress={() => this.deleteNotification()}
+										buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
 
-								<CustomButton text="Create Conversation"
-									onPress={() => Alert.alert("Confirm",
-										"Create the conversation?",
-										[{ text: "No" },
-										{ text: "Yes", onPress: () => this.createConversation() }]
-									)}
-									buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+									<CustomButton text="Create Conversation"
+										onPress={() => Alert.alert("Confirm",
+											"Create the conversation?",
+											[{ text: "No" },
+											{ text: "Yes", onPress: () => this.createConversation() }]
+										)}
+										buttonStyle={styles.buttonStyle} textStyle={styles.buttonTextStyle} />
+								</View>
 							</View>
 						</View>
-					</View>
+					</TouchableWithoutFeedback>
+
 				</Modal>
 			</React.Fragment>
 		)
