@@ -72,10 +72,10 @@ class Login extends Component {
 			AsyncStorage.setItem('loginKey', 'loginExists')
 			AsyncStorage.setItem("fullAccountName", fullName)
 			AsyncStorage.setItem("userEmail", this.state.email)
-			console.log("Login Key and info Saved")
+			//console.log("Login Key and info Saved")
 		}
 		catch (error) {
-			console.log("ASyncStoreage Error: " + error)
+			//console.log("ASyncStoreage Error: " + error)
 		}
 	}
 
@@ -134,9 +134,9 @@ class Login extends Component {
 	 * and saves the login state on the phone
 	 */
 	processLogin = (data) => {
-		console.log("Return Data: " + data.firstName + " " + data.lastName)
+		//console.log("Return Data: " + data.firstName + " " + data.lastName)
 		const fullName = data.firstName + " " + data.lastName
-		console.log("FULLNAME: " + fullName)
+		//console.log("FULLNAME: " + fullName)
 
 		switch (data.message) {
 			case "Login Accepted":

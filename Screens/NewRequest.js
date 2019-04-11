@@ -70,7 +70,7 @@ class NewRequest extends PureComponent {
     async userFullName() {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
-                console.log("Name: " + value)
+                //console.log("Name: " + value)
                 if (this._isMounted) {
                     this.setState({
                         fullName: value
@@ -80,7 +80,7 @@ class NewRequest extends PureComponent {
             })
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
         }
     }
 
@@ -88,7 +88,7 @@ class NewRequest extends PureComponent {
     async userEmail() {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
-                console.log("Email:" + value)
+                //console.log("Email:" + value)
                 if (this._isMounted) {
                     this.setState({
                         email: value
@@ -97,7 +97,7 @@ class NewRequest extends PureComponent {
             })
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
         }
     }
 
@@ -217,15 +217,15 @@ class NewRequest extends PureComponent {
      * so that we can process what to do next
      */
     processRequestCallback = (data) => {
-        console.log("Request Feedback is: " + data)
+        //console.log("Request Feedback is: " + data)
         switch (data) {
             case "success":
-                console.log("Success!")
+                //console.log("Success!")
                 this.homeInstance.refreshFeed()
                 this.props.navigation.navigate("Home")
                 break;
             default:
-                console.log("Oh no")
+                //console.log("Oh no")
                 break;
         }
     }

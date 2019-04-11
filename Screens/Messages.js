@@ -57,7 +57,7 @@ class Messages extends Component {
     async userFullName() {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
-                console.log("Name: " + value)
+                //console.log("Name: " + value)
                 if (this._isMounted) {
                     this.setState({
                         fullName: value
@@ -66,7 +66,7 @@ class Messages extends Component {
             })
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
         }
     }
 
@@ -74,7 +74,7 @@ class Messages extends Component {
     async userEmail() {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
-                console.log("Email:" + value)
+                //console.log("Email:" + value)
                 if (this._isMounted) {
                     this.setState({
                         email: value
@@ -92,7 +92,7 @@ class Messages extends Component {
             })
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
         }
     }
 
@@ -103,7 +103,7 @@ class Messages extends Component {
      * and displays them
      */
     processConversations() {
-        console.log(this.state.conversationsJSON)
+        //console.log(this.state.conversationsJSON)
 
         if (this._isMounted) {
             this.setState({
@@ -111,10 +111,10 @@ class Messages extends Component {
             })
         }
 
-        console.log("sorting JSON")
+        //console.log("sorting JSON")
         var tempArray = []
 
-        console.log(this.state.conversationsJSON.length)
+        //console.log(this.state.conversationsJSON.length)
 
         if (this.state.conversationsJSON.length > 0) {
             for (var i = 0; i < this.state.conversationsJSON.length; i++) {
@@ -124,16 +124,16 @@ class Messages extends Component {
                 let title = "PLACEHOLDER"
                 let token = "OOF I HOPE NOT"
                 if (this.state.conversationsJSON[i].user1Name == this.state.fullName) {
-                    console.log("TITLE WILL BE: " + this.state.conversationsJSON[i].user2Name)
+                    //console.log("TITLE WILL BE: " + this.state.conversationsJSON[i].user2Name)
                     title = this.state.conversationsJSON[i].user2Name
                     token = this.state.conversationsJSON[i].user2ExpoToken
                 }
                 else if (this.state.conversationsJSON[i].user2Name == this.state.fullName) {
-                    console.log("TITLE WILL BE: " + this.state.conversationsJSON[i].user1Name)
+                    //console.log("TITLE WILL BE: " + this.state.conversationsJSON[i].user1Name)
                     title = this.state.conversationsJSON[i].user1Name
                     token = this.state.conversationsJSON[i].user1ExpoToken
                 }
-                console.log("TITLE: " + title)
+                //console.log("TITLE: " + title)
 
                 var newConvo = (
                     <Message userNameTitle={title}
@@ -151,7 +151,7 @@ class Messages extends Component {
                     })
                 }
 
-                console.log(newConvo, this.state.userExpoToken, this.state.otherUsersName, this.state.request_ID)
+                //console.log(newConvo, this.state.userExpoToken, this.state.otherUsersName, this.state.request_ID)
 
                 tempArray.push(newConvo)
             }
@@ -167,12 +167,12 @@ class Messages extends Component {
             })
         }
 
-        console.log("Number of Conversations is " + this.state.conversations.length)
+        //console.log("Number of Conversations is " + this.state.conversations.length)
     }
 
     //Refreshes the feed
     refreshFeed = () => {
-        console.log("requesting messages")
+        //console.log("requesting messages")
 
         if (this._isMounted) {
             this.setState({

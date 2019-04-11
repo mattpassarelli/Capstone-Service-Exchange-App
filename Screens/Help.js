@@ -40,7 +40,7 @@ class Help extends Component {
     async userFullName() {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
-                console.log("Name: " + value)
+                //console.log("Name: " + value)
                 if (this._isMounted) {
                     this.setState({
                         fullName: value
@@ -49,7 +49,7 @@ class Help extends Component {
             })
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
         }
     }
 
@@ -57,7 +57,7 @@ class Help extends Component {
     async userEmail() {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
-                console.log("Email:" + value)
+                //console.log("Email:" + value)
                 if (this._isMounted) {
                     this.setState({
                         email: value
@@ -66,7 +66,7 @@ class Help extends Component {
             })
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
         }
     }
 
@@ -101,8 +101,8 @@ class Help extends Component {
                     "DEVICE: " + device + "\n" +
                     "MESSAGE: " + this.state.emailBody
 
-                console.log("Sending email")
-                console.log("INFO: " + deviceInfo)
+                //console.log("Sending email")
+                //console.log("INFO: " + deviceInfo)
 
                 const to = [MY_EMAIL]
 
@@ -111,7 +111,9 @@ class Help extends Component {
                     bcc: "",
                     subject: "UExchange Feedback App",
                     body: deviceInfo
-                }).then(this.clearAll()).catch(console.error)
+                }).then(this.clearAll()).catch(
+                    //console.error
+                    )
             }
             else {
                 Alert.alert("Please type a message")

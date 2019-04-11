@@ -92,7 +92,7 @@ class Notifications extends React.Component {
 	* is what is called
 	*/
 	refreshFeed = () => {
-		console.log("Refreshing requestsDataJSON")
+		//console.log("Refreshing requestsDataJSON")
 
         /**
          * Clear requests (in case they've all been deleted lol),
@@ -106,9 +106,9 @@ class Notifications extends React.Component {
 
 		this.state.socket.emit("pullNotifications", (this.state.email))
 
-		console.log("Data received from server is: " + this.state.requestsDataJSON)
+		//console.log("Data received from server is: " + this.state.requestsDataJSON)
 
-		console.log("Done Refreshing JSON")
+		//console.log("Done Refreshing JSON")
 		this.addNotifications()
 	}
 
@@ -116,7 +116,7 @@ class Notifications extends React.Component {
 	async userFullName() {
 		try {
 			await AsyncStorage.getItem("fullAccountName").then(async (value) => {
-				console.log("Name: " + value)
+				//console.log("Name: " + value)
 				if (this._isMounted) {
 					this.setState({
 						fullName: value
@@ -125,7 +125,7 @@ class Notifications extends React.Component {
 			})
 		}
 		catch (error) {
-			console.log(error)
+			//console.log(error)
 		}
 	}
 
@@ -133,7 +133,7 @@ class Notifications extends React.Component {
 	async userEmail() {
 		try {
 			await AsyncStorage.getItem("userEmail").then((value) => {
-				console.log("Email:" + value)
+				//console.log("Email:" + value)
 				if (this._isMounted) {
 					this.setState({
 						email: value
@@ -150,7 +150,7 @@ class Notifications extends React.Component {
 			})
 		}
 		catch (error) {
-			console.log(error)
+			//console.log(error)
 		}
 	}
 
@@ -160,7 +160,7 @@ class Notifications extends React.Component {
 	 * as Cards (possibly temporary)
 	 */
 	addNotifications = () => {
-		console.log("Recevied notification data: " + JSON.stringify(this.state.notificationJSON, null, 2))
+		//console.log("Recevied notification data: " + JSON.stringify(this.state.notificationJSON, null, 2))
 
 		if (this._isMounted) {
 			this.setState({
@@ -175,7 +175,7 @@ class Notifications extends React.Component {
 			for (var i = 0; i < this.state.notificationJSON.length; i++) {
 
 				var title = this.state.notificationJSON[i].fulFiller_Name + " has offered to help you with your request: " + this.state.notificationJSON[i].requestTitle
-				console.log("Request_ID: " + this.state.notificationJSON[i].request_ID)
+				//console.log("Request_ID: " + this.state.notificationJSON[i].request_ID)
 				var newCard = (
 					<Card title={title}
 						fulFiller_Email={this.state.notificationJSON[i].fulFiller_Email}
@@ -212,16 +212,16 @@ class Notifications extends React.Component {
 
 	//Open the noitifcation modal
 	openRequest = (item) => {
-		console.log(item.props.title)
-		console.log(item.props.fulFiller_Email)
-		console.log(item.props.fulFiller_Name)
-		console.log(item.props.request_ID)
-		console.log(item.props.requestType)
-		console.log("Fulfiller ExpoToken: " + item.props.fulFiller_ExpoToken)
-		console.log("Poster Expo Token: " + item.props.posterExpoToken)
-		console.log("Date Created: " + moment(item.props.dateCreated).format("dddd, MMMM Do YYYY, h:mm:ss a"))
-		console.log("Time from now: " + moment(item.props.dateCreated).from(new Date()))
-		console.log("Notification ID: " + item.props.notification_ID)
+		//console.log(item.props.title)
+		//console.log(item.props.fulFiller_Email)
+		//console.log(item.props.fulFiller_Name)
+		//console.log(item.props.request_ID)
+		//console.log(item.props.requestType)
+		//console.log("Fulfiller ExpoToken: " + item.props.fulFiller_ExpoToken)
+		//console.log("Poster Expo Token: " + item.props.posterExpoToken)
+		//console.log("Date Created: " + moment(item.props.dateCreated).format("dddd, MMMM Do YYYY, h:mm:ss a"))
+		//console.log("Time from now: " + moment(item.props.dateCreated).from(new Date()))
+		//console.log("Notification ID: " + item.props.notification_ID)
 
 		if (this._isMounted) {
 			this.setState({
@@ -253,7 +253,7 @@ class Notifications extends React.Component {
 	 * and the fulfiller
 	 */
 	createConversation() {
-		console.log("Attempting to create conversation between: " + this.state.email + " and " + this.state.fulFiller_Email)
+		//console.log("Attempting to create conversation between: " + this.state.email + " and " + this.state.fulFiller_Email)
 
 		var data = {
 			user1: this.state.email, user1Name: this.state.fullName,
@@ -269,7 +269,7 @@ class Notifications extends React.Component {
 	//Checks to make sure there isn't already a
 	//conversation about this request
 	convoReturn = (data) => {
-		console.log("Convo Return: " + data)
+		//console.log("Convo Return: " + data)
 		if (data) {
 			Alert.alert("Conversation already exists", "A conversation about this request already exists", [
 				{
@@ -291,7 +291,7 @@ class Notifications extends React.Component {
 	//On successful creation of the conversation
 	//Send a push noitifcation to the fulfiller
 	sendPushNotification = () => {
-		console.log("Sending Push Notification", this.state.fulFiller_ExpoToken)
+		//console.log("Sending Push Notification", this.state.fulFiller_ExpoToken)
 		let response = fetch(NOTIFICATION_API, {
 			method: 'POST',
 			headers: {
@@ -308,13 +308,13 @@ class Notifications extends React.Component {
 				}
 			})
 		})
-		console.log("Push Notification Sent", JSON.stringify(response))
+		//console.log("Push Notification Sent", JSON.stringify(response))
 	}
 
 	//Deletes the notification from the backend
 	//and then refreshes
 	deleteNotification = () => {
-		console.log("Deleting notification from DB" + this.state.notification_ID)
+		//console.log("Deleting notification from DB" + this.state.notification_ID)
 
 		this.state.socket.emit("DeleteNotification", { ID: this.state.notification_ID, email: this.state.email })
 	}
@@ -322,7 +322,7 @@ class Notifications extends React.Component {
 	//Handle what the server throws back when
 	//trying to delete a notification
 	processDeletionCallback = (data) => {
-		console.log("Callback: " + data);
+		//console.log("Callback: " + data);
 
 		switch (data) {
 			case "Success":

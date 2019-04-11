@@ -76,23 +76,23 @@ class RegisterAccount extends Component {
 	async getExpoTokenFromStorage() {
 		try {
 			await AsyncStorage.getItem("expoToken").then((value) => {
-				console.log("Expo Token found: " + value)
+				//console.log("Expo Token found: " + value)
 				if (value !== null) {
-					console.log("expoToken found from app launch. Saving for use")
+					//console.log("expoToken found from app launch. Saving for use")
 					if (this._isMounted) {
 						this.setState({
 							expoToken: value
 						})
 					}
-					//console.log("Expo State: " + this.state.expoToken)
+					////console.log("Expo State: " + this.state.expoToken)
 				}
 				else {
-					console.log("No expo Token found. Will attempt again on relaunch")
+					//console.log("No expo Token found. Will attempt again on relaunch")
 				}
 			})
 		}
 		catch (error) {
-			console.error(error)
+			//console.error(error)
 		}
 	}
 
@@ -151,12 +151,12 @@ class RegisterAccount extends Component {
 		var emailHasNoPlus = this.checkEmailForPlus()
 		var emailHasNoSpaces = this.checkEmailForSpaces()
 
-		console.log("Completeness " + fieldsAreNotEmpty)
-		console.log("Email Has @: " + emailHasAtSign)
-		console.log("Email ends in EDU: " + emailEndsInEDU)
-		console.log("Do passwords match? " + passwordsMatch)
-		console.log("Does email have a space?" + emailHasNoSpaces)
-		console.log("Does email have a + ?" + emailHasNoPlus)
+		//console.log("Completeness " + fieldsAreNotEmpty)
+		//console.log("Email Has @: " + emailHasAtSign)
+		//console.log("Email ends in EDU: " + emailEndsInEDU)
+		//console.log("Do passwords match? " + passwordsMatch)
+		//console.log("Does email have a space?" + emailHasNoSpaces)
+		//console.log("Does email have a + ?" + emailHasNoPlus)
 
 		if (!fieldsAreNotEmpty) { Alert.alert("Fill in all fields") }
 		if (!emailHasAtSign) { Alert.alert("Make sure your email contains an @") }
@@ -175,7 +175,7 @@ class RegisterAccount extends Component {
 				expoNotificationToken: this.state.expoToken
 			}
 
-			console.log("Submitting new user AND Expo Token" + this.state.expoToken)
+			//console.log("Submitting new user AND Expo Token" + this.state.expoToken)
 			this.state.socket.emit("newUserRegistration", (data))
 		}
 	}
@@ -185,7 +185,7 @@ class RegisterAccount extends Component {
 	 * switch cases for alerts
 	 */
 	creationReturnData = (data) => {
-		console.log(data)
+		//console.log(data)
 		switch (data) {
 			case "Email Already Used":
 				Alert.alert("There is already an account with this email")
@@ -197,7 +197,7 @@ class RegisterAccount extends Component {
 				Alert.alert("Oof. Aah.", "There was an error validating your email. Please try again.")
 				break;
 			default:
-				console.log("Oh No")
+				//console.log("Oh No")
 				break;
 		}
 	}

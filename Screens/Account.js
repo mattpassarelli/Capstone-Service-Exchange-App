@@ -62,7 +62,7 @@ class Account extends React.Component {
 	async userFullName() {
 		try {
 			await AsyncStorage.getItem("fullAccountName").then(async (value) => {
-				console.log("Name: " + value)
+				//console.log("Name: " + value)
 				if (this._isMounted) {
 					this.setState({
 						fullName: value
@@ -71,7 +71,7 @@ class Account extends React.Component {
 			})
 		}
 		catch (error) {
-			console.log(error)
+			//console.log(error)
 		}
 	}
 
@@ -79,7 +79,7 @@ class Account extends React.Component {
 	async userEmail() {
 		try {
 			await AsyncStorage.getItem("userEmail").then((value) => {
-				console.log("Email:" + value)
+				//console.log("Email:" + value)
 				if (this._isMounted) {
 					this.setState({
 						email: value
@@ -88,7 +88,7 @@ class Account extends React.Component {
 			})
 		}
 		catch (error) {
-			console.log(error)
+			//console.log(error)
 		}
 	}
 
@@ -100,11 +100,11 @@ class Account extends React.Component {
 			await AsyncStorage.removeItem("userEmail")
 			await AsyncStorage.removeItem("fullAccountName")
 			await AsyncStorage.removeItem("expoToken")
-			console.log("Login information Removed")
+			//console.log("Login information Removed")
 			navigation.navigate("SignedOut")
 		}
 		catch (error) {
-			console.log(error)
+			//console.log(error)
 		}
 	}
 

@@ -70,11 +70,11 @@ class MessagesThread extends Component {
       }
     })
 
-    // console.log("Convo ID: " + this.state.convo_ID)
-    // console.log("User ID: " + this.state.user_ID)
-    // console.log("User Expo Token ", this.state.userToReceivePushNotifications)
-    // console.log("Other User's Name: " + this.state.user2Name)
-    // console.log("Request_ID: " + this.state.request_ID)
+    // //console.log("Convo ID: " + this.state.convo_ID)
+    // //console.log("User ID: " + this.state.user_ID)
+    // //console.log("User Expo Token ", this.state.userToReceivePushNotifications)
+    // //console.log("Other User's Name: " + this.state.user2Name)
+    // //console.log("Request_ID: " + this.state.request_ID)
   }
 
   componentWillUnmount() {
@@ -83,7 +83,7 @@ class MessagesThread extends Component {
 
   //Pull Messages for the thread from DB
   requestMessages() {
-    console.log("Requesting Messages from Server")
+    //console.log("Requesting Messages from Server")
 
     var data = { convo_ID: this.state.convo_ID }
 
@@ -92,7 +92,7 @@ class MessagesThread extends Component {
 
   //Process the Messages received and then sort them
   processMessagesReceived = (data = []) => {
-    console.log("Messages Recevied: " + data)
+    //console.log("Messages Recevied: " + data)
 
     /**
      * TODO:
@@ -117,7 +117,7 @@ class MessagesThread extends Component {
   userFullName = async () => {
     try {
       await AsyncStorage.getItem("fullAccountName").then(async (value) => {
-        console.log("Name: " + value)
+        //console.log("Name: " + value)
         if (this._isMounted) {
           this.setState({
             fullName: value
@@ -126,7 +126,7 @@ class MessagesThread extends Component {
       })
     }
     catch (error) {
-      console.log(error)
+      //console.log(error)
     }
   }
 
@@ -134,7 +134,7 @@ class MessagesThread extends Component {
   userEmail = async () => {
     try {
       await AsyncStorage.getItem("userEmail").then((value) => {
-        console.log("Email:" + value)
+        //console.log("Email:" + value)
         if (this._isMounted) {
           this.setState({
             email: value
@@ -143,7 +143,7 @@ class MessagesThread extends Component {
       })
     }
     catch (error) {
-      console.log(error)
+      //console.log(error)
     }
   }
 
@@ -161,7 +161,7 @@ class MessagesThread extends Component {
 
     var data = { messages: messages, _ID: this.state.convo_ID }
 
-    console.log(messages)
+    //console.log(messages)
 
     this.state.socket.emit("addMessageToConvo", (data))
 
@@ -174,7 +174,7 @@ class MessagesThread extends Component {
    * user that there is a new message
    */
   sendPushNotification = () => {
-    console.log("Sending Push Notification", this.state.userToReceivePushNotifications)
+    //console.log("Sending Push Notification", this.state.userToReceivePushNotifications)
     let response = fetch(NOTIFICATION_API, {
       method: 'POST',
       headers: {
@@ -191,12 +191,12 @@ class MessagesThread extends Component {
         }
       })
     })
-    console.log("Push Notification Sent", JSON.stringify(response))
+    //console.log("Push Notification Sent", JSON.stringify(response))
   }
 
   //Open the options modal
   openCloseModal() {
-    console.log("Request Creator is: " + this.state.creatorEmail)
+    //console.log("Request Creator is: " + this.state.creatorEmail)
 
     if (this._isMounted) {
       this.setState({
@@ -216,13 +216,13 @@ class MessagesThread extends Component {
 
   //Deletes only the conversation
   closeChat() {
-    console.log("User wants to close chat only")
+    //console.log("User wants to close chat only")
     Alert.alert("Confirm", "Do you want to remove this conversation? If this person is harassing you or breaking rules, please report them under Account > Help",
       [
         { text: "No" },
         {
           text: "Yes", onPress: () => {
-            console.log("Deleting Request")
+            //console.log("Deleting Request")
             this.state.socket.emit("removeConversationOnly", (this.state.convo_ID))
           }
         }
@@ -235,13 +235,13 @@ class MessagesThread extends Component {
    * and it's request_ID
    * */
   closeRequest() {
-    console.log("User wants to close entire request")
+    //console.log("User wants to close entire request")
     Alert.alert("Confirm", "Are you sure you want to remove this request?",
       [
         { text: "No" },
         {
           text: "Yes", onPress: () => {
-            console.log("Deleting Request")
+            //console.log("Deleting Request")
             this.state.socket.emit("deletePersonalRequest", (this.state.request_ID))
           }
         }
@@ -250,7 +250,7 @@ class MessagesThread extends Component {
 
   //Process callback for deletion
   processRequestDeletion = (data) => {
-    console.log("Data from deleting request is: " + data)
+    //console.log("Data from deleting request is: " + data)
     switch (data) {
       case "error":
         Alert.alert("Error", "There was an error removing the request. Please try again.",
@@ -265,7 +265,7 @@ class MessagesThread extends Component {
 
   //Process callback for deletion
   processConversationDeletion = (data) => {
-    console.log("Data from deleting conversation is: " + data)
+    //console.log("Data from deleting conversation is: " + data)
     switch (data) {
       case "error":
         Alert.alert("Error", "There was an error removing the conversation. Please try again",

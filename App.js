@@ -377,7 +377,7 @@ export default class App extends React.Component {
     //Check for loginKey to log user's back in
     AsyncStorage.getItem("loginKey").then((value) => {
       if (value !== null) {
-        console.log("Login key found!")
+        //console.log("Login key found!")
 
         if (this._isMounted) {
           this.setState({
@@ -386,7 +386,7 @@ export default class App extends React.Component {
         }
       }
       else {
-        console.log("Login key not found")
+        //console.log("Login key not found")
 
         if (this._isMounted) {
           this.setState({
@@ -397,12 +397,12 @@ export default class App extends React.Component {
     })
 
 
-    console.log("Getting Geo-Location")
+    //console.log("Getting Geo-Location")
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const location = JSON.stringify(position)
-        console.log("LOCATION: " + location)
+        //console.log("LOCATION: " + location)
 
         /**
          * TODO: Reinstate the proper distance method below
@@ -419,7 +419,7 @@ export default class App extends React.Component {
           longitude: -76.492951
         })
 
-        console.log('You are ' + distance + ' meters away from CNU')
+        //console.log('You are ' + distance + ' meters away from CNU')
 
         if (distance <= 1610) {
           if (this._isMounted) {
@@ -464,7 +464,7 @@ export default class App extends React.Component {
   async userEmail() {
     try {
       await AsyncStorage.getItem("userEmail").then((value) => {
-        console.log("Email:" + value)
+        //console.log("Email:" + value)
         if (this._isMounted) {
           this.setState({
             email: value,
@@ -474,7 +474,7 @@ export default class App extends React.Component {
       })
     }
     catch (error) {
-      console.log(error)
+      //console.log(error)
     }
   }
 
@@ -482,10 +482,10 @@ export default class App extends React.Component {
   checkForTokenStorage() {
     AsyncStorage.getItem("expoToken").then((value) => {
       if (value !== null) {
-        console.log("Expo Token found in storage")
+        //console.log("Expo Token found in storage")
       }
       else {
-        console.log("No Expo Token found. Asking for token/permissions")
+        //console.log("No Expo Token found. Asking for token/permissions")
         this.registerForPushNotificationsAsync()
       }
     })
@@ -516,10 +516,10 @@ export default class App extends React.Component {
     let token = await Notifications.getExpoPushTokenAsync();
     //let token =  "ExponentPushToken[XeeNo9APZFj_gWwUnfJk2O]"
 
-    console.log("TOKEN: " + token, "Sending token to user account and saving to STORAGE")
+    //console.log("TOKEN: " + token, "Sending token to user account and saving to STORAGE")
 
     AsyncStorage.setItem("expoToken", token)
-    console.log("Expo Token saved to Phone Storage")
+    //console.log("Expo Token saved to Phone Storage")
 
     if (this._isMounted) {
       this.setState({
@@ -553,13 +553,13 @@ export default class App extends React.Component {
 
   //Handle receiving a push notification while the app is in the foreground
   _handleNotification = (notification) => {
-    console.log("Incoming notification: " + JSON.stringify(notification))
+    //console.log("Incoming notification: " + JSON.stringify(notification))
     Toast.show(notification.data.message)
   };
 
   render() {
-    console.log("Are you WITHIN DISTANCE: " + this.state.withinDistance)
-    console.log("SignedIn Boolean: " + this.state.signedIn)
+    //console.log("Are you WITHIN DISTANCE: " + this.state.withinDistance)
+    //console.log("SignedIn Boolean: " + this.state.signedIn)
 
     if (!this.state.isReady) {
       return (

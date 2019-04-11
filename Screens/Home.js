@@ -9,7 +9,7 @@ import RF from "react-native-responsive-fontsize"
 import { NEW_NOTIFICATION_MESSAGE, NEW_NOTIFICATION_TITLE, NOTIFICATION_API } from "../Components/Constants"
 import { AsyncStorage } from "react-native"
 
-console.ignoredYellowBox = ["Remote Debugger"]
+//console.ignoredYellowBox = ["Remote Debugger"]
 YellowBox.ignoreWarnings([
     'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
 ]);
@@ -90,7 +90,7 @@ class Home extends Component {
         this.userFullName()
         this.userEmail()
         this.state.socket.emit("requestRequests")
-        console.log("Component Mounted")
+        //console.log("Component Mounted")
         this.state.socket.on("requestData", (data) => {
             if (this._isMounted) {
                 this.setState({ requestsDataJSON: data }), this.addRequestsFromServer()
@@ -106,7 +106,7 @@ class Home extends Component {
     async userFullName() {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
-                console.log("Name: " + value)
+                //console.log("Name: " + value)
                 if (this._isMounted) {
                     this.setState({
                         fullName: value
@@ -115,7 +115,7 @@ class Home extends Component {
             })
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
         }
     }
 
@@ -123,7 +123,7 @@ class Home extends Component {
     async userEmail() {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
-                console.log("Email:" + value)
+                //console.log("Email:" + value)
                 if (this._isMounted) {
                     this.setState({
                         email: value
@@ -132,7 +132,7 @@ class Home extends Component {
             })
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
         }
     }
 
@@ -140,12 +140,12 @@ class Home extends Component {
 
     //Displays the modal for clicking a Request
     openRequest = (item) => {
-        console.log(item.props.title)
-        console.log(item.props.subtitle)
-        console.log(item.props.request_ID)
-        console.log(item.props.posterName)
-        console.log("EXPO TOKEN: " + item.props.expoToken)
-        console.log("Poster email: " + item.props.posterEmail)
+        //console.log(item.props.title)
+        //console.log(item.props.subtitle)
+        //console.log(item.props.request_ID)
+        //console.log(item.props.posterName)
+        //console.log("EXPO TOKEN: " + item.props.expoToken)
+        //console.log("Poster email: " + item.props.posterEmail)
         if (this._isMounted) {
             this.setState({
                 popupIsOpen: true,
@@ -172,8 +172,8 @@ class Home extends Component {
     //the array of requests
     addRequestsFromServer = () => {
 
-        console.log("Gotten Request data from server")
-        // console.log(this.state.requestsDataJSON)
+        //console.log("Gotten Request data from server")
+        // //console.log(this.state.requestsDataJSON)
 
         if (this._isMounted) {
             this.setState({
@@ -182,12 +182,12 @@ class Home extends Component {
         }
 
         if (this.state.requestsDataJSON.length > 0) {
-            //console.log(this.state.requestsDataJSON)
+            ////console.log(this.state.requestsDataJSON)
             var tempRequests = []
 
 
             for (var i = 0; i < this.state.requestsDataJSON.length; i++) {
-                // console.log("Adding request " + i + " to array of requests")
+                // //console.log("Adding request " + i + " to array of requests")
                 var newCard = (
                     <Card title={this.state.requestsDataJSON[i].title} subtitle={this.state.requestsDataJSON[i].subtitle}
                         posterName={this.state.requestsDataJSON[i].posterName} request_ID={this.state.requestsDataJSON[i]._id}
@@ -211,11 +211,11 @@ class Home extends Component {
                 })
             }
 
-            //console.log("Finished adding requests. Total is now: " + this.state.requests.length)
+            ////console.log("Finished adding requests. Total is now: " + this.state.requests.length)
 
         }
         else {
-            console.log("No requests in DB. Or is connection bad?")
+            //console.log("No requests in DB. Or is connection bad?")
         }
 
         if (this._isMounted) {
@@ -231,7 +231,7 @@ class Home extends Component {
      * is what is called
      */
     refreshFeed = () => {
-        console.log("Refreshing requestsDataJSON")
+        //console.log("Refreshing requestsDataJSON")
 
         /**
          * Clear requests (in case they've all been deleted lol),
@@ -249,9 +249,9 @@ class Home extends Component {
             }
         })
 
-        console.log("Data received from server is: " + this.state.requestsDataJSON)
+        //console.log("Data received from server is: " + this.state.requestsDataJSON)
 
-        console.log("Done Refreshing JSON")
+        //console.log("Done Refreshing JSON")
         this.addRequestsFromServer()
     }
 
@@ -288,7 +288,7 @@ class Home extends Component {
     //we send a push notification to that
     //request's OP
     sendPushNotification = () => {
-        console.log("Sending Push Notification", this.state.OPExpoToken)
+        //console.log("Sending Push Notification", this.state.OPExpoToken)
         let response = fetch(NOTIFICATION_API, {
             method: 'POST',
             headers: {
@@ -305,7 +305,7 @@ class Home extends Component {
                 }
             })
         })
-        console.log("Push Notification Sent", JSON.stringify(response))
+        //console.log("Push Notification Sent", JSON.stringify(response))
     }
 
 

@@ -53,7 +53,7 @@ class PersonalRequests extends Component {
     userFullName = async () => {
         try {
             await AsyncStorage.getItem("fullAccountName").then(async (value) => {
-                console.log("Name: " + value)
+                //console.log("Name: " + value)
                 if (this._isMounted) {
                     this.setState({
                         fullName: value
@@ -62,7 +62,7 @@ class PersonalRequests extends Component {
             })
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
         }
     }
 
@@ -70,7 +70,7 @@ class PersonalRequests extends Component {
     userEmail = async () => {
         try {
             await AsyncStorage.getItem("userEmail").then((value) => {
-                console.log("Email:" + value)
+                //console.log("Email:" + value)
                 if (this._isMounted) {
                     this.setState({
                         email: value
@@ -80,7 +80,7 @@ class PersonalRequests extends Component {
             })
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
         }
     }
 
@@ -96,7 +96,7 @@ class PersonalRequests extends Component {
         }
 
         if (this.state.requestsDataJSON.length > 0) {
-            console.log("Requests received: " + this.state.requestsDataJSON)
+            //console.log("Requests received: " + this.state.requestsDataJSON)
 
             var temp = []
 
@@ -124,7 +124,7 @@ class PersonalRequests extends Component {
 
         }
         else {
-            console.log("No requests for user. Or is DB connection bad?")
+            //console.log("No requests for user. Or is DB connection bad?")
         }
 
         if (this._isMounted) {
@@ -142,15 +142,15 @@ class PersonalRequests extends Component {
             })
         }
 
-        console.log("Refreshing. Email: " + this.state.email)
+        //console.log("Refreshing. Email: " + this.state.email)
 
         this.state.socket.emit("requestPersonalRequests", (this.state.email))
     }
 
     //Open the Request Modal
     openRequest = (item) => {
-        console.log("Date Created: " + new Date(item.props.dateCreated).toLocaleDateString())
-        console.log("Request ID: " + item.props.request_ID)
+        //console.log("Date Created: " + new Date(item.props.dateCreated).toLocaleDateString())
+        //console.log("Request ID: " + item.props.request_ID)
 
         if (this._isMounted) {
             this.setState({
@@ -181,7 +181,7 @@ class PersonalRequests extends Component {
                 { text: "No" },
                 {
                     text: "Yes", onPress: () => {
-                        console.log("Deleting Request")
+                        //console.log("Deleting Request")
                         this.state.socket.emit("deletePersonalRequest", (this.state.request_ID))
                     }
                 }
@@ -190,7 +190,7 @@ class PersonalRequests extends Component {
 
     //If request was deleted, refresh
     processRequestDeletion = (data) => {
-        console.log("Data from deleting request is: " + data)
+        //console.log("Data from deleting request is: " + data)
 
         switch (data) {
             case "error":
