@@ -94,12 +94,6 @@ class MessagesThread extends Component {
   processMessagesReceived = (data = []) => {
     //console.log("Messages Recevied: " + data)
 
-    /**
-     * TODO:
-     * I'm apparently causing another memory leak here, but
-     * that is yet to be confirmed. Just keep it in mind
-     */
-
     if (this._isMounted) {
       this.setState({
         messages: []

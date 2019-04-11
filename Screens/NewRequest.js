@@ -249,8 +249,6 @@ class NewRequest extends PureComponent {
                                     style={{ alignItems: 'center', justifyContent: "center" }}
                                     prompt="Select a Request Type">
 
-                                    {/* TODO: Add in request items */}
-
                                     {/* Placeholder Item */}
                                     <Picker.Item label="Please Select a Request..." value="0" />
 

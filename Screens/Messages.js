@@ -80,13 +80,11 @@ class Messages extends Component {
                         email: value
                     })
                 }
-				/**
-				 * Since I can't come up with a decent way of storing these
-				 * values in state before the socket emits, we'll just emit
-				 * in the call back. I hope to fix this later on
-				 * 
-				 * TODO: Store account data in a constant file hopefully
-				 */
+            /**
+             * Since I can't come up with a decent way of storing these
+             * values in state before the socket emits, we'll just emit
+             * in the call back. I hope to fix this later on
+             */
                 this.state.socket.emit("requestConversations", ({ email: value }))
                 this.state.socket.emit("requestUserID", ({ email: value }))
             })

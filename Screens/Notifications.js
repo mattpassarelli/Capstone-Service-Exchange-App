@@ -143,9 +143,8 @@ class Notifications extends React.Component {
 				 * Since I can't come up with a decent way of storing these
 				 * values in state before the socket emits, we'll just emit
 				 * in the call back. I hope to fix this later on
-				 * 
-				 * TODO: Store account data in a constant file hopefully
-				 */
+				 *
+				 **/
 				this.state.socket.emit("pullNotifications", (value))
 			})
 		}

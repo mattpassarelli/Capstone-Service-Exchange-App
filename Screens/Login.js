@@ -10,11 +10,6 @@ import { AsyncStorage } from 'react-native';
 
 const apiEndpoint = API_ENDPOINT
 
-/**
- * TODO:
- * Possible forgot password option down the line
- */
-
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
