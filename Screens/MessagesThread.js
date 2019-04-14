@@ -251,8 +251,9 @@ class MessagesThread extends Component {
           [{ text: "OK", onPress: () => this.closeCloseRequest() }])
         break;
       case "success":
-        Alert.alert("Success", "Successfully deleted the request",
-          [{ text: "OK", onPress: () => this.closeModalThenGoBack() }])
+        // Alert.alert("Success", "Successfully deleted the request",
+        //   [{ text: "OK", onPress: () => this.closeModalThenGoBack() }])
+        this.closeModalThenGoBack()
         break;
     }
   }
@@ -266,8 +267,9 @@ class MessagesThread extends Component {
           [{ text: "OK", onPress: () => this.closeCloseRequest() }])
         break;
       case "success":
-        Alert.alert("Success", "Successfully deleted the conversation",
-          [{ text: "OK", onPress: () => this.closeModalThenGoBack() }])
+        // Alert.alert("Success", "Successfully deleted the conversation",
+        //   [{ text: "OK", onPress: () => this.closeModalThenGoBack() }])
+        this.closeModalThenGoBack()
         break;
     }
   }

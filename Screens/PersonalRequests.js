@@ -198,8 +198,8 @@ class PersonalRequests extends Component {
                     [{ text: "OK", onPress: () => this.closeRequest() }])
                 break;
             case "success":
-                Alert.alert("Success", "Successfully deleted the request",
-                    [{ text: "OK", onPress: () => this.closeRequest() }])
+                // Alert.alert("Success", "Successfully deleted the request",
+                //     [{ text: "OK", onPress: () => this.closeRequest() }])
                 this.refreshFeed()
                 break;
         }

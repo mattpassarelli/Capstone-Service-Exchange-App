@@ -109,7 +109,7 @@ class Notifications extends React.Component {
 		//console.log("Data received from server is: " + this.state.requestsDataJSON)
 
 		//console.log("Done Refreshing JSON")
-		this.addNotifications()
+		// this.addNotifications()
 	}
 
 	//Grab the full name from the phone's storage
